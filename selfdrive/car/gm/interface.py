@@ -159,6 +159,8 @@ class CarInterface(CarInterfaceBase):
     #  events.add(EventName.accFaulted)
     #if ret.vEgo < self.CP.minSteerSpeed:
     #  events.add(car.CarEvent.EventName.belowSteerSpeed)
+    if EventName.pedalPressed in events.events:
+      events.events.remove(EventName.pedalPressed)
 
     # handle button presses
     for b in ret.buttonEvents:
