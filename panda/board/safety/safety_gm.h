@@ -80,12 +80,12 @@ static int gm_rx_hook(CANPacket_t *to_push) {
     }
 
     // exit controls on regen paddle
-    if (addr == 189) {
-      bool regen = GET_BYTE(to_push, 0) & 0x20U;
+    //if (addr == 189) {
+    //  bool regen = GET_BYTE(to_push, 0) & 0x20U;
       //if (regen) {
       //  controls_allowed = 0;
       //}
-    }
+    //}
 
      // Pedal Interceptor
     if (addr == 513) {
@@ -127,7 +127,7 @@ static int gm_tx_hook(CANPacket_t *to_send) {
   if (!unsafe_allow_gas) {
     pedal_pressed = pedal_pressed || gas_pressed_prev;
   }
-  bool current_controls_allowed = controls_allowed // && !pedal_pressed;
+  bool current_controls_allowed = controls_allowed; // && !pedal_pressed;
 
   // GAS: safety check (interceptor)
   if (addr == 512) {
