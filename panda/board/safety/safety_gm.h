@@ -18,6 +18,10 @@ const int GM_DRIVER_TORQUE_FACTOR = 4;
 const int GM_MAX_GAS = 3072;
 const int GM_MAX_REGEN = 1404;
 const int GM_MAX_BRAKE = 350;
+
+const int GM_GAS_INTERCEPTOR_THRESHOLD = 458;  // (610 + 306.25) / 2ratio between offset and gain from dbc file
+#define GM_GET_INTERCEPTOR(msg) (((GET_BYTE((msg), 0) << 8) + GET_BYTE((msg), 1) + ((GET_BYTE((msg), 2) << 8) + GET_BYTE((msg), 3)) / 2 ) / 2) // avg between 2 tracks
+
 const CanMsg GM_TX_MSGS[] = {{384, 0, 4}, {1033, 0, 7}, {1034, 0, 7}, {715, 0, 8}, {880, 0, 6},  // pt bus
                              {161, 1, 7}, {774, 1, 8}, {776, 1, 7}, {784, 1, 2},   // obs bus
                              {789, 2, 5},  // ch bus
@@ -62,9 +66,6 @@ static int gm_rx_hook(CANPacket_t *to_push) {
         case 3:  // set
           controls_allowed = 1;
           break;
-        case 6:  // cancel
-          controls_allowed = 0;
-          break;
         default:
           break;  // any other button is irrelevant
       }
@@ -81,16 +82,25 @@ static int gm_rx_hook(CANPacket_t *to_push) {
     // exit controls on regen paddle
     if (addr == 189) {
       bool regen = GET_BYTE(to_push, 0) & 0x20U;
-      if (regen) {
-        controls_allowed = 0;
-      }
+      //if (regen) {
+      //  controls_allowed = 0;
+      //}
+    }
+
+     // Pedal Interceptor
+    if (addr == 513) {
+      gas_interceptor_detected = 1;
+      int gas_interceptor = GM_GET_INTERCEPTOR(to_push);
+      gas_pressed = gas_interceptor > GM_GAS_INTERCEPTOR_THRESHOLD;
+      gas_interceptor_prev = gas_interceptor;
     }
 
     // Check if ASCM or LKA camera are online
     // on powertrain bus.
     // 384 = ASCMLKASteeringCmd
     // 715 = ASCMGasRegenCmd
-    generic_rx_checks(((addr == 384) || (addr == 715)));
+    // generic_rx_checks(((addr == 384) || (addr == 715)));
+    generic_rx_checks(addr == 384);
   }
   return valid;
 }
@@ -117,21 +127,30 @@ static int gm_tx_hook(CANPacket_t *to_send) {
   if (!unsafe_allow_gas) {
     pedal_pressed = pedal_pressed || gas_pressed_prev;
   }
-  bool current_controls_allowed = controls_allowed && !pedal_pressed;
+  bool current_controls_allowed = controls_allowed // && !pedal_pressed;
 
-  // BRAKE: safety check
-  if (addr == 789) {
-    int brake = ((GET_BYTE(to_send, 0) & 0xFU) << 8) + GET_BYTE(to_send, 1);
-    brake = (0x1000 - brake) & 0xFFF;
+  // GAS: safety check (interceptor)
+  if (addr == 512) {
     if (!current_controls_allowed) {
-      if (brake != 0) {
+      if (GET_BYTE(to_send, 0) || GET_BYTE(to_send, 1)) {
         tx = 0;
       }
     }
-    if (brake > GM_MAX_BRAKE) {
-      tx = 0;
-    }
   }
+
+  // BRAKE: safety check
+  //if (addr == 789) {
+  //  int brake = ((GET_BYTE(to_send, 0) & 0xFU) << 8) + GET_BYTE(to_send, 1);
+  //  brake = (0x1000 - brake) & 0xFFF;
+  //  if (!current_controls_allowed) {
+  //    if (brake != 0) {
+  //      tx = 0;
+  //    }
+  //  }
+  //  if (brake > GM_MAX_BRAKE) {
+  //    tx = 0;
+  //  }
+  //}
 
   // LKA STEER: safety check
   if (addr == 384) {
@@ -154,14 +173,14 @@ static int gm_tx_hook(CANPacket_t *to_send) {
       desired_torque_last = desired_torque;
 
       // *** torque real time rate limit check ***
-      violation |= rt_rate_limit_check(desired_torque, rt_torque_last, GM_MAX_RT_DELTA);
+      //violation |= rt_rate_limit_check(desired_torque, rt_torque_last, GM_MAX_RT_DELTA);
 
       // every RT_INTERVAL set the new limits
-      uint32_t ts_elapsed = get_ts_elapsed(ts, ts_last);
-      if (ts_elapsed > GM_RT_INTERVAL) {
-        rt_torque_last = desired_torque;
-        ts_last = ts;
-      }
+      //uint32_t ts_elapsed = get_ts_elapsed(ts, ts_last);
+      //if (ts_elapsed > GM_RT_INTERVAL) {
+      //  rt_torque_last = desired_torque;
+      //  ts_last = ts;
+      //}
     }
 
     // no torque if controls is not allowed
