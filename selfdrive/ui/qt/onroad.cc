@@ -570,7 +570,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   // brake
 
-  int x = 110;
+  int x = 120;
   const int y = rect().bottom() - footer_h / 2 - 10;
 
   bool brake_valid = car_state.getBrakePressed();
