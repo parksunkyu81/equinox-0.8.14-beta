@@ -18,7 +18,6 @@ EventName = car.CarEvent.EventName
 MAX_CTRL_SPEED = (V_CRUISE_MAX + 4) * CV.KPH_TO_MS
 ACCEL_MAX = 2.0
 ACCEL_MIN = -3.5
-DISENGAGE_ON_GAS = False
 
 # generic car and radar interfaces
 
@@ -127,8 +126,6 @@ class CarInterfaceBase(ABC):
       events.add(EventName.wrongCarMode)
     if cs_out.espDisabled:
       events.add(EventName.espDisabled)
-    if cs_out.gasPressed and DISENGAGE_ON_GAS:
-      events.add(EventName.gasPressed)
     #if cs_out.gasPressed:
     #  events.add(EventName.gasPressed)
     if cs_out.stockFcw:
@@ -158,9 +155,9 @@ class CarInterfaceBase(ABC):
       events.add(EventName.steerUnavailable)
 
     # Disable on rising edge of gas or brake. Also disable on brake when speed > 0.
-    if (DISENGAGE_ON_GAS and cs_out.gasPressed and not self.CS.out.gasPressed) or \
-       (cs_out.brakePressed and (not self.CS.out.brakePressed or not cs_out.standstill)):
-      events.add(EventName.pedalPressed)
+    #if (cs_out.gasPressed and not self.CS.out.gasPressed) or \
+    #   (cs_out.brakePressed and (not self.CS.out.brakePressed or not cs_out.standstill)):
+    #  events.add(EventName.pedalPressed)
 
     # we engage when pcm is active (rising edge)
     if pcm_enable:
