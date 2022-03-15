@@ -127,7 +127,7 @@ static int gm_tx_hook(CANPacket_t *to_send) {
   if (!unsafe_allow_gas) {
     pedal_pressed = pedal_pressed || gas_pressed_prev;
   }
-  bool current_controls_allowed = controls_allowed; // && !pedal_pressed;
+  bool current_controls_allowed = controls_allowed && !pedal_pressed;
 
   // GAS: safety check (interceptor)
   if (addr == 512) {
@@ -139,18 +139,18 @@ static int gm_tx_hook(CANPacket_t *to_send) {
   }
 
   // BRAKE: safety check
-  //if (addr == 789) {
-  //  int brake = ((GET_BYTE(to_send, 0) & 0xFU) << 8) + GET_BYTE(to_send, 1);
-  //  brake = (0x1000 - brake) & 0xFFF;
-  //  if (!current_controls_allowed) {
-  //    if (brake != 0) {
-  //      tx = 0;
-  //    }
-  //  }
-  //  if (brake > GM_MAX_BRAKE) {
-  //    tx = 0;
-  //  }
-  //}
+  if (addr == 789) {
+    int brake = ((GET_BYTE(to_send, 0) & 0xFU) << 8) + GET_BYTE(to_send, 1);
+    brake = (0x1000 - brake) & 0xFFF;
+    if (!current_controls_allowed) {
+      if (brake != 0) {
+        tx = 0;
+      }
+    }
+    if (brake > GM_MAX_BRAKE) {
+      tx = 0;
+    }
+  }
 
   // LKA STEER: safety check
   if (addr == 384) {
