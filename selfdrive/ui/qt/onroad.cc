@@ -570,7 +570,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   // brake
 
-  int x = 120;
+  int x = 140;
   const int y = rect().bottom() - footer_h / 2 - 10;
 
   bool brake_valid = car_state.getBrakePressed();
@@ -637,7 +637,7 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
 void NvgWindow::drawSpeed(QPainter &p) {
   UIState *s = uiState();
   const SubMaster &sm = *(s->sm);
-  float cur_speed = std::max(0.0, sm["carState"].getCarState().getCluSpeedMs() * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH));
+  float cur_speed = std::max(0.0, sm["carState"].getCarState().getVEgo() * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH));
   auto car_state = sm["carState"].getCarState();
   float accel = car_state.getAEgo();
 
