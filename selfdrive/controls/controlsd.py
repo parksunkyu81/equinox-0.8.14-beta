@@ -27,7 +27,6 @@ from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.locationd.calibrationd import Calibration
 from selfdrive.hardware import HARDWARE, TICI, EON
 from selfdrive.manager.process_config import managed_processes
-from selfdrive.car.hyundai.scc_smoother import SccSmoother
 from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_get
 
 SOFT_DISABLE_TIME = 3  # seconds
@@ -418,12 +417,12 @@ class Controls:
     self.CP.pcmCruise = self.CI.CP.pcmCruise
 
     # if stock cruise is completely disabled, then we can use our own set speed logic
-    #if not self.CP.pcmCruise:
-    #  self.v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.button_timers, self.enabled, self.is_metric)
-    #elif CS.cruiseState.enabled:
-    #  self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
+    if not self.CP.pcmCruise:
+      self.v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.button_timers, self.enabled, self.is_metric)
+    elif CS.cruiseState.enabled:
+      self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
 
-    SccSmoother.update_cruise_buttons(self, CS, self.CP.openpilotLongitudinalControl)
+    #SccSmoother.update_cruise_buttons(self, CS, self.CP.openpilotLongitudinalControl)
 
     # decrement the soft disable timer at every step, as it's reset on
     # entrance in SOFT_DISABLING state
