@@ -475,6 +475,7 @@ void NvgWindow::drawHud(QPainter &p) {
   drawBottomIcons(p);
 }
 
+/*
 static const QColor get_tpms_color(float tpms) {
     if(tpms < 5 || tpms > 60) // N/A
         return QColor(255, 255, 255, 220);
@@ -490,14 +491,14 @@ static const QString get_tpms_text(float tpms) {
     char str[32];
     snprintf(str, sizeof(str), "%.0f", round(tpms));
     return QString(str);
-}
+}*/
 
 void NvgWindow::drawBottomIcons(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
-  auto scc_smoother = sm["carControl"].getCarControl().getSccSmoother();
 
   // tire pressure
+  /*
   {
     const int w = 58;
     const int h = 126;
@@ -528,7 +529,9 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     drawText2(p, center_x-marginX, center_y+marginY, Qt::AlignRight, get_tpms_text(rl), get_tpms_color(rl));
     drawText2(p, center_x+marginX, center_y+marginY, Qt::AlignLeft, get_tpms_text(rr), get_tpms_color(rr));
   }
+  */
 
+/*
   int x = radius / 2 + (bdr_s * 2) + (radius + 50);
   const int y = rect().bottom() - footer_h / 2 - 10;
 
@@ -563,10 +566,14 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y+50, str, textColor);
+  */
 
   // brake
-  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
-  bool brake_valid = car_state.getBrakeLights();
+
+  int x = radius / 2 + (bdr_s * 2) + (radius + 50);
+  const int y = rect().bottom() - footer_h / 2 - 10;
+
+  bool brake_valid = car_state.getBrakePressed();
   float img_alpha = brake_valid ? 1.0f : 0.15f;
   float bg_alpha = brake_valid ? 0.3f : 0.1f;
   drawIcon(p, x, y, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
@@ -574,7 +581,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   // auto hold
   int autohold = car_state.getAutoHold();
   if(autohold >= 0) {
-    x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
+    x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
     img_alpha = autohold > 0 ? 1.0f : 0.15f;
     bg_alpha = autohold > 0 ? 0.3f : 0.1f;
     drawIcon(p, x, y, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
@@ -587,13 +594,12 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 void NvgWindow::drawMaxSpeed(QPainter &p) {
   UIState *s = uiState();
   const SubMaster &sm = *(s->sm);
-  const auto scc_smoother = sm["carControl"].getCarControl().getSccSmoother();
+  const auto controls_state = sm["controlsState"].getControlsState();
   bool is_metric = s->scene.is_metric;
-  bool long_control = scc_smoother.getLongControl();
 
   // kph
-  float applyMaxSpeed = scc_smoother.getApplyMaxSpeed();
-  float cruiseMaxSpeed = scc_smoother.getCruiseMaxSpeed();
+  float applyMaxSpeed = controls_state.getApplyMaxSpeed();
+  float cruiseMaxSpeed = controls_state.getCruiseMaxSpeed();
   bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
 
   QRect rc(30, 30, 184, 202);
@@ -620,14 +626,8 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
     configFont(p, "Open Sans", 76, "Bold");
     drawText(p, rc.center().x(), 195, str, 255);
   } else {
-    if(long_control) {
-      configFont(p, "Open Sans", 48, "sans-semibold");
-      drawText(p, rc.center().x(), 100, "OP", 100);
-    }
-    else {
-      configFont(p, "Open Sans", 48, "sans-semibold");
-      drawText(p, rc.center().x(), 100, "MAX", 100);
-    }
+    configFont(p, "Open Sans", 48, "sans-semibold");
+    drawText(p, rc.center().x(), 100, "MAX", 100);
 
     configFont(p, "Open Sans", 76, "sans-semibold");
     drawText(p, rc.center().x(), 195, "N/A", 100);
