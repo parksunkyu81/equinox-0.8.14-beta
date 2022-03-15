@@ -172,9 +172,12 @@ struct CarState {
   stockAeb @30 :Bool;
   stockFcw @31 :Bool;
   espDisabled @32 :Bool;
+  lkasEnable @44 :Bool;
 
   # cruise state
   cruiseState @10 :CruiseState;
+  adaptiveCruise @5 :Bool;
+  mainOn @46 :Bool;
 
   # gear
   gearShifter @14 :GearShifter;
