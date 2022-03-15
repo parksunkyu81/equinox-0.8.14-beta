@@ -570,7 +570,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   // brake
 
-  int x = radius / 2 + (bdr_s * 2) + (radius + 50);
+  int x = 110;
   const int y = rect().bottom() - footer_h / 2 - 10;
 
   bool brake_valid = car_state.getBrakePressed();
@@ -581,7 +581,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   // auto hold
   int autohold = car_state.getAutoHold();
   if(autohold >= 0) {
-    x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
+    x = radius / 2 + (bdr_s * 2) + (radius + 50);
     img_alpha = autohold > 0 ? 1.0f : 0.15f;
     bg_alpha = autohold > 0 ? 0.3f : 0.1f;
     drawIcon(p, x, y, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
