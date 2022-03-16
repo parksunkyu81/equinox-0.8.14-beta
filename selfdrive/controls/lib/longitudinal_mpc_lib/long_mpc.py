@@ -329,12 +329,7 @@ class LongitudinalMpc:
     self.params[:,1] = self.cruise_max_a
 
     # neokii
-    cruise_gap = int(clip(carstate.cruiseGap, 1., 4.))
-    if cruise_gap == AUTO_TR_CRUISE_GAP:
-      tr = interp(carstate.vEgo, AUTO_TR_BP, AUTO_TR_V)
-    else:
-      tr = interp(float(cruise_gap), CRUISE_GAP_BP, CRUISE_GAP_V)
-
+    tr = interp(carstate.vEgo, AUTO_TR_BP, AUTO_TR_V)
     self.param_tr = tr
 
     # To estimate a safe distance from a moving lead, we calculate how much stopping
