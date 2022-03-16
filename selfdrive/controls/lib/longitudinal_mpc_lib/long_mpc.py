@@ -7,7 +7,7 @@ from common.numpy_fast import clip, interp
 from selfdrive.swaglog import cloudlog
 from selfdrive.modeld.constants import index_function
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
-from selfdrive.config import Conversions as CV
+from common.conversions import Conversions as CV
 
 if __name__ == '__main__':  # generating code
   from pyextra.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
@@ -41,6 +41,9 @@ CRASH_DISTANCE = .5
 LIMIT_COST = 1e6
 ACADOS_SOLVER_TYPE = 'SQP_RTI'
 
+
+CRUISE_GAP_BP = [1., 2., 3., 4.]
+CRUISE_GAP_V = [1.2, 1.35, 1.5, 1.7]
 
 AUTO_TR_BP = [0., 10.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110.*CV.KPH_TO_MS]
 AUTO_TR_V = [1., 1.2, 1.35, 1.45]
