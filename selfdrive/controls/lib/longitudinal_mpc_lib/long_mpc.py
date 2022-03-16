@@ -7,19 +7,19 @@ from common.numpy_fast import clip, interp
 from selfdrive.swaglog import cloudlog
 from selfdrive.modeld.constants import index_function
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
-from selfdrive.config import Conversions as CV
+from common.conversions import Conversions as CV
 
 if __name__ == '__main__':  # generating code
   from pyextra.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
 else:
-  # from pyextra.acados_template import AcadosOcpSolver as AcadosOcpSolverFast
-  from selfdrive.controls.lib.longitudinal_mpc_lib.c_generated_code.acados_ocp_solver_pyx import AcadosOcpSolverFast  # pylint: disable=no-name-in-module, import-error
+  from selfdrive.controls.lib.longitudinal_mpc_lib.c_generated_code.acados_ocp_solver_pyx import AcadosOcpSolverCython  # pylint: disable=no-name-in-module, import-error
 
 from casadi import SX, vertcat
 
+MODEL_NAME = 'long'
 LONG_MPC_DIR = os.path.dirname(os.path.abspath(__file__))
 EXPORT_DIR = os.path.join(LONG_MPC_DIR, "c_generated_code")
-JSON_FILE = "acados_ocp_long.json"
+JSON_FILE = os.path.join(LONG_MPC_DIR, "acados_ocp_long.json")
 
 SOURCES = ['lead0', 'lead1', 'cruise']
 
@@ -39,10 +39,8 @@ A_CHANGE_COST = 50. # 200.
 DANGER_ZONE_COST = 100.
 CRASH_DISTANCE = .5
 LIMIT_COST = 1e6
+ACADOS_SOLVER_TYPE = 'SQP_RTI'
 
-
-CRUISE_GAP_BP = [1., 2., 3., 4.]
-CRUISE_GAP_V = [1.2, 1.35, 1.5, 1.7]
 
 AUTO_TR_BP = [0., 10.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110.*CV.KPH_TO_MS]
 AUTO_TR_V = [1., 1.2, 1.35, 1.45]
@@ -55,7 +53,7 @@ AUTO_TR_CRUISE_GAP = 4
 # much better convergence of the MPC with low iterations
 N = 12
 MAX_T = 10.0
-T_IDXS_LST = [index_function(idx, max_val=MAX_T, max_idx=N+1) for idx in range(N+1)]
+T_IDXS_LST = [index_function(idx, max_val=MAX_T, max_idx=N) for idx in range(N+1)]
 
 T_IDXS = np.array(T_IDXS_LST)
 T_DIFFS = np.diff(T_IDXS, prepend=[0.])
@@ -76,7 +74,7 @@ def desired_follow_distance(v_ego, v_lead, tr):
 
 def gen_long_model():
   model = AcadosModel()
-  model.name = 'long'
+  model.name = MODEL_NAME
 
   # set up states & controls
   x_ego = SX.sym('x_ego')
@@ -109,7 +107,7 @@ def gen_long_model():
   return model
 
 
-def gen_long_mpc_solver():
+def gen_long_ocp():
   ocp = AcadosOcp()
   ocp.model = gen_long_model()
 
@@ -162,7 +160,6 @@ def gen_long_mpc_solver():
                         (a_max - a_ego),
                         ((x_obstacle - x_ego) - (3/4) * (desired_dist_comfort)) / (v_ego + 10.))
   ocp.model.con_h_expr = constraints
-  ocp.model.con_h_expr_e = vertcat(np.zeros(CONSTR_DIM))
 
   x0 = np.zeros(X_DIM)
   ocp.constraints.x0 = x0
@@ -176,9 +173,7 @@ def gen_long_mpc_solver():
   ocp.cost.zu = cost_weights
 
   ocp.constraints.lh = np.zeros(CONSTR_DIM)
-  ocp.constraints.lh_e = np.zeros(CONSTR_DIM)
   ocp.constraints.uh = 1e4*np.ones(CONSTR_DIM)
-  ocp.constraints.uh_e = 1e4*np.ones(CONSTR_DIM)
   ocp.constraints.idxsh = np.arange(CONSTR_DIM)
 
   # The HPIPM solver can give decent solutions even when it is stopped early
@@ -188,12 +183,13 @@ def gen_long_mpc_solver():
   ocp.solver_options.qp_solver = 'PARTIAL_CONDENSING_HPIPM'
   ocp.solver_options.hessian_approx = 'GAUSS_NEWTON'
   ocp.solver_options.integrator_type = 'ERK'
-  ocp.solver_options.nlp_solver_type = 'SQP_RTI'
+  ocp.solver_options.nlp_solver_type = ACADOS_SOLVER_TYPE
   ocp.solver_options.qp_solver_cond_N = 1
 
   # More iterations take too much time and less lead to inaccurate convergence in
   # some situations. Ideally we would run just 1 iteration to ensure fixed runtime.
   ocp.solver_options.qp_solver_iter_max = 10
+  ocp.solver_options.qp_tol = 1e-3
 
   # set prediction horizon
   ocp.solver_options.tf = Tf
@@ -210,7 +206,7 @@ class LongitudinalMpc:
     self.source = SOURCES[2]
 
   def reset(self):
-    self.solver = AcadosOcpSolverFast('long', N)
+    self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.v_solution = np.zeros(N+1)
     self.a_solution = np.zeros(N+1)
     self.prev_a = np.array(self.a_solution)
@@ -330,7 +326,7 @@ class LongitudinalMpc:
     self.params[:,1] = self.cruise_max_a
 
     # neokii
-    tr = interp(float(cruise_gap), CRUISE_GAP_BP, CRUISE_GAP_V)
+    tr = interp(carstate.vEgo, AUTO_TR_BP, AUTO_TR_V)
 
     self.param_tr = tr
 
@@ -412,5 +408,6 @@ class LongitudinalMpc:
 
 
 if __name__ == "__main__":
-  ocp = gen_long_mpc_solver()
-  AcadosOcpSolver.generate(ocp, json_file=JSON_FILE, build=False)
+  ocp = gen_long_ocp()
+  AcadosOcpSolver.generate(ocp, json_file=JSON_FILE)
+  # AcadosOcpSolver.build(ocp.code_export_directory, with_cython=True)

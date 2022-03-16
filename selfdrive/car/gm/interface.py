@@ -73,33 +73,25 @@ class CarInterface(CarInterfaceBase):
     ret.steerRatioRear = 0.
     ret.steerControlType = car.CarParams.SteerControlType.torque
 
-    #ret.maxSteeringAngleDeg = 1000.
+    tire_stiffness_factor = 1.
+    ret.maxSteeringAngleDeg = 1000.
 
     # lateral
     ret.lateralTuning.init('lqr')
-    ret.lateralTuning.lqr.scale = 1600.
-    ret.lateralTuning.lqr.ki = 0.01
-    ret.lateralTuning.lqr.dcGain = 0.0027
+    ret.lateralTuning.lqr.scale = 1975.0
+    ret.lateralTuning.lqr.ki = 0.032
     ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
     ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
     ret.lateralTuning.lqr.c = [1., 0.]
-    ret.lateralTuning.lqr.k = [-110., 451.]
-    ret.lateralTuning.lqr.l = [0.33, 0.318]
-
-    #ret.lateralTuning.lqr.scale = 1975.0
-    #ret.lateralTuning.lqr.ki = 0.032
-    #ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
-    #ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
-    #ret.lateralTuning.lqr.c = [1., 0.]
-    #ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
-    #ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
-    #ret.lateralTuning.lqr.dcGain = 0.0029
+    ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
+    ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
+    ret.lateralTuning.lqr.dcGain = 0.0029
 
     ret.steerRatio = 17.5
-    ret.steerActuatorDelay = 0.15
-    ret.steerRateCost = 0.35
+    ret.steerActuatorDelay = 0.3
+    ret.steerRateCost = 0.4
     ret.steerMaxBP = [0.]
-    ret.steerMaxV = [2.]  # default 1.
+    ret.steerMaxV = [1.1]
 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
@@ -112,17 +104,8 @@ class CarInterface(CarInterfaceBase):
 
     ret.longitudinalTuning.kpBP = [0., 5., 35.]
     ret.longitudinalTuning.kpV = [1.2, 0.75, 0.5]
-    #ret.longitudinalTuning.kiBP = [0., 35.]
-    #ret.longitudinalTuning.kiV = [0.18, 0.12]
-    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.1, 0.06]
-    ret.longitudinalActuatorDelayLowerBound = 0.3
-    ret.longitudinalActuatorDelayUpperBound = 0.3
-
-    ret.stopAccel = -2.0
-    ret.stoppingDecelRate = 0.5  # brake_travel/s while trying to stop
-    ret.vEgoStopping = 0.5
-    ret.vEgoStarting = 0.5
+    ret.longitudinalTuning.kiBP = [0., 35.]
+    ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     ret.steerLimitTimer = 0.4
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
@@ -176,8 +159,6 @@ class CarInterface(CarInterfaceBase):
     #  events.add(EventName.accFaulted)
     #if ret.vEgo < self.CP.minSteerSpeed:
     #  events.add(car.CarEvent.EventName.belowSteerSpeed)
-    #if EventName.pedalPressed in events.events:
-    #  events.events.remove(EventName.pedalPressed)
 
     # handle button presses
     for b in ret.buttonEvents:
