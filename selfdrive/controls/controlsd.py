@@ -254,7 +254,7 @@ class Controls:
         return None
 
     def get_long_lead_safe_speed(self, sm, CS, vEgo):
-        if CS.adaptiveCruise:
+        if CS.longcontrol:
             lead = self.get_lead(sm)
             if lead is not None:
                 # d : 비전 레이더 거리
