@@ -254,7 +254,7 @@ class Controls:
         return None
 
     def get_long_lead_safe_speed(self, sm, CS, vEgo):
-        if CS.longcontrol:
+        if CS.cruiseState.enabled:
             lead = self.get_lead(sm)
             if lead is not None:
                 # d : 비전 레이더 거리
@@ -366,7 +366,7 @@ class Controls:
         return road_limit_speed, left_dist, max_speed_log
 
     def update_max_speed(self, max_speed, CS):
-        if not CS.adaptiveCruise or self.max_speed_clu <= 0:
+        if not CS.cruiseState.enabled or self.max_speed_clu <= 0:
             self.max_speed_clu = max_speed
         else:
             kp = 0.01
@@ -594,7 +594,7 @@ class Controls:
         return None
 
     def get_long_lead_speed(self, sm, CS, vEgo):
-        if CS.adaptiveCruise:
+        if CS.cruiseState.enabled:
             lead = self.get_lead(sm)
             if lead is not None:
                 # d : 비전 레이더 거리
