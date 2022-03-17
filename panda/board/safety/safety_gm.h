@@ -117,9 +117,9 @@ static int gm_rx_hook(CANPacket_t *to_push) {
         case 3:  // set
           controls_allowed = 1;
           break;
-        case 6:  // cancel
-          controls_allowed = 0;
-          break;
+        //case 6:  // cancel
+        //  controls_allowed = 0;
+        //  break;
         default:
           break;  // any other button is irrelevant
       }
