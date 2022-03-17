@@ -17,9 +17,11 @@ def long_control_state_trans(CP, active, long_control_state, v_ego, v_target,
                              v_target_future, brake_pressed, cruise_standstill, radarState):
   """Update longitudinal control state machine"""
   accelerating = v_target_future > v_target
+  # [BRAKE]
   stopping_condition = (v_ego < 2.0 and cruise_standstill) or \
                        (v_ego < CP.vEgoStopping and
-                        ((v_target_future < CP.vEgoStopping and not accelerating) or brake_pressed))
+                        (v_target_future < CP.vEgoStopping and not accelerating))
+                        #((v_target_future < CP.vEgoStopping and not accelerating) or brake_pressed))
 
   starting_condition = v_target_future > CP.vEgoStarting and accelerating and not cruise_standstill
 
@@ -95,7 +97,8 @@ class LongControl():
                                                        v_target, v_target_future, CS.brakePressed,
                                                        CS.cruiseState.standstill, radarState)
 
-    if self.long_control_state == LongCtrlState.off or CS.gasPressed:
+    # [BRAKE]
+    if self.long_control_state == LongCtrlState.off or CS.gasPressed or CS.brakePressed:
       self.reset(CS.vEgo)
       output_accel = 0.
 
