@@ -110,6 +110,10 @@ class CarInterface(CarInterfaceBase):
     ret.steerLimitTimer = 0.4
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
+    # set safety_hyundai_community only for non-SCC, MDPS harrness or SCC harrness cars or cars that have unknown issue
+    if ret.radarOffCan or ret.openpilotLongitudinalControl:
+      ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.gm, 0)]
+
     return ret
 
   # returns a car.CarState
@@ -121,6 +125,8 @@ class CarInterface(CarInterfaceBase):
 
     ret.canValid = self.cp.can_valid and self.cp_loopback.can_valid
     ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
+
+    ret.cruiseState.enabled = ret.cruiseState.available
 
     buttonEvents = []
 
