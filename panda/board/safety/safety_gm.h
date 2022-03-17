@@ -73,8 +73,6 @@ const int GM_GAS_INTERCEPTOR_THRESHOLD = 458;  // (610 + 306.25) / 2ratio betwee
 #define GM_GET_INTERCEPTOR(msg) (((GET_BYTE((msg), 0) << 8) + GET_BYTE((msg), 1) + (GET_BYTE((msg), 2) << 8) + GET_BYTE((msg), 3)) / 2) // avg between 2 tracks
 
 const CanMsg GM_TX_MSGS[] = {{384, 0, 4}, {1033, 0, 7}, {1034, 0, 7}, {715, 0, 8}, {880, 0, 6}, {512, 0, 6}, {789, 0, 5}, {800, 0, 6},  // pt bus
-                             {161, 1, 7}, {774, 1, 8}, {776, 1, 7}, {784, 1, 2},   // obs bus
-                             {789, 2, 5},  // ch bus
                              {0x104c006c, 3, 3}, {0x10400060, 3, 5}};  // gmlan
 
 // TODO: do checksum and counter checks. Add correct timestep, 0.1s for now.
@@ -84,6 +82,7 @@ AddrCheckStruct gm_addr_checks[] = {
   {.msg = {{481, 0, 7, .expected_timestep = 100000U}, { 0 }, { 0 }}},
   {.msg = {{201, 0, 8, .expected_timestep = 100000U}, { 0 }, { 0 }}},
   {.msg = {{452, 0, 8, .expected_timestep = 100000U}, { 0 }, { 0 }}},
+  {.msg = {{241, 0, 6, .expected_timestep = 100000U}, { 0 }, { 0 }}},
 };
 #define GM_RX_CHECK_LEN (sizeof(gm_addr_checks) / sizeof(gm_addr_checks[0]))
 addr_checks gm_rx_checks = {gm_addr_checks, GM_RX_CHECK_LEN};
@@ -136,11 +135,18 @@ static int gm_rx_hook(CANPacket_t *to_push) {
 
     // exit controls on regen paddle
     //TODO: Evaluate impact of this change. Previous method could have caused controls mismatch...
-    if (addr == 189) {
-      brake_pressed = GET_BYTE(to_push, 0) & 0x20U;
+    //if (addr == 189) {
+    //  brake_pressed = GET_BYTE(to_push, 0) & 0x20U;
       // if (regen) {
       //   controls_allowed = 0;
       // }
+   // }
+
+     // speed > 0
+    if (addr == 241) {
+      // Brake pedal's potentiometer returns near-zero reading
+      // even when pedal is not pressed
+      brake_pressed = GET_BYTE(to_push, 1) >= 10;
     }
 
     // Pedal Interceptor
