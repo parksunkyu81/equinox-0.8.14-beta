@@ -615,6 +615,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y+50, ACCstr, textColor);
+  p.setOpacity(1.);
 
   // LKAS
   x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
