@@ -632,7 +632,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   QString LKASstr;
   textSize = 50.f;
-  QColor textColor = QColor(255, 255, 255, 200);
+  textColor = QColor(255, 255, 255, 200);
 
   if(lkas == 0) {
     LKASstr = "OFF";
