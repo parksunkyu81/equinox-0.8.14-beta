@@ -595,17 +595,17 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
   p.drawEllipse(x - radius / 2, y - radius / 2, radius, radius);
 
-  QString ACCstr;
+  QString str;
   float textSize = 50.f;
   QColor textColor = QColor(255, 255, 255, 200);
 
   if(acc == 0) {
-    ACCstr = "OFF";
+    str = "OFF";
     textColor = QColor(240, 83, 44, 200);
     textSize = 70.f;
   }
   else if(acc == 1) {
-    ACCstr = "ON";
+    str = "ON";
     textColor = QColor(120, 255, 120, 200);
     textSize = 70.f;
   }
@@ -614,8 +614,8 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   drawText(p, x, y-20, "ACC", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y+50, ACCstr, textColor);
-  p.setOpacity(1.);
+  drawTextWithColor(p, x, y+50, str, textColor);
+
 
   // LKAS
   x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
@@ -631,17 +631,16 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
   p.drawEllipse(x - radius / 2, y - radius / 2, radius, radius);
 
-  QString LKASstr;
   textSize = 50.f;
   textColor = QColor(255, 255, 255, 200);
 
   if(lkas == 0) {
-    LKASstr = "OFF";
+    str = "OFF";
     textColor = QColor(240, 83, 44, 200);
     textSize = 70.f;
   }
   else if(lkas == 1) {
-    LKASstr = "ON";
+    str = "ON";
     textColor = QColor(120, 255, 120, 200);
     textSize = 70.f;
   }
@@ -650,7 +649,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   drawText(p, x, y-20, "LKAS", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y+50, LKASstr, textColor);
+  drawTextWithColor(p, x, y+50, str, textColor);
 
 
   p.setOpacity(1.);

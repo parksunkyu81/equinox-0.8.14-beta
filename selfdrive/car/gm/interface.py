@@ -186,8 +186,13 @@ class CarInterface(CarInterfaceBase):
             events.add(EventName.buttonEnable)
             break
           if (b.type == ButtonType.accelCruise and not b.pressed) and not self.CS.adaptive_Cruise:
-            self.CS.adaptive_Cruise = True
-            self.CS.enable_lkas = False
+            self.CS.adaptive_Cruise = False
+            self.CS.enable_lkas = True
+            events.add(EventName.buttonEnable)
+            break
+          if (b.type == ButtonType.decelCruise and not b.pressed) and self.CS.adaptive_Cruise:
+            self.CS.adaptive_Cruise = False
+            self.CS.enable_lkas = True
             events.add(EventName.buttonEnable)
             break
           if (b.type == ButtonType.cancel and b.pressed) and self.CS.adaptive_Cruise:
