@@ -438,7 +438,7 @@ void NvgWindow::drawHud(QPainter &p) {
     drawDebugText(p);
 
   const auto controls_state = sm["controlsState"].getControlsState();
-  const auto car_params = sm["carParams"].getCarParams();
+  //const auto car_params = sm["carParams"].getCarParams();
   const auto live_params = sm["liveParameters"].getLiveParameters();
 
   //const auto scc_smoother = sm["carControl"].getCarControl().getSccSmoother();
