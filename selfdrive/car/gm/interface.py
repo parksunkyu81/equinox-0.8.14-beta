@@ -167,13 +167,71 @@ class CarInterface(CarInterfaceBase):
     #  events.add(car.CarEvent.EventName.belowSteerSpeed)
 
     # handle button presses
-    for b in ret.buttonEvents:
+    #for b in ret.buttonEvents:
       # do enable on both accel and decel buttons
-      if b.type in (ButtonType.accelCruise, ButtonType.decelCruise) and not b.pressed:
-        events.add(EventName.buttonEnable)
+    #  if b.type in (ButtonType.accelCruise, ButtonType.decelCruise) and not b.pressed:
+    #    events.add(EventName.buttonEnable)
       # do disable on button down
-      if b.type == ButtonType.cancel and b.pressed:
-        events.add(EventName.buttonCancel)
+    #  if b.type == ButtonType.cancel and b.pressed:
+    #    events.add(EventName.buttonCancel)
+
+    ###
+
+    if self.CP.enableGasInterceptor:
+      if not self.CS.main_on:  # lat dis-engage
+        for b in ret.buttonEvents:
+          if (b.type == ButtonType.decelCruise and not b.pressed) and not self.CS.adaptive_Cruise:
+            self.CS.adaptive_Cruise = True
+            self.CS.enable_lkas = True
+            events.add(EventName.buttonEnable)
+            break
+          if (b.type == ButtonType.accelCruise and not b.pressed) and not self.CS.adaptive_Cruise:
+            self.CS.adaptive_Cruise = True
+            self.CS.enable_lkas = False
+            events.add(EventName.buttonEnable)
+            break
+          if (b.type == ButtonType.cancel and b.pressed) and self.CS.adaptive_Cruise:
+            self.CS.adaptive_Cruise = False
+            self.CS.enable_lkas = True
+            events.add(EventName.buttonCancel)
+            break
+          if (b.type == ButtonType.altButton3 and b.pressed):  # and self.CS.adaptive_Cruise
+            self.CS.adaptive_Cruise = False
+            self.CS.enable_lkas = True
+            events.add(EventName.buttonEnable)  # 어느 이벤트가 먼저인지 확인
+            break
+      else:  # lat engage
+        self.CS.adaptive_Cruise = False
+        self.CS.enable_lkas = True
+
+    else:
+      if self.CS.main_on:  # wihtout pedal case
+        self.CS.adaptive_Cruise = False
+        self.CS.enable_lkas = True
+
+
+    # Added by jc01rho inspired by JangPoo
+    #if self.CS.main_on and self.CS.enable_lkas and not self.CS.adaptive_Cruise and ret.cruiseState.enabled and ret.gearShifter == GearShifter.drive and ret.vEgo > 2 and not ret.brakePressed:
+    """if not self.CS.main_on and ret.cruiseState.enabled and ret.gearShifter == GearShifter.drive and ret.vEgo > 2:
+      if ret.cruiseState.available and not ret.seatbeltUnlatched and not ret.espDisabled and self.flag_pcmEnable_able:
+
+        if self.flag_pcmEnable_initialSet == False:
+          self.initial_pcmEnable_counter = self.initial_pcmEnable_counter + 1
+          if self.initial_pcmEnable_counter > 750:
+            # events.add(EventName.pcmEnable)
+            # self.flag_pcmEnable_initialSet = True
+            self.flag_pcmEnable_able = False
+            self.initial_pcmEnable_counter = 0
+        else:
+          events.add(EventName.pcmEnable)
+          self.flag_pcmEnable_able = False
+          # self.flag_pcmEnable_initialSet = True
+          # self.initial_pcmEnable_counter = 0
+    else:
+      self.flag_pcmEnable_able = True
+    """
+
+    ###
 
     ret.events = events.to_msg()
 

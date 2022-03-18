@@ -455,20 +455,16 @@ void NvgWindow::drawHud(QPainter &p) {
   int scc_bus = car_params.getSccBus();
 
   QString infoText;
-  infoText.sprintf("AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) BUS(MDPS %d, SCC %d) SCC(%.2f/%.2f/%.2f)",
+  infoText.sprintf("AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
                       controls_state.getSteerRateCost(),
-                      controls_state.getSteerActuatorDelay(),
-                      mdps_bus, scc_bus,
-                      controls_state.getSccGasFactor(),
-                      controls_state.getSccBrakeFactor(),
-                      controls_state.getSccCurvatureFactor()
+                      controls_state.getSteerActuatorDelay()
                       );
 
   // info
-  configFont(p, "Open Sans", 34, "Regular");
+  configFont(p, "Open Sans", 38, "Regular");
   p.setPen(QColor(0xff, 0xff, 0xff, 200));
   p.drawText(rect().left() + 20, rect().height() - 15, infoText);
 
@@ -587,6 +583,77 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     drawIcon(p, x, y, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   }
+
+  // ACC
+  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
+  bool acc_bool = car_state.getAdaptiveCruise();
+  int acc = 0;
+  if (acc_bool == true) {
+    acc = 1;
+  } else {
+    acc = 0;
+  }
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
+  p.drawEllipse(x - radius / 2, y - radius / 2, radius, radius);
+
+  QString ACCstr;
+  float textSize = 50.f;
+  QColor textColor = QColor(255, 255, 255, 200);
+
+  if(acc == 0) {
+    ACCstr = "OFF";
+    textColor = QColor(240, 83, 44, 200);
+    textSize = 70.f;
+  }
+  else if(acc == 1) {
+    ACCstr = "ON";
+    textColor = QColor(120, 255, 120, 200);
+    textSize = 70.f;
+  }
+
+  configFont(p, "Open Sans", 35, "Bold");
+  drawText(p, x, y-20, "ACC", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y+50, ACCstr, textColor);
+
+  // LKAS
+  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
+  bool lkas_bool = car_state.getLkasEnable();
+  int lkas = 0;
+  if (lkas_bool == true) {
+    lkas = 1;
+  } else {
+    lkas = 0;
+  }
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
+  p.drawEllipse(x - radius / 2, y - radius / 2, radius, radius);
+
+  QString LKASstr;
+  float textSize = 50.f;
+  QColor textColor = QColor(255, 255, 255, 200);
+
+  if(lkas == 0) {
+    LKASstr = "OFF";
+    textColor = QColor(240, 83, 44, 200);
+    textSize = 70.f;
+  }
+  else if(lkas == 1) {
+    LKASstr = "ON";
+    textColor = QColor(120, 255, 120, 200);
+    textSize = 70.f;
+  }
+
+  configFont(p, "Open Sans", 35, "Bold");
+  drawText(p, x, y-20, "LKAS", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y+50, LKASstr, textColor);
+
 
   p.setOpacity(1.);
 }
