@@ -207,6 +207,11 @@ struct CarState {
   tpms @43 : Tpms;
   vCluRatio @44 :Float32;
 
+  # PSK
+  lkasEnable @45 :Bool;
+  adaptiveCruise @46 :Bool;
+  mainOn @47 :Bool;
+
   struct Tpms {
     fl @0 :Float32;
     fr @1 :Float32;

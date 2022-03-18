@@ -14,8 +14,17 @@ class CarState(CarStateBase):
     self.lka_steering_cmd_counter = 0
     self.park_brake = 0
 
+    self.adaptive_Cruise = False
+    self.enable_lkas = False
+    self.main_on = False
+
+
   def update(self, pt_cp, loopback_cp):
     ret = car.CarState.new_message()
+
+    ret.adaptiveCruise = self.adaptive_Cruise
+    ret.lkasEnable = self.enable_lkas
+
     self.prev_cruise_buttons = self.cruise_buttons
     self.cruise_buttons = pt_cp.vl["ASCMSteeringButton"]["ACCButtons"]
 
@@ -83,14 +92,24 @@ class CarState(CarStateBase):
     ret.autoHold = pt_cp.vl["EPBStatus"]["EPBClosed"]
 
     ret.cruiseState.available = pt_cp.vl["ECMEngineStatus"]["CruiseMainOn"] != 0
+
+    # 크루즈 메인버튼 활성 여부
+    self.main_on = bool(pt_cp.vl["ECMEngineStatus"]["CruiseMainOn"])
+    ret.mainOn = self.main_on
+
     if self.CP.enableGasInterceptor: # Flip CC main logic when pedal is being used for long
       ret.cruiseState.available = (not ret.cruiseState.available)
 
     ret.espDisabled = pt_cp.vl["ESPStatus"]["TractionControlOn"] != 1
     self.pcm_acc_status = pt_cp.vl["AcceleratorPedal2"]["CruiseState"]
 
-    ret.cruiseState.enabled = self.pcm_acc_status != AccState.OFF
-    ret.cruiseState.standstill = self.pcm_acc_status == AccState.STANDSTILL
+    #ret.cruiseState.enabled = self.pcm_acc_status != AccState.OFF
+    #ret.cruiseState.standstill = self.pcm_acc_status == AccState.STANDSTILL
+
+    ret.cruiseState.available = self.pcm_acc_status != 0
+    ret.cruiseState.standstill = False
+
+    ret.cruiseState.enabled = self.main_on or ret.adaptiveCruise
 
     return ret
 

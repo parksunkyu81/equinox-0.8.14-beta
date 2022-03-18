@@ -326,7 +326,7 @@ class Controls:
 
         max_speed_log = ""
 
-        if apply_limit_speed >= self.kph_to_clu(V_CRUISE_MIN):  # 크루즈 최저 속도보다 큰 경우 설정
+        if apply_limit_speed >= self.kph_to_clu(10):       # 크루즈 최저 속도보다 큰 경우 설정
 
             # 크루즈 초기 설정 속도 (PSK)
             # controls.v_cruise_kph : 크루즈 설정 속도
@@ -348,7 +348,7 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        # 안전거리 활성화
+        # [안전거리 활성화]
         #if ntune_scc_get('leadSafe') == 1:
         #    lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
         #    if lead_speed >= self.min_set_speed_clu:
@@ -377,6 +377,13 @@ class Controls:
         """Compute carEvents from carState"""
 
         self.events.clear()
+
+        # Add NDA
+        if self.slowing_down_sound_alert:
+            self.slowing_down_sound_alert = False
+            self.events.add(EventName.slowingDownSpeedSound)
+        elif self.slowing_down_alert:
+            self.events.add(EventName.slowingDownSpeed)
 
         # Add startup event
         if self.startup_event is not None:
