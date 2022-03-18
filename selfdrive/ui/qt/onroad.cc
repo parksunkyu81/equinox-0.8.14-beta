@@ -451,9 +451,6 @@ void NvgWindow::drawHud(QPainter &p) {
 
   //bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
 
-  int mdps_bus = car_params.getMdpsBus();
-  int scc_bus = car_params.getSccBus();
-
   QString infoText;
   infoText.sprintf("AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
                       live_params.getAngleOffsetDeg(),
@@ -634,7 +631,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.drawEllipse(x - radius / 2, y - radius / 2, radius, radius);
 
   QString LKASstr;
-  float textSize = 50.f;
+  textSize = 50.f;
   QColor textColor = QColor(255, 255, 255, 200);
 
   if(lkas == 0) {
