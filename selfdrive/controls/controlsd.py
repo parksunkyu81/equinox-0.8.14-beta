@@ -339,12 +339,16 @@ class Controls:
 
             # if self.v_cruise_kph > apply_limit_speed:
             if vEgo > apply_limit_speed:
+
                 if not self.slowing_down_alert and not self.slowing_down:
                     self.slowing_down_sound_alert = True
                     self.slowing_down = True
+
                 self.slowing_down_alert = True
+
             else:
                 self.slowing_down_alert = False
+
         else:
             self.slowing_down_alert = False
             self.slowing_down = False
