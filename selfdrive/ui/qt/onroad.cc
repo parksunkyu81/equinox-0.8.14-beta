@@ -598,6 +598,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   //drawIcon(p, x, y, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
 
   // LKAS
+  QString str;
   x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
   bool lkas_bool = car_state.getLkasEnable();
   int lkas = 0;
@@ -611,8 +612,8 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
   p.drawEllipse(x - radius / 2, y - radius / 2, radius, radius);
 
-  textSize = 50.f;
-  textColor = QColor(255, 255, 255, 200);
+  float textSize = 50.f;
+  QColor textColor = QColor(255, 255, 255, 200);
 
   if(lkas == 0) {
     str = "OFF";
