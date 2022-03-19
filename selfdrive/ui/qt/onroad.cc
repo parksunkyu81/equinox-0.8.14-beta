@@ -253,7 +253,6 @@ void NvgWindow::initializeGL() {
   ic_nda = QPixmap("../assets/images/img_nda.png");
   ic_hda = QPixmap("../assets/images/img_hda.png");
   ic_acc = QPixmap("../assets/images/img_lat_icon.png");
-  ic_lkas = QPixmap("../assets/images/img_long.png");
   ic_tire_pressure = QPixmap("../assets/images/img_tire_pressure.png");
   ic_turn_signal_l = QPixmap("../assets/images/turn_signal_l.png");
   ic_turn_signal_r = QPixmap("../assets/images/turn_signal_r.png");
@@ -592,11 +591,11 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
 
   // LKAS
-  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
-  bool lkas_bool = car_state.getLkasEnable();
-  img_alpha = lkas_bool ? 1.0f : 0.15f;
-  bg_alpha = lkas_bool ? 0.3f : 0.1f;
-  drawIcon(p, x, y, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
+  //bool lkas_bool = car_state.getLkasEnable();
+  //img_alpha = lkas_bool ? 1.0f : 0.15f;
+  //bg_alpha = lkas_bool ? 0.3f : 0.1f;
+  //drawIcon(p, x, y, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
 
 
   p.setOpacity(1.);

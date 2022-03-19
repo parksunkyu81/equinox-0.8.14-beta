@@ -66,7 +66,6 @@ protected:
   QPixmap ic_turn_signal_r;
   QPixmap ic_satellite;
   QPixmap ic_acc;
-  QPixmap ic_lkas;
 
   void drawMaxSpeed(QPainter &p);
   void drawSpeed(QPainter &p);

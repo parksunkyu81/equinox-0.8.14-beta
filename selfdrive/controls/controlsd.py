@@ -326,7 +326,7 @@ class Controls:
 
         max_speed_log = ""
 
-        if apply_limit_speed >= self.kph_to_clu(10):       # 크루즈 최저 속도보다 큰 경우 설정
+        if apply_limit_speed >= self.kph_to_clu(V_CRUISE_MIN):       # 크루즈 최저 속도보다 큰 경우 설정
 
             # 크루즈 초기 설정 속도 (PSK)
             # controls.v_cruise_kph : 크루즈 설정 속도
