@@ -79,8 +79,7 @@ class CarInterface(CarInterfaceBase):
     # lateral
     ret.lateralTuning.init('lqr')
 
-    ret.lateralTuning.lqr.scale = 1975.0
-    #ret.lateralTuning.lqr.ki = 0.032
+    ret.lateralTuning.lqr.scale = 1680.0
     ret.lateralTuning.lqr.ki = 0.01
     ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
     ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
@@ -89,12 +88,12 @@ class CarInterface(CarInterfaceBase):
     ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
     ret.lateralTuning.lqr.dcGain = 0.003
 
-    ret.steerRatio = 17.5
+    ret.steerRatio = 17.2
     # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
-    ret.steerActuatorDelay = 0.3
-    ret.steerRateCost = 0.5
+    ret.steerActuatorDelay = 0.0
+    ret.steerRateCost = 0.552
     ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.1]
+    ret.steerMaxV = [1.5]
 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
@@ -105,10 +104,17 @@ class CarInterface(CarInterfaceBase):
     ret.tireStiffnessFront, ret.tireStiffnessRear = scale_tire_stiffness(ret.mass, ret.wheelbase, ret.centerToFront,
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
-    ret.longitudinalTuning.kpBP = [0., 5., 35.]
-    ret.longitudinalTuning.kpV = [1.1, 0.75, 0.5]
-    ret.longitudinalTuning.kiBP = [0., 35.]
-    ret.longitudinalTuning.kiV = [0.18, 0.12]
+    #ret.longitudinalTuning.kpBP = [0., 5., 35.]
+    #ret.longitudinalTuning.kpV = [1.1, 0.75, 0.5]
+    #ret.longitudinalTuning.kiBP = [0., 35.]
+    #ret.longitudinalTuning.kiV = [0.18, 0.12]
+
+    ret.longitudinalTuning.kpBP = [0., 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.2, 1.1, 0.9, 0.78, 0.48]
+    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kiV = [0.1, 0.06]
+    ret.longitudinalActuatorDelayLowerBound = 0.3
+    ret.longitudinalActuatorDelayUpperBound = 0.3
 
     ret.steerLimitTimer = 0.4
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
