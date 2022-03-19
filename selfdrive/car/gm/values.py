@@ -4,7 +4,7 @@ Ecu = car.CarParams.Ecu
 from common.conversions import Conversions as CV
 
 SLOW_ON_CURVES = 1     # 슬로우 커브 사용 유무 (0,1)
-MIN_CURVE_SPEED = 35. * CV.KPH_TO_MS    # 커브 속도 설정
+MIN_CURVE_SPEED = 40. * CV.KPH_TO_MS    # 커브 속도 설정
 
 class CarControllerParams():
   def __init__(self, CP):  
