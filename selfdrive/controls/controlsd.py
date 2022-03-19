@@ -304,6 +304,7 @@ class Controls:
             else:
                 self.curve_speed_ms = 255.
 
+
     # [크루즈 MAX 속도 설정] #
     def cal_max_speed(self, frame: int, vEgo, sm, CS):
 
@@ -377,13 +378,6 @@ class Controls:
         """Compute carEvents from carState"""
 
         self.events.clear()
-
-        # Add NDA
-        if self.slowing_down_sound_alert:
-            self.slowing_down_sound_alert = False
-            self.events.add(EventName.slowingDownSpeedSound)
-        elif self.slowing_down_alert:
-            self.events.add(EventName.slowingDownSpeed)
 
         # Add startup event
         if self.startup_event is not None:
@@ -510,6 +504,13 @@ class Controls:
         if not self.disable_op_fcw and (planner_fcw or model_fcw):
             self.events.add(EventName.fcw)
 
+        # NDA
+        if self.slowing_down_sound_alert:
+            self.slowing_down_sound_alert = False
+            self.events.add(EventName.slowingDownSpeedSound)
+        elif self.slowing_down_alert:
+            self.events.add(EventName.slowingDownSpeed)
+
         if TICI:
             for m in messaging.drain_sock(self.log_sock, wait_for_one=False):
                 try:
@@ -621,7 +622,7 @@ class Controls:
 
         return 0
 
-    def cal_curve_speed(self, sm, v_ego, frame):
+    """def cal_curve_speed(self, sm, v_ego, frame):
 
         if frame % 10 == 0:
             md = sm['modelV2']
@@ -646,7 +647,7 @@ class Controls:
             else:
                 self.curve_speed_ms = 255.
 
-        return self.curve_speed_ms
+        return self.curve_speed_ms"""
 
     def update_cruise_buttons(self, CS):  # called by controlds's state_transition
 
