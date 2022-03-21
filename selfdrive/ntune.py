@@ -166,13 +166,10 @@ class nTune():
     if self.checkValue("sccGasFactor", 0.5, 1.5, 1.0):
       updated = True
 
-    if self.checkValue("sccBrakeFactor", 0.5, 1.5, 1.0):
+    if self.checkValue("sccBrakeFactor", 0, 1, 0):
       updated = True
 
     if self.checkValue("sccCurvatureFactor", 0.5, 1.5, 0.98):
-      updated = True
-
-    if self.checkValue("leadSafe", 0, 1, 0):
       updated = True
 
     return updated
