@@ -86,15 +86,6 @@ void OnroadWindow::updateState(const UIState &s) {
   }
 }
 
-void OnroadHud::drawTextColor(QPainter &p, int x, int y, const QString &text, QColor &color) {
-  QFontMetrics fm(p.font());
-  QRect init_rect = fm.boundingRect(text);
-  QRect real_rect = fm.boundingRect(init_rect, 0, text);
-  real_rect.moveCenter({x, y - real_rect.height() / 2});
-  p.setPen(color);
-  p.drawText(real_rect.x(), real_rect.bottom(), text);
-}
-
 void OnroadWindow::mouseReleaseEvent(QMouseEvent* e) {
 
   QPoint endPos = e->pos();
@@ -639,14 +630,14 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
 
   if (is_cruise_set) {
     configFont(p, "Open Sans", 55, "Bold");
-    drawTextColor(p, rc.center().x(), 100, applyMaxSpeed, yellowColor());
+    drawTextWithColor(p, rc.center().x(), 100, applyMaxSpeed, yellowColor);
     configFont(p, "Open Sans", 76, "Bold");
-    drawTextColor(p, rc.center().x(), 195, cruiseMaxSpeed, whiteColor());
+    drawTextWithColor(p, rc.center().x(), 195, cruiseMaxSpeed, whiteColor);
   } else {
     configFont(p, "Open Sans", 55, "sans-semibold");
-    drawTextColor(p, rc.center().x(), 100, "SET", yellowColor());
+    drawTextWithColor(p, rc.center().x(), 100, "SET", yellowColor);
     configFont(p, "Open Sans", 76, "sans-semibold");
-    drawTextColor(p, rc.center().x(), 195, "──", whiteColor());
+    drawTextWithColor(p, rc.center().x(), 195, "──", whiteColor);
   }
 
   /*if (is_cruise_set) {
