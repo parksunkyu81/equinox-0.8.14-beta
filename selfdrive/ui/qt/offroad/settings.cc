@@ -580,29 +580,29 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
 
   QList<ParamControl*> toggles;
 
-  toggles.append(new ParamControl("UseClusterSpeed",
+  /*toggles.append(new ParamControl("UseClusterSpeed",
                                             "Use Cluster Speed",
                                             "Use cluster speed instead of wheel speed.",
                                             "../assets/offroad/icon_road.png",
-                                            this));
+                                            this));*/
 
-  toggles.append(new ParamControl("LongControlEnabled",
+  /*toggles.append(new ParamControl("LongControlEnabled",
                                             "Enable HKG Long Control",
                                             "warnings: it is beta, be careful!! Openpilot will control the speed of your car",
                                             "../assets/offroad/icon_road.png",
-                                            this));
+                                            this));*/
 
   toggles.append(new ParamControl("MadModeEnabled",
-                                            "Enable HKG MAD mode",
-                                            "Openpilot will engage when turn cruise control on",
+                                            "Enable Lead Safe speed Control",
+                                            "For use in city driving or on blocked roads.",
                                             "../assets/offroad/icon_openpilot.png",
                                             this));
 
-  toggles.append(new ParamControl("IsLdwsCar",
+  /*toggles.append(new ParamControl("IsLdwsCar",
                                             "LDWS",
                                             "If your car only supports LDWS, turn it on.",
                                             "../assets/offroad/icon_openpilot.png",
-                                            this));
+                                            this));*/
 
   toggles.append(new ParamControl("LaneChangeEnabled",
                                             "Enable Lane Change Assist",
@@ -616,34 +616,35 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_road.png",
                                             this));
 
-  toggles.append(new ParamControl("SccSmootherSlowOnCurves",
+  /*toggles.append(new ParamControl("SccSmootherSlowOnCurves",
                                             "Enable Slow On Curves",
                                             "",
                                             "../assets/offroad/icon_road.png",
-                                            this));
+                                            this));*/
 
-  toggles.append(new ParamControl("SccSmootherSyncGasPressed",
+  /*toggles.append(new ParamControl("SccSmootherSyncGasPressed",
                                             "Sync set speed on gas pressed",
                                             "",
                                             "../assets/offroad/icon_road.png",
-                                            this));
+                                            this));*/
 
-  toggles.append(new ParamControl("StockNaviDecelEnabled",
+  /*toggles.append(new ParamControl("StockNaviDecelEnabled",
                                             "Stock Navi based deceleration",
                                             "Use the stock navi based deceleration for longcontrol",
                                             "../assets/offroad/icon_road.png",
-                                            this));
+                                            this));*/
 
-  toggles.append(new ParamControl("KeepSteeringTurnSignals",
+  /*toggles.append(new ParamControl("KeepSteeringTurnSignals",
                                             "Keep steering while turn signals",
                                             "",
                                             "../assets/offroad/icon_openpilot.png",
-                                            this));
-  toggles.append(new ParamControl("HapticFeedbackWhenSpeedCamera",
+                                            this));*/
+
+  /*toggles.append(new ParamControl("HapticFeedbackWhenSpeedCamera",
                                             "Haptic feedback (speed-cam alert)",
                                             "Haptic feedback when a speed camera is detected",
                                             "../assets/offroad/icon_openpilot.png",
-                                            this));
+                                            this));*/
 
   /*toggles.append(new ParamControl("NewRadarInterface",
                                             "Use new radar interface",
@@ -651,11 +652,11 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_road.png",
                                             this));*/
 
-  toggles.append(new ParamControl("DisableOpFcw",
+  /*toggles.append(new ParamControl("DisableOpFcw",
                                             "Disable Openpilot FCW",
                                             "",
                                             "../assets/offroad/icon_shell.png",
-                                            this));
+                                            this));*/
 
   toggles.append(new ParamControl("ShowDebugUI",
                                             "Show Debug UI",
