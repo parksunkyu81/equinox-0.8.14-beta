@@ -172,7 +172,6 @@ class Controls:
         # 앞차 거리 (PSK) 2021.10.15
         # 레이더 비전 상태를 저장한다.
         self.limited_lead = False
-        self.mad_mode_enabled = Params().get_bool('MadModeEnabled')
 
         self.speed_conv_to_ms = CV.KPH_TO_MS if self.is_metric else CV.MPH_TO_MS
         self.speed_conv_to_clu = CV.MS_TO_KPH if self.is_metric else CV.MS_TO_MPH
@@ -353,7 +352,7 @@ class Controls:
             self.slowing_down = False
 
         # [안전거리 활성화]
-        if self.mad_mode_enabled:
+        if ntune_scc_get('leadSafe') == 1:
             lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
             if lead_speed >= self.min_set_speed_clu:
                 if lead_speed < max_speed_clu:
@@ -508,11 +507,14 @@ class Controls:
             self.events.add(EventName.fcw)
 
         # NDA
-        if self.slowing_down_sound_alert:
-            self.slowing_down_sound_alert = False
-            self.events.add(EventName.slowingDownSpeedSound)
-        elif self.slowing_down_alert:
-            self.events.add(EventName.slowingDownSpeed)
+        #if self.slowing_down_sound_alert:
+        #    self.slowing_down_sound_alert = False
+        #    self.events.add(EventName.slowingDownSpeedSound)
+        #elif self.slowing_down_alert:
+        #    self.events.add(EventName.slowingDownSpeed)
+
+        if self.slowing_down_alert:
+            self.events.add(EventName.stockAeb)
 
         if TICI:
             for m in messaging.drain_sock(self.log_sock, wait_for_one=False):
@@ -1013,14 +1015,7 @@ class Controls:
         controlsState.sccGasFactor = ntune_scc_get('sccGasFactor')
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
-
-        # Lead Safe Mode
-        if self.mad_mode_enabled:
-            lead_safe_chk = 1
-        else:
-            lead_safe_chk = 0
-
-        controlsState.leadSafeMode = lead_safe_chk
+        controlsState.leadSafeMode = ntune_scc_get('leadSafe')
 
         lat_tuning = self.CP.lateralTuning.which()
         if self.joystick_mode:
