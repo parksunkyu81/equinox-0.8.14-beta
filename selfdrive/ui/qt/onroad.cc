@@ -446,6 +446,10 @@ void NvgWindow::drawHud(QPainter &p) {
   int longControlState = (int)controls_state.getLongControlState();
   const char* long_state[] = {"Off", "Pid", "Stopping", "Starting"};
 
+  int SafeLeadState = (int)controls_state.getLeadSafeMode();
+  const char* safe_lead[] = {"Off", "On"};
+
+
   //const auto scc_smoother = sm["carControl"].getCarControl().getSccSmoother();
   //bool is_metric = s->scene.is_metric;
   //bool long_control = scc_smoother.getLongControl();
@@ -457,13 +461,14 @@ void NvgWindow::drawHud(QPainter &p) {
   //bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
 
   QString infoText;
-  infoText.sprintf("LONG STATE[ %s ] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
+  infoText.sprintf("LONG STATE[ %s ] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) SAFE MODE[ %s ] ",
                       long_state[longControlState],
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
                       controls_state.getSteerRateCost(),
-                      controls_state.getSteerActuatorDelay()
+                      controls_state.getSteerActuatorDelay(),
+                      SafeLeadState[SafeLeadState]
                       );
 
   // info

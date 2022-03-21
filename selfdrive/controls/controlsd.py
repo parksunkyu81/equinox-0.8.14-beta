@@ -33,7 +33,6 @@ from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_ge
 from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_speed_limiter_get_active
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, V_CRUISE_DELTA_KM, V_CRUISE_DELTA_MI
 from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
-from common.params import Params
 
 MIN_SET_SPEED_KPH = V_CRUISE_MIN
 MAX_SET_SPEED_KPH = V_CRUISE_MAX
@@ -1014,6 +1013,14 @@ class Controls:
         controlsState.sccGasFactor = ntune_scc_get('sccGasFactor')
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
+
+        # Lead Safe Mode
+        if self.mad_mode_enabled:
+            lead_safe_chk = 1
+        else:
+            lead_safe_chk = 0
+
+        controlsState.leadSafeMode = lead_safe_chk
 
         lat_tuning = self.CP.lateralTuning.which()
         if self.joystick_mode:
