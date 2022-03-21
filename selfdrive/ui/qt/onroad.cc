@@ -628,11 +628,17 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
   p.drawRoundedRect(rc, 20, 20);
   p.setPen(Qt::NoPen);
 
+  QString applyMaxSpeedQstr;
+  applyMaxSpeedQstr.sprintf("%.0f", applyMaxSpeed);
+
+  QString cruiseMaxSpeedQstr;
+  cruiseMaxSpeedQstr.sprintf("%.0f", cruiseMaxSpeed);
+
   if (is_cruise_set) {
     configFont(p, "Open Sans", 55, "Bold");
-    drawTextWithColor(p, rc.center().x(), 100, applyMaxSpeed, yellowColor);
+    drawTextWithColor(p, rc.center().x(), 100, applyMaxSpeedQstr, yellowColor);
     configFont(p, "Open Sans", 76, "Bold");
-    drawTextWithColor(p, rc.center().x(), 195, cruiseMaxSpeed, whiteColor);
+    drawTextWithColor(p, rc.center().x(), 195, cruiseMaxSpeedQstr, whiteColor);
   } else {
     configFont(p, "Open Sans", 55, "sans-semibold");
     drawTextWithColor(p, rc.center().x(), 100, "SET", yellowColor);
