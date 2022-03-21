@@ -468,7 +468,7 @@ void NvgWindow::drawHud(QPainter &p) {
                       controls_state.getSteerRatio(),
                       controls_state.getSteerRateCost(),
                       controls_state.getSteerActuatorDelay(),
-                      SafeLeadState[SafeLeadState]
+                      safe_lead[SafeLeadState]
                       );
 
   // info
