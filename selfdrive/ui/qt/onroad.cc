@@ -86,6 +86,15 @@ void OnroadWindow::updateState(const UIState &s) {
   }
 }
 
+void OnroadHud::drawTextColor(QPainter &p, int x, int y, const QString &text, QColor &color) {
+  QFontMetrics fm(p.font());
+  QRect init_rect = fm.boundingRect(text);
+  QRect real_rect = fm.boundingRect(init_rect, 0, text);
+  real_rect.moveCenter({x, y - real_rect.height() / 2});
+  p.setPen(color);
+  p.drawText(real_rect.x(), real_rect.bottom(), text);
+}
+
 void OnroadWindow::mouseReleaseEvent(QMouseEvent* e) {
 
   QPoint endPos = e->pos();
@@ -457,8 +466,8 @@ void NvgWindow::drawHud(QPainter &p) {
   //bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
 
   QString infoText;
-  infoText.sprintf("STATE[ %s ] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
-                      lateral_state[lateralControlState],
+  infoText.sprintf("LONG STATE[ %s ] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
+                      long_state[longControlState],
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
@@ -618,6 +627,9 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
   float applyMaxSpeed = controls_state.getApplyMaxSpeed();
   float cruiseMaxSpeed = controls_state.getCruiseMaxSpeed();
   bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
+
+  QColor yellowColor = QColor(255, 255, 0, 255);
+  QColor whiteColor = QColor(255, 255, 255, 255);
 
   QRect rc(30, 30, 184, 202);
   p.setPen(QPen(QColor(0xff, 0xff, 0xff, 100), 10));
