@@ -443,9 +443,6 @@ void NvgWindow::drawHud(QPainter &p) {
   //const auto car_params = sm["carParams"].getCarParams();
   const auto live_params = sm["liveParameters"].getLiveParameters();
 
-  int longControlState = (int)controls_state.getLongControlState();
-  const char* long_state[] = {"Off", "Pid", "Stopping", "Starting"};
-
   //const auto scc_smoother = sm["carControl"].getCarControl().getSccSmoother();
   //bool is_metric = s->scene.is_metric;
   //bool long_control = scc_smoother.getLongControl();
@@ -457,8 +454,7 @@ void NvgWindow::drawHud(QPainter &p) {
   //bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
 
   QString infoText;
-  infoText.sprintf("STATE[ %s ] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
-                      lateral_state[lateralControlState],
+  infoText.sprintf("AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
@@ -467,7 +463,7 @@ void NvgWindow::drawHud(QPainter &p) {
                       );
 
   // info
-  configFont(p, "Open Sans", 45, "Regular");
+  configFont(p, "Open Sans", 38, "Regular");
   p.setPen(QColor(0xff, 0xff, 0xff, 200));
   p.drawText(rect().left() + 20, rect().height() - 15, infoText);
 
