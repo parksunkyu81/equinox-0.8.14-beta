@@ -623,6 +623,7 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
   float applyMaxSpeed = controls_state.getApplyMaxSpeed();
   float cruiseMaxSpeed = controls_state.getCruiseMaxSpeed();
   bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
+  bool is_metric = s->scene.is_metric;
 
   //QColor yellowColor = QColor(255, 255, 0, 255);
   //QColor whiteColor = QColor(255, 255, 255, 255);
