@@ -173,7 +173,6 @@ class Controls:
         # 앞차 거리 (PSK) 2021.10.15
         # 레이더 비전 상태를 저장한다.
         self.limited_lead = False
-        self.mad_mode_enabled = Params().get_bool('MadModeEnabled')
 
         self.speed_conv_to_ms = CV.KPH_TO_MS if self.is_metric else CV.MPH_TO_MS
         self.speed_conv_to_clu = CV.MS_TO_KPH if self.is_metric else CV.MS_TO_MPH
@@ -354,7 +353,7 @@ class Controls:
             self.slowing_down = False
 
         # [안전거리 활성화]
-        if self.mad_mode_enabled:
+        if Params().get_bool('MadModeEnabled'):
             lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
             if lead_speed >= self.min_set_speed_clu:
                 if lead_speed < max_speed_clu:

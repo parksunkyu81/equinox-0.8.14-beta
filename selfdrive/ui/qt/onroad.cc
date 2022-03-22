@@ -566,12 +566,12 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   // brake
 
   int x = 140;
-  const int y = rect().bottom() - footer_h / 2 - 10;
+  const int y1 = rect().bottom() - footer_h / 2 - 10;
 
   bool brake_valid = car_state.getBrakePressed();
   float img_alpha = brake_valid ? 1.0f : 0.15f;
   float bg_alpha = brake_valid ? 0.3f : 0.1f;
-  drawIcon(p, x, y, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  drawIcon(p, x, y1, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
 
   // auto hold
   int autohold = car_state.getAutoHold();
@@ -579,27 +579,32 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     x = radius / 2 + (bdr_s * 2) + (radius + 50);
     img_alpha = autohold > 0 ? 1.0f : 0.15f;
     bg_alpha = autohold > 0 ? 0.3f : 0.1f;
-    drawIcon(p, x, y, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
+    drawIcon(p, x, y1, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   }
 
   // ACC
-  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
+  //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
+  x = 140;
+  const int y2 = rect().bottom() - (footer_h / 2) - (radius + 50) - 10;
+
   bool acc_bool = car_state.getAdaptiveCruise();
   img_alpha = acc_bool ? 1.0f : 0.15f;
   bg_alpha = acc_bool ? 0.3f : 0.1f;
-  drawIcon(p, x, y, ic_acc, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  drawIcon(p, x, y2, ic_acc, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
 
 
   // LKAS
-  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
+  //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
+  x = radius / 2 + (bdr_s * 2) + (radius + 50);
   bool lkas_bool = car_state.getLkasEnable();
   img_alpha = lkas_bool ? 1.0f : 0.15f;
   bg_alpha = lkas_bool ? 0.3f : 0.1f;
-  drawIcon(p, x, y, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  drawIcon(p, x, y2, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
 
 }
 
+/*
 void NvgWindow::drawMaxSpeed(QPainter &p) {
   UIState *s = uiState();
   const SubMaster &sm = *(s->sm);
@@ -641,6 +646,45 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
     configFont(p, "Open Sans", 76, "sans-semibold");
     drawText(p, rc.center().x(), 195, "N/A", 100);
   }
+}*/
+
+void NvgWindow::drawMaxSpeed(QPainter &p) {
+  UIState *s = uiState();
+  const SubMaster &sm = *(s->sm);
+  const auto controls_state = sm["controlsState"].getControlsState();
+
+  // kph
+  float applyMaxSpeed = controls_state.getApplyMaxSpeed();
+  float cruiseMaxSpeed = controls_state.getCruiseMaxSpeed();
+  bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
+
+  QColor yellowColor = QColor(255, 255, 0, 255);
+  QColor whiteColor = QColor(255, 255, 255, 255);
+
+  QRect rc(30, 30, 184, 202);
+  p.setPen(QPen(QColor(0xff, 0xff, 0xff, 100), 10));
+  p.setBrush(QColor(0, 0, 0, 100));
+  p.drawRoundedRect(rc, 20, 20);
+  p.setPen(Qt::NoPen);
+
+  QString applyMaxSpeedQstr;
+  applyMaxSpeedQstr.sprintf("%.0f", applyMaxSpeed);
+
+  QString cruiseMaxSpeedQstr;
+  cruiseMaxSpeedQstr.sprintf("%.0f", cruiseMaxSpeed);
+
+  if (is_cruise_set) {
+    configFont(p, "Open Sans", 55, "Bold");
+    drawTextWithColor(p, rc.center().x(), 100, applyMaxSpeedQstr, yellowColor);
+    configFont(p, "Open Sans", 76, "Bold");
+    drawTextWithColor(p, rc.center().x(), 195, cruiseMaxSpeedQstr, whiteColor);
+  } else {
+    configFont(p, "Open Sans", 55, "sans-semibold");
+    drawTextWithColor(p, rc.center().x(), 100, "SET", yellowColor);
+    configFont(p, "Open Sans", 76, "sans-semibold");
+    drawTextWithColor(p, rc.center().x(), 195, "──", whiteColor);
+  }
+
 }
 
 void NvgWindow::drawSpeed(QPainter &p) {
