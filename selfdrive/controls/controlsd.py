@@ -352,7 +352,7 @@ class Controls:
             self.slowing_down = False
 
         # [안전거리 활성화]
-        if ntune_scc_get('sccBrakeFactor') == 1:
+        if Params.get_bool('MadModeEnabled'):
             lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
             if lead_speed >= self.min_set_speed_clu:
                 if lead_speed < max_speed_clu:
