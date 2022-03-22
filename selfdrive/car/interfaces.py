@@ -19,6 +19,7 @@ MAX_CTRL_SPEED = (V_CRUISE_MAX + 4) * CV.KPH_TO_MS
 ACCEL_MAX = 2.0
 ACCEL_MIN = -3.5
 
+
 # generic car and radar interfaces
 
 
@@ -31,11 +32,6 @@ class CarInterfaceBase(ABC):
     self.steering_unpressed = 0
     self.low_speed_alert = False
     self.silent_steer_warning = True
-
-    ####added by jc01rho
-    self.flag_pcmEnable_able = True
-    self.flag_pcmEnable_initialSet = False
-    self.initial_pcmEnable_counter = 0
 
     if CarState is not None:
       self.CS = CarState(CP)
@@ -54,7 +50,7 @@ class CarInterfaceBase(ABC):
 
   @staticmethod
   @abstractmethod
-  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None):
+  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None, disable_radar=False):
     pass
 
   @staticmethod
@@ -159,25 +155,10 @@ class CarInterfaceBase(ABC):
     if cs_out.steerFaultPermanent:
       events.add(EventName.steerUnavailable)
 
-    # Disable on rising edge of gas or brake. Also disable on brake when speed > 0.
-    # [BRAKE]
-    #if (DISENGAGE_ON_GAS and cs_out.gasPressed and not self.CS.out.gasPressed) or \
-    #   (cs_out.brakePressed and (not self.CS.out.brakePressed or not cs_out.standstill)):
-    #  events.add(EventName.pedalPressed)
-
-    # we engage when pcm is active (rising edge)
-    #if pcm_enable:
-    #  if cs_out.cruiseState.enabled and not self.CS.out.cruiseState.enabled:
-    #    events.add(EventName.pcmEnable)
-    #  elif not cs_out.cruiseState.enabled:
-    #    events.add(EventName.pcmDisable)
-
     # we engage when pcm is active (rising edge)
     if pcm_enable:
       if cs_out.cruiseState.enabled and not self.CS.out.cruiseState.enabled:
         events.add(EventName.pcmEnable)
-        if self.flag_pcmEnable_initialSet == False:
-          self.flag_pcmEnable_initialSet = True
       elif not cs_out.cruiseState.enabled:
         events.add(EventName.pcmDisable)
 
