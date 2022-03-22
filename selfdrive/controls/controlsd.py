@@ -33,7 +33,6 @@ from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_ge
 from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_speed_limiter_get_active
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, V_CRUISE_DELTA_KM, V_CRUISE_DELTA_MI
 from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
-from datetime import datetime
 
 MIN_SET_SPEED_KPH = V_CRUISE_MIN
 MAX_SET_SPEED_KPH = V_CRUISE_MAX
@@ -183,7 +182,6 @@ class Controls:
         self.active_cam = False
 
         # scc smoother
-        self.limited_lead = False
         self.is_cruise_enabled = False
         self.applyMaxSpeed = 0
 
@@ -354,7 +352,7 @@ class Controls:
             self.slowing_down = False
 
         # [안전거리 활성화]
-        #if ntune_scc_get('leadSafe') == 1:
+        #if Params().get_bool('MadModeEnabled'):
         #    lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
         #    if lead_speed >= self.min_set_speed_clu:
         #        if lead_speed < max_speed_clu:
@@ -509,11 +507,14 @@ class Controls:
             self.events.add(EventName.fcw)
 
         # NDA
-        if self.slowing_down_sound_alert:
-            self.slowing_down_sound_alert = False
-            self.events.add(EventName.slowingDownSpeedSound)
-        elif self.slowing_down_alert:
-            self.events.add(EventName.slowingDownSpeed)
+        #if self.slowing_down_sound_alert:
+        #    self.slowing_down_sound_alert = False
+        #    self.events.add(EventName.slowingDownSpeedSound)
+        #elif self.slowing_down_alert:
+        #    self.events.add(EventName.slowingDownSpeed)
+
+        #if self.slowing_down_alert:
+        #    self.events.add(EventName.stockAeb)
 
         if TICI:
             for m in messaging.drain_sock(self.log_sock, wait_for_one=False):
@@ -1014,6 +1015,7 @@ class Controls:
         controlsState.sccGasFactor = ntune_scc_get('sccGasFactor')
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
+        controlsState.leadSafeMode = ntune_scc_get('leadSafe')
 
         lat_tuning = self.CP.lateralTuning.which()
         if self.joystick_mode:
