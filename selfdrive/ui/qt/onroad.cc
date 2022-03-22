@@ -466,7 +466,7 @@ void NvgWindow::drawHud(QPainter &p) {
   configFont(p, "Open Sans", 45, "Regular");
   p.setPen(QColor(0xff, 0xff, 0xff, 200));
   //p.drawText(rect().left() + 20, rect().height() - 15, infoText);
-  drawTextWithColor(p, 100 , rect().height() - 15, infoText, yellowColor);
+  drawTextWithColor(p, 300 , rect().height() - 15, infoText, yellowColor);
 
   drawBottomIcons(p);
 }
