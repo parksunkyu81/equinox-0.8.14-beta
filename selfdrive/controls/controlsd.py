@@ -352,16 +352,16 @@ class Controls:
             self.slowing_down = False
 
         # [안전거리 활성화]
-        if Params().get_bool('MadModeEnabled'):
-            lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
-            if lead_speed >= self.min_set_speed_clu:
-                if lead_speed < max_speed_clu:
-                    max_speed_clu = min(max_speed_clu, lead_speed)
-                    if not self.limited_lead:
-                        self.max_speed_clu = vEgo + 3.
-                        self.limited_lead = True
-            else:
-                self.limited_lead = False
+        #if Params().get_bool('MadModeEnabled'):
+        #    lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
+        #    if lead_speed >= self.min_set_speed_clu:
+        #        if lead_speed < max_speed_clu:
+        #            max_speed_clu = min(max_speed_clu, lead_speed)
+        #            if not self.limited_lead:
+        #                self.max_speed_clu = vEgo + 3.
+        #                self.limited_lead = True
+        #    else:
+        #        self.limited_lead = False
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS)
         # print("update_max_speed() value : ", self.max_speed_clu)
@@ -513,8 +513,8 @@ class Controls:
         #elif self.slowing_down_alert:
         #    self.events.add(EventName.slowingDownSpeed)
 
-        if self.slowing_down_alert:
-            self.events.add(EventName.stockAeb)
+        #if self.slowing_down_alert:
+        #    self.events.add(EventName.stockAeb)
 
         if TICI:
             for m in messaging.drain_sock(self.log_sock, wait_for_one=False):
