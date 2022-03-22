@@ -566,12 +566,12 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   // brake
 
   int x = 140;
-  const int y1 = rect().bottom() - footer_h / 2 - 10;
+  const int y = rect().bottom() - footer_h / 2 - 10;
 
   bool brake_valid = car_state.getBrakePressed();
   float img_alpha = brake_valid ? 1.0f : 0.15f;
   float bg_alpha = brake_valid ? 0.3f : 0.1f;
-  drawIcon(p, x, y1, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  drawIcon(p, x, y, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
 
   // auto hold
   int autohold = car_state.getAutoHold();
@@ -579,28 +579,24 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     x = radius / 2 + (bdr_s * 2) + (radius + 50);
     img_alpha = autohold > 0 ? 1.0f : 0.15f;
     bg_alpha = autohold > 0 ? 0.3f : 0.1f;
-    drawIcon(p, x, y1, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
+    drawIcon(p, x, y, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   }
 
   // ACC
-  //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
-  x = 140;
-  const int y2 = rect().bottom() - (footer_h / 2) - (radius + 50) - 10;
-
+  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
   bool acc_bool = car_state.getAdaptiveCruise();
   img_alpha = acc_bool ? 1.0f : 0.15f;
   bg_alpha = acc_bool ? 0.3f : 0.1f;
-  drawIcon(p, x, y2, ic_acc, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  drawIcon(p, x, y, ic_acc, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
 
 
   // LKAS
-  //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
-  x = radius / 2 + (bdr_s * 2) + (radius + 50);
+  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
   bool lkas_bool = car_state.getLkasEnable();
   img_alpha = lkas_bool ? 1.0f : 0.15f;
   bg_alpha = lkas_bool ? 0.3f : 0.1f;
-  drawIcon(p, x, y2, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  drawIcon(p, x, y, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
 
 }
 
