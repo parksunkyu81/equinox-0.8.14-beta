@@ -612,6 +612,7 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
   UIState *s = uiState();
   const SubMaster &sm = *(s->sm);
   const auto controls_state = sm["controlsState"].getControlsState();
+  bool is_metric = s->scene.is_metric;
 
   // kph
   float applyMaxSpeed = controls_state.getApplyMaxSpeed();
