@@ -261,12 +261,12 @@ class Controls:
                 # vRel : Real Speed (- 값이면 내차 속도가 더 빠름)
                 # lead의 vrel(상대속도)에 곱해지는 상수라 커지면 더 멀리서 줄이기 시작합니다
                 # longLeadVision : 비전이 인식한 지정된 거리부터 속도를 줄인다.
-                if 0. < d < -lead.vRel * (9. + 3.) * ntune_scc_get("leadSafeRatio"):
+                if 0. < d < -lead.vRel * (9. + 3.) * 2. and lead.vRel < -1.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     # 속도를 증가하는 속도를 Delay 한다. -> 속도를 더 지속적으로 낮춘다.
-                    # accel *= 0.01
-                    accel *= 0.001
+                    accel *= 1.2
+
 
                     if accel < 0.:
                         # target_speed = vEgo + accel  # accel 값은 1키로씩 상승한다.
