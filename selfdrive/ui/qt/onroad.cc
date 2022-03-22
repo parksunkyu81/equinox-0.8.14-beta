@@ -449,8 +449,10 @@ void NvgWindow::drawHud(QPainter &p) {
   int SafeLeadState = (int)controls_state.getLeadSafeMode();
   const char* safe_lead[] = {"Off", "On"};
 
+  QColor yellowColor = QColor(255, 255, 0, 255);
+
   QString infoText;
-  infoText.sprintf("LONG STATE[ %s ] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) SAFE MODE[ %s ] ",
+  infoText.sprintf("LONG [ %s ] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) SAFE [ %s ] ",
                       long_state[longControlState],
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
@@ -463,7 +465,8 @@ void NvgWindow::drawHud(QPainter &p) {
   // info
   configFont(p, "Open Sans", 45, "Regular");
   p.setPen(QColor(0xff, 0xff, 0xff, 200));
-  p.drawText(rect().left() + 20, rect().height() - 15, infoText);
+  //p.drawText(rect().left() + 20, rect().height() - 15, infoText);
+  drawTextWithColor(p, rect().left() + 20, rect().height() - 15, infoText, yellowColor);
 
   drawBottomIcons(p);
 }
