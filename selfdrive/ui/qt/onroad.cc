@@ -613,6 +613,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
 }
 
+
 void NvgWindow::drawMaxSpeed(QPainter &p) {
   UIState *s = uiState();
   const SubMaster &sm = *(s->sm);
@@ -623,8 +624,8 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
   float cruiseMaxSpeed = controls_state.getCruiseMaxSpeed();
   bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
 
-  QColor yellowColor = QColor(255, 255, 0, 255);
-  QColor whiteColor = QColor(255, 255, 255, 255);
+  //QColor yellowColor = QColor(255, 255, 0, 255);
+  //QColor whiteColor = QColor(255, 255, 255, 255);
 
   QRect rc(30, 30, 184, 202);
   p.setPen(QPen(QColor(0xff, 0xff, 0xff, 100), 10));
@@ -632,7 +633,7 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
   p.drawRoundedRect(rc, 20, 20);
   p.setPen(Qt::NoPen);
 
-  QString applyMaxSpeedQstr;
+  /*QString applyMaxSpeedQstr;
   applyMaxSpeedQstr.sprintf("%.0f", applyMaxSpeed);
 
   QString cruiseMaxSpeedQstr;
@@ -648,9 +649,9 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
     drawTextWithColor(p, rc.center().x(), 100, "SET", yellowColor);
     configFont(p, "Open Sans", 76, "sans-semibold");
     drawTextWithColor(p, rc.center().x(), 195, "──", whiteColor);
-  }
+  }*/
 
-  /*if (is_cruise_set) {
+  if (is_cruise_set) {
     char str[256];
     if (is_metric)
         snprintf(str, sizeof(str), "%d", (int)(applyMaxSpeed + 0.5));
@@ -673,7 +674,7 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
 
     configFont(p, "Open Sans", 76, "sans-semibold");
     drawText(p, rc.center().x(), 195, "N/A", 100);
-  }*/
+  }
 }
 
 void NvgWindow::drawSpeed(QPainter &p) {
