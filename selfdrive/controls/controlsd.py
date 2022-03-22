@@ -1013,6 +1013,11 @@ class Controls:
         controlsState.sccGasFactor = ntune_scc_get('sccGasFactor')
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
+        if Params().get_bool('MadModeEnabled'):
+            controlsState.leadSafeMode = 1
+        else:
+            controlsState.leadSafeMode = 0
+
 
         lat_tuning = self.CP.lateralTuning.which()
         if self.joystick_mode:
