@@ -126,10 +126,10 @@ class nTune():
   def checkValidCommon(self):
     updated = False
 
-    if self.checkValue("useLiveSteerRatio", 0., 1., 1.):
+    if self.checkValue("useLiveSteerRatio", 0., 1., 0.):
       updated = True
 
-    if self.checkValue("steerRatio", 10.0, 20.0, 17.2):
+    if self.checkValue("steerRatio", 10.0, 20.0, 17.5):
       updated = True
 
     if self.checkValue("steerActuatorDelay", 0., 0.8, 0.0):
