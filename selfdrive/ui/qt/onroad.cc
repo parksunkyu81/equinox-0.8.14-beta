@@ -448,7 +448,7 @@ void NvgWindow::drawHud(QPainter &p) {
 
   QColor limeColor = QColor(120, 255, 120, 255);
 
-  int x = rect().left() + radius * 1.8;
+  int x = 850;
   int y = rect().height() - 15;
 
   QString infoText;
