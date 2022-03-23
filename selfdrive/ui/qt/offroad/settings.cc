@@ -592,11 +592,11 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_road.png",
                                             this));*/
 
-  toggles.append(new ParamControl("MadModeEnabled",
+  /*toggles.append(new ParamControl("MadModeEnabled",
                                             "Enable Lead Safe speed Control",
                                             "For use in city driving or on blocked roads.",
                                             "../assets/offroad/icon_openpilot.png",
-                                            this));
+                                            this));*/
 
   /*toggles.append(new ParamControl("IsLdwsCar",
                                             "LDWS",

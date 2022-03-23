@@ -446,27 +446,26 @@ void NvgWindow::drawHud(QPainter &p) {
   int longControlState = (int)controls_state.getLongControlState();
   const char* long_state[] = {"Off", "Pid", "Stopping", "Starting"};
 
-  int SafeLeadState = (int)controls_state.getLeadSafeMode();
-  const char* safe_lead[] = {"Off", "On"};
+  QColor limeColor = QColor(120, 255, 120, 255);
 
-  QColor blueColor = QColor(24, 0, 255, 255);
+  int x = rect().left() + radius * 1.8;
+  int y = rect().height() - 15;
 
   QString infoText;
-  infoText.sprintf("LONG [ %s ] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f) SAFE [ %s ] ",
+  infoText.sprintf("LONG[ %s ] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
                       long_state[longControlState],
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
                       controls_state.getSteerRateCost(),
-                      controls_state.getSteerActuatorDelay(),
-                      safe_lead[SafeLeadState]
+                      controls_state.getSteerActuatorDelay()
                       );
 
   // info
-  configFont(p, "Open Sans", 55, "Regular");
+  configFont(p, "Open Sans", 52, "Regular");
   p.setPen(QColor(0xff, 0xff, 0xff, 200));
   //p.drawText(rect().left() + 20, rect().height() - 15, infoText);
-  drawTextWithColor(p, 850 , rect().height() - 15, infoText, blueColor);
+  drawTextWithColor(p, x , y, infoText, limeColor);
 
   drawBottomIcons(p);
 }

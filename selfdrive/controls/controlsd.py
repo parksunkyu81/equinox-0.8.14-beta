@@ -170,10 +170,6 @@ class Controls:
         self.min_set_speed_clu = self.kph_to_clu(MIN_SET_SPEED_KPH)
         self.max_set_speed_clu = self.kph_to_clu(MAX_SET_SPEED_KPH)
 
-        # 앞차 거리 (PSK) 2021.10.15
-        # 레이더 비전 상태를 저장한다.
-        self.limited_lead = False
-
         self.speed_conv_to_ms = CV.KPH_TO_MS if self.is_metric else CV.MPH_TO_MS
         self.speed_conv_to_clu = CV.MS_TO_KPH if self.is_metric else CV.MS_TO_MPH
 
@@ -245,36 +241,6 @@ class Controls:
         self.slowing_down = False
         self.slowing_down_alert = False
         self.slowing_down_sound_alert = False
-
-    def get_lead(self, sm):
-        radar = sm['radarState']
-        if radar.leadOne.status:
-            return radar.leadOne
-        return None
-
-    def get_long_lead_safe_speed(self, sm, CS, vEgo):
-        if CS.cruiseState.enabled:
-            lead = self.get_lead(sm)
-            if lead is not None:
-                # d : 비전 레이더 거리
-                d = lead.dRel - 5.
-                # vRel : Real Speed (- 값이면 내차 속도가 더 빠름)
-                # lead의 vrel(상대속도)에 곱해지는 상수라 커지면 더 멀리서 줄이기 시작합니다
-                # longLeadVision : 비전이 인식한 지정된 거리부터 속도를 줄인다.
-                if 0. < d < -lead.vRel * (9. + 3.) * 2. and lead.vRel < -1.:
-                    t = d / lead.vRel
-                    accel = -(lead.vRel / t) * self.speed_conv_to_clu
-                    # 속도를 증가하는 속도를 Delay 한다. -> 속도를 더 지속적으로 낮춘다.
-                    accel *= 1.2
-
-
-                    if accel < 0.:
-                        # target_speed = vEgo + accel  # accel 값은 1키로씩 상승한다.
-                        target_speed = vEgo + accel
-                        target_speed = max(target_speed, self.min_set_speed_clu)
-                        return target_speed
-
-        return 0
 
     def cal_curve_speed(self, sm, v_ego, frame):
 
@@ -352,17 +318,6 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        # [안전거리 활성화]
-        if Params().get_bool('MadModeEnabled'):
-            lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
-            if lead_speed >= self.min_set_speed_clu:
-                if lead_speed < max_speed_clu:
-                    max_speed_clu = min(max_speed_clu, lead_speed)
-                    if not self.limited_lead:
-                        self.max_speed_clu = vEgo + 3.
-                        self.limited_lead = True
-            else:
-                self.limited_lead = False
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS)
         # print("update_max_speed() value : ", self.max_speed_clu)
@@ -1013,10 +968,6 @@ class Controls:
         controlsState.sccGasFactor = ntune_scc_get('sccGasFactor')
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
-        if Params().get_bool('MadModeEnabled'):
-            controlsState.leadSafeMode = 1
-        else:
-            controlsState.leadSafeMode = 0
 
 
         lat_tuning = self.CP.lateralTuning.which()
