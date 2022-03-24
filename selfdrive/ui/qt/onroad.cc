@@ -457,7 +457,7 @@ void NvgWindow::drawHud(QPainter &p) {
                       );
 
   // info
-  configFont(p, "Open Sans", 50, "Regular");
+  configFont(p, "Open Sans", 45, "Regular");
   drawTextWithColor(p, x , y, infoText, orangeColor);
   p.setOpacity(1.0);
 
