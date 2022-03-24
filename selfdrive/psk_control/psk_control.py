@@ -30,8 +30,6 @@ def apply():
         global DYNAMIC_FOLLOW
         DYNAMIC_FOLLOW = request.form['chk_dynamicFollow']
 
-
-
         message = '{\n "dynamicFollow": DYNAMIC_FOLLOW,' \
                    '\n "sccGasFactor": SCC_GAS_FACTOR,' \
                    '\n "sccBrakeFactor": SCC_BRAKE_FACTOR,' \
@@ -44,7 +42,8 @@ def apply():
         message = message.replace('SCC_GAS_FACTOR', str(ntune_scc_get('sccGasFactor')))
         message = message.replace('SCC_BRAKE_FACTOR', str(ntune_scc_get('sccBrakeFactor')))
         message = message.replace('SCC_CURVATURE_FACTOR', str(ntune_scc_get('sccCurvatureFactor')))
-        message = message.replace('DYNAMIC_FOLLOW', str(ntune_scc_get('dynamicFollow')))
+
+        message = message.replace('DYNAMIC_FOLLOW', str(DYNAMIC_FOLLOW))
 
 
         # 파일 저장
