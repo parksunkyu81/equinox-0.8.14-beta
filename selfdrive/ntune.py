@@ -172,6 +172,9 @@ class nTune():
     if self.checkValue("sccCurvatureFactor", 0.5, 1.5, 0.98):
       updated = True
 
+    if self.checkValue("dynamicFollow", 0, 3, 1):
+      updated = True
+
     return updated
 
   def updateLQR(self):
