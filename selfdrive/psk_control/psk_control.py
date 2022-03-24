@@ -2,7 +2,7 @@ import json
 from flask import Flask, render_template
 from flask import request
 from flask import jsonify, Response
-from cereal import messaging
+#from cereal import messaging
 from selfdrive.ntune import ntune_scc_get
 
 app = Flask(__name__)
