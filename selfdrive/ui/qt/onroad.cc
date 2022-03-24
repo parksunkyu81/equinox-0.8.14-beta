@@ -434,26 +434,21 @@ void NvgWindow::drawHud(QPainter &p) {
   drawSpeed(p);
   drawSpeedLimit(p);
   drawTurnSignals(p);
-  drawGpsStatus(p);
+  //drawGpsStatus(p);
 
   if(s->show_debug && width() > 1200)
     drawDebugText(p);
 
   const auto controls_state = sm["controlsState"].getControlsState();
-  //const auto car_params = sm["carParams"].getCarParams();
   const auto live_params = sm["liveParameters"].getLiveParameters();
 
-  int longControlState = (int)controls_state.getLongControlState();
-  const char* long_state[] = {"Off", "Pid", "Stopping", "Starting"};
+  QColor orangeColor = QColor(255, 188, 0, 255);
 
-  QColor limeColor = QColor(120, 255, 120, 255);
-
-  int x = 850;
+  int x = rect().left() + radius * 1.8;
   int y = rect().height() - 15;
 
   QString infoText;
-  infoText.sprintf("LONG[ %s ] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
-                      long_state[longControlState],
+  infoText.sprintf("[LQR] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
@@ -462,10 +457,9 @@ void NvgWindow::drawHud(QPainter &p) {
                       );
 
   // info
-  configFont(p, "Open Sans", 52, "Regular");
-  p.setPen(QColor(0xff, 0xff, 0xff, 200));
-  //p.drawText(rect().left() + 20, rect().height() - 15, infoText);
-  drawTextWithColor(p, x , y, infoText, limeColor);
+  configFont(p, "Open Sans", 50, "Regular");
+  drawTextWithColor(p, x , y, infoText, orangeColor);
+  p.setOpacity(1.0);
 
   drawBottomIcons(p);
 }
@@ -899,6 +893,7 @@ void NvgWindow::drawTurnSignals(QPainter &p) {
   p.setOpacity(1.);
 }
 
+/*
 void NvgWindow::drawGpsStatus(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto gps = sm["gpsLocationExternal"].getGpsLocationExternal();
@@ -925,7 +920,7 @@ void NvgWindow::drawGpsStatus(QPainter &p) {
   str.sprintf("%.1fm", accuracy);
   p.drawText(rect, Qt::AlignHCenter, str);
   p.setOpacity(1.);
-}
+}*/
 
 void NvgWindow::drawDebugText(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
