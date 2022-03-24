@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+
+<meta charset="UTF-8" />
+<title>Openpilot Control</title>
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+<meta name="format-detection" content="telephone=no" />
+
+<style>
+
+.slider {
+  -webkit-appearance: none;
+  width: 85%;
+  height: 45px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 30px;
+  height: 30px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+body {
+  background-color: black;
+  text-align: center;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+input[type=button], input[type=submit], input[type=reset] {
+  background-color: #4CAF50;
+  width: 45%;
+  border: none;
+  color: white;
+  padding: 15px 30px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+input[type=text] {
+  width: 25%;
+  height: 45px;
+  font-size: 20px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+</style>
+
+<script type="text/javascript">
+
+	function load()
+	{
+
+
+	}
+
+    function apply_ok() {
+		document.frm1.action = "/apply";
+        document.frm1.method = "post";
+        document.frm1.submit();
+    }
+
+
+    function delHangle(evt){ //한글을 지우는 부분, keyup부분에 넣어준다.
+		var objTarget = evt.srcElement || evt.target;
+		var _value = event.srcElement.value;
+		if(/[ㄱ-ㅎㅏ-ㅡ가-핳]/g.test(_value)) {
+			// objTarget.value = objTarget.value.replace(/[ㄱ-ㅎㅏ-ㅡ가-핳]/g,'');
+			objTarget.value = null;
+			//return false;
+		}
+	}
+
+	function isNumberKey(evt) { // 숫자를 제외한 값을 입력하지 못하게 한다.
+		var charCode = (evt.which) ? evt.which : event.keyCode;
+		// Textbox value
+		var _value = event.srcElement.value;
+		if (event.keyCode < 48 || event.keyCode > 57) {
+			if (event.keyCode != 46) { //숫자와 . 만 입력가능하도록함
+				return false;
+			}
+		}
+
+		// 소수점(.)이 두번 이상 나오지 못하게
+		var _pattern0 = /^\d*[.]\d*$/; // 현재 value값에 소수점(.) 이 있으면 . 입력불가
+		if (_pattern0.test(_value)) {
+			if (charCode == 46) {
+				return false;
+			}
+		}
+
+		// 두자리 이하의 숫자만 입력가능
+		var _pattern1 = /^\d{2}$/; // 현재 value값이 2자리 숫자이면 . 만 입력가능
+		// {숫자}의 값을 변경하면 자리수를 조정할 수 있다.
+		if (_pattern1.test(_value)) {
+			if (charCode != 46) {
+				alert("두자리 이하의 숫자만 입력가능합니다");
+				return false;
+			}
+		}
+
+		// 소수점 둘째자리까지만 입력가능
+		var _pattern2 = /^\d*[.]\d{2}$/; // 현재 value값이 소수점 둘째짜리 숫자이면 더이
+		// {숫자}의 값을 변경하면 자리수를 조정할 수 있다.
+		if (_pattern2.test(_value)) {
+			alert("소수점 둘째자리까지만 입력가능합니다.");
+			return false;
+		}
+		return true;
+	}
+
+
+</script>
+
+
+
+</head>
+<body onload="load()">
+
+	<form name="frm1" id="frm1" action="" method="post">
+		<h2>Openpilot Control</h2>
+
+		<div align="center">
+			<input type="button" value="APPLY" onclick="apply_ok()">
+			<input type="button" value="RESET" onclick="load()">
+		</div>
+
+
+
+	</form>
+</body>
+</html>
