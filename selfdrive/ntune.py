@@ -175,6 +175,17 @@ class nTune():
     if self.checkValue("dynamicFollow", 0, 3, 1):
       updated = True
 
+    """동적 추적이 사용하는 현재 거리의 승수 범위는 0.85에서 2.5로 제한됩니다.
+    값이 작을수록 가까워지고 클수록 멀어집니다.
+    이것은 활성화된 프로필로 곱해집니다. 비활성화하려면 1로 설정하십시오."""
+    if self.checkValue("globalDfMod", 0.85, 2.5, 1.0):
+      updated = True
+
+    """허용되는 최소 추종 거리(초) 기본값은 0.9 초입니다.
+    범위는 0.85 에서 2.7로 제한됩니다."""
+    if self.checkValue("minTR", 0.85, 2.7, 0.9):
+      updated = True
+
     return updated
 
   def updateLQR(self):

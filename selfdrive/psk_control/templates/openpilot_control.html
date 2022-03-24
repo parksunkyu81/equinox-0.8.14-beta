@@ -89,6 +89,11 @@ input[type=text] {
 			document.frm1.chk_dynamicFollow[4].checked = true;
 		}
 
+		var global_df_mod = {{globalDfModParam}};
+		document.frm1.global_df_mod.value = global_df_mod;
+
+		var min_tr = {{minTRParam}};
+		document.frm1.min_tr.value = min_tr;
 
 	}
 
@@ -179,6 +184,20 @@ input[type=text] {
 			<br><input type="radio" name="chk_dynamicFollow" value=1>stock (기본)
 			<br><input type="radio" name="chk_dynamicFollow" value=2>roadtrip (편안한)
 			<br><input type="radio" name="chk_dynamicFollow" value=3>auto (자동)
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<font color="GREEN">GLOBAL DF MOD (0.85 ~ 2.5, DEF : 1.0)</font>
+			<br><input type="text" name="global_df_mod" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<font color="GREEN">MIN TR (0.85 ~ 2.7, DEF : 0.9)</font>
+			<br><input type="text" name="min_tr" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
 		</p>
 		</h3>
 
