@@ -13,8 +13,7 @@ from common.travis_checker import gh_actions
 if __name__ == '__main__':  # generating code
   from pyextra.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
 else:
-  # from pyextra.acados_template import AcadosOcpSolver as AcadosOcpSolverFast
-  from selfdrive.controls.lib.longitudinal_mpc_lib.c_generated_code.acados_ocp_solver_pyx import AcadosOcpSolverFast  # pylint: disable=no-name-in-module, import-error
+  from selfdrive.controls.lib.longitudinal_mpc_lib.c_generated_code.acados_ocp_solver_pyx import AcadosOcpSolverCython
 
 from casadi import SX, vertcat
 
@@ -204,7 +203,7 @@ class LongitudinalMpc:
     self.source = SOURCES[2]
 
   def reset(self):
-    self.solver = AcadosOcpSolverFast('long', N, EXPORT_DIR)
+    self.solver = AcadosOcpSolverCython('long', N, EXPORT_DIR)
     self.v_solution = np.zeros(N+1)
     self.a_solution = np.zeros(N+1)
     self.prev_a = np.array(self.a_solution)
