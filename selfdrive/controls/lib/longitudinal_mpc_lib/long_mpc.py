@@ -409,4 +409,4 @@ class LongitudinalMpc:
 
 if __name__ == "__main__":
   ocp = gen_long_mpc_solver()
-  AcadosOcpSolver.generate(ocp, json_file=JSON_FILE, build=False)
+  AcadosOcpSolver.generate(ocp, json_file=JSON_FILE)
