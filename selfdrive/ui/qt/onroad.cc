@@ -444,7 +444,7 @@ void NvgWindow::drawHud(QPainter &p) {
 
   QColor orangeColor = QColor(255, 188, 0, 255);
 
-  int x = 850;
+  int x = 800;
   int y = rect().height() - 15;
 
   QString infoText;
@@ -611,15 +611,19 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   if(dynamic_follow == 0) {
     str = "TRAFFIC";
+    textColor = QColor(120, 255, 120, 200);
   }
   else if(dynamic_follow == 1) {
     str = "STOCK";
+    textColor = QColor(120, 255, 120, 200);
   }
   else if(dynamic_follow == 2) {
     str = "ROADTRIP";
+    textColor = QColor(120, 255, 120, 200);
   }
   else if(dynamic_follow == 3) {
     str = "AUTO";
+    textColor = QColor(120, 255, 120, 200);
   }
 
   configFont(p, "Open Sans", 35, "Bold");
