@@ -598,7 +598,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   //drawIcon(p, x, y2, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
 
   p.setPen(Qt::NoPen);
-  p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
+  p.setBrush(blackColor(70));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
   QString str;
@@ -619,7 +619,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y2+50, str, textColor);
-  p.setOpacity(1.);
+  p.setOpacity(1.0);
 
 
   // dynamic follow
@@ -627,7 +627,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   int dynamic_follow = controls_state.getDynamicSelFollow();
 
   p.setPen(Qt::NoPen);
-  p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
+  p.setBrush(blackColor(70));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
   textSize = 40.f;
@@ -655,7 +655,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y2+50, str, textColor);
-  p.setOpacity(1.);
+  p.setOpacity(1.0);
 
 }
 
