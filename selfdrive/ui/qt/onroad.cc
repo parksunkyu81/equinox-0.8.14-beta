@@ -580,8 +580,9 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     bg_alpha = autohold > 0 ? 0.3f : 0.1f;
     drawIcon(p, x, y1, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+    p.setOpacity(1.0);
   }
-  p.setOpacity(1.0);
+
 
   // ACC
   //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
