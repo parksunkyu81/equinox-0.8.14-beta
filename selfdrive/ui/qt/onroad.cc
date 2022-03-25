@@ -441,15 +441,17 @@ void NvgWindow::drawHud(QPainter &p) {
 
   const auto controls_state = sm["controlsState"].getControlsState();
   const auto live_params = sm["liveParameters"].getLiveParameters();
+  const auto dynamicFollowData = sm["dynamicFollowData"].getDynamicFollowData();
 
   QColor orangeColor = QColor(255, 188, 0, 255);
 
-  int x = 700;
+  int x = 680;
   int y = rect().height() - 15;
 
   QString infoText;
-  infoText.sprintf("[LQR] AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
+  infoText.sprintf("[LQR] TR(%.2f) AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
                       live_params.getAngleOffsetDeg(),
+                      dynamicFollowData.getMpcTR(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
                       controls_state.getSteerRateCost(),
@@ -567,6 +569,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   float img_alpha = brake_valid ? 1.0f : 0.15f;
   float bg_alpha = brake_valid ? 0.3f : 0.1f;
   drawIcon(p, x, y1, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  p.setOpacity(1.0);
 
   // auto hold
   int autohold = car_state.getAutoHold();
@@ -577,6 +580,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     drawIcon(p, x, y1, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   }
+  p.setOpacity(1.0);
 
   // ACC
   //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
@@ -587,6 +591,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   img_alpha = acc_bool ? 1.0f : 0.15f;
   bg_alpha = acc_bool ? 0.3f : 0.1f;
   drawIcon(p, x, y2, ic_acc, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  p.setOpacity(1.0);
 
 
   // LKAS
