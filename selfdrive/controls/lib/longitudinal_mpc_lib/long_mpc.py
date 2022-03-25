@@ -328,7 +328,7 @@ class LongitudinalMpc:
     lead_xv_1 = self.process_lead(radarstate.leadTwo, 1)
 
     if not gh_actions:
-      self.set_desired_TR(self.dynamic_follow.update(carstate))  # update dynamic follow and get desired TR
+      self.set_desired_TR(self.dynamic_follow.update(carstate))  # 동적 팔로우를 업데이트하고 원하는 TR을 얻습니다.
 
     # set accel limits in params
     self.params[:,0] = interp(float(self.status), [0.0, 1.0], [self.cruise_min_a, MIN_ACCEL])
