@@ -1027,7 +1027,7 @@ class Controls:
         controlsState.sccGasFactor = ntune_scc_get('sccGasFactor')
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
-        controlsState.dynamicFollow = ntune_scc_get('dynamicFollow')
+        controlsState.dynamicSelFollow = ntune_scc_get('dynamicFollow')
 
 
         lat_tuning = self.CP.lateralTuning.which()

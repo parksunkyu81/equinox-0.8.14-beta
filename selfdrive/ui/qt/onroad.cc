@@ -485,6 +485,7 @@ static const QString get_tpms_text(float tpms) {
 void NvgWindow::drawBottomIcons(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
+  auto controls_state = sm["controlsState"].getControlsState();
 
   // tire pressure
   /*
@@ -598,7 +599,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   // dynamic follow
   x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
-  int dynamic_follow = car_state.getDynamicFollow();
+  int dynamic_follow = controls_state.getDynamicSelFollow();
 
   p.setPen(Qt::NoPen);
   p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
