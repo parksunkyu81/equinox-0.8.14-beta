@@ -259,7 +259,7 @@ class DynamicFollow:
     else:
       df_profile = self.user_profile
 
-    print('========== df_profile ============== : ', df_profile)
+    #print('========== df_profile ============== : ', df_profile)
 
     if df_profile != self.last_effective_profile:
       self.profile_change_time = sec_since_boot()
@@ -272,8 +272,8 @@ class DynamicFollow:
       return 1.45
     elif df_profile == self.df_profiles.roadtrip:  # previous stock following distance
       return 1.8
-    else:
-      raise Exception('Unknown profile type: {}'.format(df_profile))
+    #else:
+    #  raise Exception('Unknown profile type: {}'.format(df_profile))
 
     # Global df mod
     y_dist = self.global_profile_mod(x_vel, y_dist)
