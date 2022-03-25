@@ -186,6 +186,7 @@ class nTune():
     if self.checkValue("minTR", 0.85, 2.7, 0.9):
       updated = True
 
+
     return updated
 
   def updateLQR(self):
