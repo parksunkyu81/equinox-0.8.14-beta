@@ -259,6 +259,8 @@ class DynamicFollow:
     else:
       df_profile = self.user_profile
 
+    print('========== df_profile ============== : ', df_profile)
+
     if df_profile != self.last_effective_profile:
       self.profile_change_time = sec_since_boot()
     self.last_effective_profile = df_profile
