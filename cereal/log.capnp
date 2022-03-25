@@ -1481,6 +1481,11 @@ struct RoadLimitSpeed {
     camSpeedFactor @8 :Float32;
 }
 
+struct DynamicFollowData {
+    mpcTR @0 :Float32;
+    profilePred @1 :UInt16;
+}
+
 struct Event {
   logMonoTime @0 :UInt64;  # nanoseconds
   valid @67 :Bool = true;
@@ -1546,6 +1551,9 @@ struct Event {
     
     # neokii
     roadLimitSpeed @86 :RoadLimitSpeed;
+
+    # shane
+    dynamicFollowData @87 :DynamicFollowData;
 
     # *********** debug ***********
     testJoystick @52 :Joystick;
