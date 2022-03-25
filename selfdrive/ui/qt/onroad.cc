@@ -444,7 +444,7 @@ void NvgWindow::drawHud(QPainter &p) {
 
   QColor orangeColor = QColor(255, 188, 0, 255);
 
-  int x = rect().left() + radius * 1.8;
+  int x = 850;
   int y = rect().height() - 15;
 
   QString infoText;
@@ -457,7 +457,7 @@ void NvgWindow::drawHud(QPainter &p) {
                       );
 
   // info
-  configFont(p, "Open Sans", 45, "Regular");
+  configFont(p, "Open Sans", 50, "Regular");
   drawTextWithColor(p, x , y, infoText, orangeColor);
   p.setOpacity(1.0);
 
@@ -595,6 +595,38 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   img_alpha = lkas_bool ? 1.0f : 0.15f;
   bg_alpha = lkas_bool ? 0.3f : 0.1f;
   drawIcon(p, x, y2, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+
+  // dynamic follow
+  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
+  int dynamic_follow = car_state.getDynamicFollow();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
+  p.drawEllipse(x - radius / 2, y - radius / 2, radius, radius);
+
+  QString str;
+  float textSize = 40.f;
+  QColor textColor = QColor(255, 255, 255, 200);
+
+  if(dynamic_follow == 0) {
+    str = "TRAFFIC";
+  }
+  else if(dynamic_follow == 1) {
+    str = "STOCK";
+  }
+  else if(dynamic_follow == 2) {
+    str = "ROADTRIP";
+  }
+  else if(dynamic_follow == 3) {
+    str = "AUTO";
+  }
+
+  configFont(p, "Open Sans", 35, "Bold");
+  drawText(p, x, y2-20, "GAP", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y2+50, str, textColor);
+  p.setOpacity(1.);
 
 }
 
