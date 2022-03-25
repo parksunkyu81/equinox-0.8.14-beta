@@ -593,9 +593,34 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
   x = radius / 2 + (bdr_s * 2) + (radius + 50);
   bool lkas_bool = car_state.getLkasEnable();
-  img_alpha = lkas_bool ? 1.0f : 0.15f;
-  bg_alpha = lkas_bool ? 0.3f : 0.1f;
-  drawIcon(p, x, y2, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  //img_alpha = lkas_bool ? 1.0f : 0.15f;
+  //bg_alpha = lkas_bool ? 0.3f : 0.1f;
+  //drawIcon(p, x, y2, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
+  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+
+  QString str;
+  float textSize = 50.f;
+  QColor textColor = QColor(255, 255, 255, 200);
+
+  if(lkas_bool == true) {
+    str = "ON";
+    textColor = QColor(120, 255, 120, 200);
+  }
+  else {
+    str = "OFF";
+    textColor = QColor(254, 32, 32, 200);
+  }
+
+  configFont(p, "Open Sans", 35, "Bold");
+  drawText(p, x, y2-20, "LKAS", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y2+50, str, textColor);
+  p.setOpacity(1.);
+
 
   // dynamic follow
   x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
