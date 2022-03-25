@@ -1483,7 +1483,7 @@ struct RoadLimitSpeed {
 
 struct DynamicFollowData {
     mpcTR @0 :Float32;
-    profilePred @1 :UInt16;
+    profilePred @1 :Int16;
 }
 
 struct LaneSpeed {
