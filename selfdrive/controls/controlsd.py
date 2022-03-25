@@ -547,7 +547,7 @@ class Controls:
         #                   extra_text_2='Change lanes to faster {} lane'.format(faster_lane))
         #    return
 
-        df_out = self.df_manager.update()
+        """df_out = self.df_manager.update()
         if df_out.changed:
             df_alert = 'dfButtonAlert'
             if df_out.is_auto and df_out.last_is_auto:
@@ -560,7 +560,7 @@ class Controls:
                 df_alert += 'Silent'
                 self.AM.SA_add(df_alert, extra_text_1=df_out.user_profile_text,
                                extra_text_2='Dynamic follow: {} profile active'.format(df_out.user_profile_text))
-                return
+                return"""
 
     def data_sample(self):
         """Receive data from sockets and update carState"""
