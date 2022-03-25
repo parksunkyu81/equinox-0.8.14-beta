@@ -68,6 +68,7 @@ services = {
   "navThumbnail": (True, 0.),
   "roadLimitSpeed": (False, 0.),
   "dynamicFollowData": (False, 20.),
+  "laneSpeed": (False, 0.),
 
   # debug
   "testJoystick": (False, 0.),
