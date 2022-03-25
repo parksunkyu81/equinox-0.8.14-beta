@@ -1486,6 +1486,23 @@ struct DynamicFollowData {
     profilePred @1 :UInt16;
 }
 
+struct LaneSpeed {
+  fastestLane @0 :Text;
+  state @1 :Text;
+  new @2 :Bool;
+
+  leftLaneSpeeds @3 :List(Float32);
+  middleLaneSpeeds @4 :List(Float32);
+  rightLaneSpeeds @5 :List(Float32);
+
+  leftLaneDistances @6 :List(Float32);
+  middleLaneDistances @7 :List(Float32);
+  rightLaneDistances @8 :List(Float32);
+
+  leftLaneOncoming @9 :Bool;
+  rightLaneOncoming @10 :Bool;
+}
+
 struct Event {
   logMonoTime @0 :UInt64;  # nanoseconds
   valid @67 :Bool = true;
@@ -1554,6 +1571,7 @@ struct Event {
 
     # shane
     dynamicFollowData @87 :DynamicFollowData;
+    laneSpeed @88 :LaneSpeed;
 
     # *********** debug ***********
     testJoystick @52 :Joystick;
