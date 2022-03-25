@@ -634,8 +634,9 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(70));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  textSize = 40.f;
-  textColor = QColor(255, 255, 255, 200);
+  QString str;
+  float textSize = 40.f;
+  QColor textColor = QColor(255, 255, 255, 200);
 
   if(dynamic_follow == 0) {
     str = "TRAFFIC";
