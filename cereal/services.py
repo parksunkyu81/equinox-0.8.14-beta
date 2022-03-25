@@ -67,6 +67,7 @@ services = {
   "navRoute": (True, 0.),
   "navThumbnail": (True, 0.),
   "roadLimitSpeed": (False, 0.),
+  "dynamicFollowData": (False, 20.),
 
   # debug
   "testJoystick": (False, 0.),
