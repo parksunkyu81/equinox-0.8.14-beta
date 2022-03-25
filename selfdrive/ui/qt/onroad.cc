@@ -603,7 +603,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   p.setPen(Qt::NoPen);
   p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
-  p.drawEllipse(x - radius / 2, y - radius / 2, radius, radius);
+  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
   QString str;
   float textSize = 40.f;
