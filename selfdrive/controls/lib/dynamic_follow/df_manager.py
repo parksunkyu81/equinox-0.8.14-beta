@@ -59,8 +59,8 @@ class dfManager:
 
     self.cur_user_profile = ntune_scc_get('dynamicFollow')
 
-    print('self.cur_user_profile ================================', self.cur_user_profile)
-    print('self.last_user_profile ================================', self.last_user_profile)
+    #print('self.cur_user_profile ================================', self.cur_user_profile)
+    #print('self.last_user_profile ================================', self.last_user_profile)
     #if self.sm.updated['dynamicFollowButton']:
     #  self.button_updated = True
 
@@ -73,6 +73,7 @@ class dfManager:
     if self.cur_user_profile != self.last_user_profile:
       print('self.cur_user_profile != self.last_user_profile ================================')
       #self.op_params.put('dynamic_follow', self.df_profiles.to_profile[df_out.user_profile])  # save current profile for next drive (다음 드라이브를 위해 현재 프로필 저장)
+      self.last_user_profile = self.cur_user_profile
       self.change_time = sec_since_boot()
       self.last_is_auto = False
       df_out.changed = True
@@ -88,5 +89,5 @@ class dfManager:
         df_out.changed = True  # to hide pred alerts until user-selected auto alert has finished (사용자가 선택한 자동 경고가 완료될 때까지 사전 경고를 숨기려면)
       self.cur_model_profile = df_out.model_profile
 
-    self.last_user_profile = self.cur_user_profile
+    #self.last_user_profile = self.cur_user_profile
     return df_out
