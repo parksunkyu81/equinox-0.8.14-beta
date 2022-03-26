@@ -202,6 +202,7 @@ class DynamicFollow:
       print('if self.car_data.cruise_enabled and self.lead_data.status')
       if cur_time - self.last_predict_time > self.predict_rate:
         if len(self.auto_df_model_data) == self.model_input_len:
+          print('len(self.auto_df_model_data) == self.model_input_len:')
           pred = predict(np.array(self.auto_df_model_data[::self.skip_every], dtype=np.float32).flatten())
           self.last_predict_time = cur_time
           self.model_profile = int(np.argmax(pred))
