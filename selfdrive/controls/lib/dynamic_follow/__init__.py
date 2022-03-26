@@ -175,7 +175,7 @@ class DynamicFollow:
 
   def _store_df_data(self):
     cur_time = sec_since_boot()
-    # Store custom relative accel over time
+    # 시간 경과에 따른 사용자 지정 상대 가속도 저장
     if self.lead_data.status:
       if self.lead_data.new_lead:
         self.df_data.v_rels = []  # reset when new lead
@@ -187,7 +187,7 @@ class DynamicFollow:
     self.df_data.v_egos = self._remove_old_entries(self.df_data.v_egos, cur_time, self.v_ego_retention)
     self.df_data.v_egos.append({'v_ego': self.car_data.v_ego, 'time': cur_time})
 
-    # Store data for auto-df model
+    # 자동 df 모델에 대한 데이터 저장
     self.auto_df_model_data.append([self._norm(self.car_data.v_ego, 'v_ego'),
                                     self._norm(self.lead_data.v_lead, 'v_lead'),
                                     self._norm(self.lead_data.a_lead, 'a_lead'),
