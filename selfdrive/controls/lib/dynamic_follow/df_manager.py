@@ -69,7 +69,7 @@ class dfManager:
       self.last_is_auto = False
       df_out.changed = True
 
-    if self.is_auto:
+    if self.is_auto:    # 오토 모드인 경우만 수행
       df_out.model_profile = self.sm['dynamicFollowData'].profilePred
       df_out.model_profile_text = self.df_profiles.to_profile[df_out.model_profile]
       df_out.is_auto = True

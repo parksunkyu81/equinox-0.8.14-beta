@@ -140,7 +140,7 @@ class DynamicFollow:
     df_out = self.df_manager.update()
     self.user_profile = df_out.user_profile
     if df_out.is_auto:  # todo: find some way to share prediction between the two mpcs to reduce processing overhead
-      self._get_pred()  # sets self.model_profile, all other checks are inside function
+      self._get_pred()  # self.model_profile을 설정하고 다른 모든 검사는 함수 내부에 있습니다.
 
   def _gather_data(self):
     self.sm_collector.update(0)
@@ -197,15 +197,13 @@ class DynamicFollow:
 
   def _get_pred(self):
     cur_time = sec_since_boot()
-    print('cur_time = sec_since_boot()')
     if self.car_data.cruise_enabled and self.lead_data.status:
-      print('if self.car_data.cruise_enabled and self.lead_data.status')
       if cur_time - self.last_predict_time > self.predict_rate:
         if len(self.auto_df_model_data) == self.model_input_len:
-          print('len(self.auto_df_model_data) == self.model_input_len:')
           pred = predict(np.array(self.auto_df_model_data[::self.skip_every], dtype=np.float32).flatten())
           self.last_predict_time = cur_time
           self.model_profile = int(np.argmax(pred))
+          print('_get_pred ====================================:', self.model_profile)
 
   @staticmethod
   def _remove_old_entries(lst, cur_time, retention):

@@ -449,9 +449,8 @@ void NvgWindow::drawHud(QPainter &p) {
   int y = rect().height() - 15;
 
   QString infoText;
-  infoText.sprintf("FD(TR %.2f, SEL %d) AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
+  infoText.sprintf("TR(%.2f) AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
                       dynamicFollow.getMpcTR(),
-                      dynamicFollow.getProfilePred(),
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
