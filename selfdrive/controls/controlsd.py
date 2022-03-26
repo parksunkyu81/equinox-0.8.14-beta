@@ -99,7 +99,7 @@ class Controls:
                  'managerState', 'liveParameters', 'radarState'] + self.camera_packets + joystick_packet,
                 ignore_alive=ignore, ignore_avg_freq=['radarState', 'longitudinalPlan'])
 
-        #self.sm_smiskol = messaging.SubMaster(['radarState', 'dynamicFollowData', 'liveTracks'])
+        self.sm_smiskol = messaging.SubMaster(['dynamicFollowData'])
 
         self.df_manager = dfManager()
 
@@ -570,6 +570,7 @@ class Controls:
         CS = self.CI.update(self.CC, can_strs)
 
         self.sm.update(0)
+        self.sm_smiskol.update(0)
 
         if not self.initialized:
             all_valid = CS.canValid and self.sm.all_alive_and_valid()
