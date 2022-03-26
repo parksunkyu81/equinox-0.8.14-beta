@@ -441,6 +441,7 @@ void NvgWindow::drawHud(QPainter &p) {
 
   const auto controls_state = sm["controlsState"].getControlsState();
   const auto live_params = sm["liveParameters"].getLiveParameters();
+  const auto dynamicFollow = sm["dynamicFollowData"].getDynamicFollowData();
 
   QColor orangeColor = QColor(255, 188, 0, 255);
 
