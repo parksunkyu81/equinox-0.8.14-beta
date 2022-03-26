@@ -57,8 +57,10 @@ class dfManager:
     self.sm.update(0)
     df_out = dfReturn()
 
-    print('self.cur_user_profile ================================', self.cur_user_profile)
-    print('self.last_user_profile ================================', self.last_user_profile)
+    self.cur_user_profile = ntune_scc_get('dynamicFollow')
+
+    #print('self.cur_user_profile ================================', self.cur_user_profile)
+    #print('self.last_user_profile ================================', self.last_user_profile)
     #if self.sm.updated['dynamicFollowButton']:
     #  self.button_updated = True
 
