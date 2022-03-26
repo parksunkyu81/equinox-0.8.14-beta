@@ -85,7 +85,7 @@ class dfManager:
       df_out.is_auto = True
       df_out.last_is_auto = self.last_is_auto
       self.last_is_auto = True
-      if self.cur_model_profile != df_out.model_profile and self.can_show_alert:
+      if self.cur_model_profile != df_out.model_profile:
         df_out.changed = True  # to hide pred alerts until user-selected auto alert has finished (사용자가 선택한 자동 경고가 완료될 때까지 사전 경고를 숨기려면)
       self.cur_model_profile = df_out.model_profile
 
