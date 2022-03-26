@@ -441,7 +441,7 @@ void NvgWindow::drawHud(QPainter &p) {
 
   const auto controls_state = sm["controlsState"].getControlsState();
   const auto live_params = sm["liveParameters"].getLiveParameters();
-  const auto dynamicFollowData = sm["dynamicFollowData"].getDynamicFollowData();
+  const auto dynamic_follow = sm["dynamicFollowData"].getDynamicFollowData();
 
   QColor orangeColor = QColor(255, 188, 0, 255);
 
@@ -449,9 +449,9 @@ void NvgWindow::drawHud(QPainter &p) {
   int y = rect().height() - 15;
 
   QString infoText;
-  infoText.sprintf("[LQR] FOLLOW(TR %.2f, PROFILE %d) AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
-                      dynamicFollowData.getMpcTR(),
-                      dynamicFollowData.getProfilePred(),
+  infoText.sprintf("[LQR] FOLLOW(TR %.2f) AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
+                      dynamic_follow.getMpcTR(),
+                      //dynamicFollowData.getProfilePred(),
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
