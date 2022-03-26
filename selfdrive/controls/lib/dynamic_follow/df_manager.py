@@ -56,6 +56,8 @@ class dfManager:
   def update(self):
     self.sm.update(0)
     df_out = dfReturn()
+
+    print('self.cur_user_profile ================================', self.cur_user_profile)
     #if self.sm.updated['dynamicFollowButton']:
     #  self.button_updated = True
 
