@@ -59,8 +59,8 @@ class dfManager:
 
     self.cur_user_profile = ntune_scc_get('dynamicFollow')
 
-    #print('self.cur_user_profile ================================', self.cur_user_profile)
-    #print('self.last_user_profile ================================', self.last_user_profile)
+    print('self.cur_user_profile ================================', self.cur_user_profile)
+    print('self.last_user_profile ================================', self.last_user_profile)
     #if self.sm.updated['dynamicFollowButton']:
     #  self.button_updated = True
 
@@ -71,12 +71,14 @@ class dfManager:
     df_out.user_profile_text = self.df_profiles.to_profile[df_out.user_profile]
 
     if self.cur_user_profile != self.last_user_profile:
+      print('self.cur_user_profile != self.last_user_profile ================================')
       #self.op_params.put('dynamic_follow', self.df_profiles.to_profile[df_out.user_profile])  # save current profile for next drive (다음 드라이브를 위해 현재 프로필 저장)
       self.change_time = sec_since_boot()
       self.last_is_auto = False
       df_out.changed = True
 
     if self.is_auto:
+      print('self.is_auto: ================================')
       df_out.model_profile = self.sm['dynamicFollowData'].profilePred
       df_out.model_profile_text = self.df_profiles.to_profile[df_out.model_profile]
       df_out.is_auto = True
