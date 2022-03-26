@@ -562,7 +562,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   */
 
   // brake
-
   int x = 140;
   const int y1 = rect().bottom() - footer_h / 2 - 10;
 
@@ -570,6 +569,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   float img_alpha = brake_valid ? 1.0f : 0.15f;
   float bg_alpha = brake_valid ? 0.3f : 0.1f;
   drawIcon(p, x, y1, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  p.setOpacity(1.0);
 
   // auto hold
   int autohold = car_state.getAutoHold();
@@ -579,6 +579,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     bg_alpha = autohold > 0 ? 0.3f : 0.1f;
     drawIcon(p, x, y1, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+    p.setOpacity(1.0);
   }
 
 
@@ -591,17 +592,18 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   img_alpha = acc_bool ? 1.0f : 0.15f;
   bg_alpha = acc_bool ? 0.3f : 0.1f;
   drawIcon(p, x, y2, ic_acc, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
-
+  p.setOpacity(1.0);
 
   // LKAS
   //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
   x = radius / 2 + (bdr_s * 2) + (radius + 50);
   bool lkas_bool = car_state.getLkasEnable();
-  img_alpha = lkas_bool ? 1.0f : 0.15f;
-  bg_alpha = lkas_bool ? 0.3f : 0.1f;
-  drawIcon(p, x, y2, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  //img_alpha = lkas_bool ? 1.0f : 0.15f;
+  //bg_alpha = lkas_bool ? 0.3f : 0.1f;
+  //drawIcon(p, x, y2, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  //p.setOpacity(1.0);
 
-  /*p.setPen(Qt::NoPen);
+  p.setPen(Qt::NoPen);
   p.setBrush(blackColor(70));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
@@ -623,7 +625,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y2+50, str, textColor);
-  p.setOpacity(1.0);*/
+  p.setOpacity(1.0);
 
 
   // dynamic follow
@@ -634,9 +636,8 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(70));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  QString str;
-  float textSize = 40.f;
-  QColor textColor = QColor(255, 255, 255, 200);
+  textSize = 40.f;
+  textColor = QColor(255, 255, 255, 200);
 
   if(dynamic_follow == 0) {
     str = "TRAFFIC";
