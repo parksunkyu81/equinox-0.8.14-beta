@@ -445,7 +445,7 @@ void NvgWindow::drawHud(QPainter &p) {
 
   QColor orangeColor = QColor(255, 188, 0, 255);
 
-  int x = 550;
+  int x = 500;
   int y = rect().height() - 15;
 
   QString infoText;
