@@ -104,13 +104,13 @@ class CarInterface(CarInterfaceBase):
     ret.tireStiffnessFront, ret.tireStiffnessRear = scale_tire_stiffness(ret.mass, ret.wheelbase, ret.centerToFront,
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
-
-    ret.longitudinalTuning.kpBP = [0., 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.2, 1.1, 0.9, 0.78, 0.68, 0.65, 0.62, 0.48]
+    ret.longitudinalTuning.kpBP = [0., 10. * CV.KPH_TO_MS, 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
+                                   80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.20, 1.05, 0.81, 0.66, 0.63, 0.57, 0.54, 0.52]
     ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.08, 0.04]
-    ret.longitudinalActuatorDelayLowerBound = 0.3
-    ret.longitudinalActuatorDelayUpperBound = 0.3
+    ret.longitudinalTuning.kiV = [0.25, 0.12]
+    ret.longitudinalActuatorDelayLowerBound = 0.13
+    ret.longitudinalActuatorDelayUpperBound = 0.17
 
     ret.steerLimitTimer = 0.4
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
