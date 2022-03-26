@@ -589,9 +589,32 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   const int y2 = rect().bottom() - (footer_h / 2) - (radius + 50) - 10;
 
   bool acc_bool = car_state.getAdaptiveCruise();
-  img_alpha = acc_bool ? 1.0f : 0.15f;
-  bg_alpha = acc_bool ? 0.3f : 0.1f;
-  drawIcon(p, x, y2, ic_acc, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  //img_alpha = acc_bool ? 1.0f : 0.15f;
+  //bg_alpha = acc_bool ? 0.3f : 0.1f;
+  //drawIcon(p, x, y2, ic_acc, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  //p.setOpacity(1.0);
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(70));
+  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+
+  QString str;
+  float textSize = 50.f;
+  QColor textColor = QColor(255, 255, 255, 200);
+
+  if(acc_bool == true) {
+    str = "ON";
+    textColor = QColor(120, 255, 120, 200);
+  }
+  else {
+    str = "OFF";
+    textColor = QColor(254, 32, 32, 200);
+  }
+
+  configFont(p, "Open Sans", 35, "Bold");
+  drawText(p, x, y2-20, "ACC", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y2+50, str, textColor);
   p.setOpacity(1.0);
 
   // LKAS
@@ -607,9 +630,8 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(70));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  QString str;
-  float textSize = 50.f;
-  QColor textColor = QColor(255, 255, 255, 200);
+  textSize = 50.f;
+  textColor = QColor(255, 255, 255, 200);
 
   if(lkas_bool == true) {
     str = "ON";
