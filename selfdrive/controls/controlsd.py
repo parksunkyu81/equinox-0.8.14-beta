@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+ #!/usr/bin/env python3
 import os
 import math
 import numpy as np
@@ -236,6 +236,13 @@ class Controls:
             self.events.add(EventName.joystickDebug, static=True)
             self.startup_event = None
 
+        # NDA
+        if self.slowing_down_sound_alert:
+            self.slowing_down_sound_alert = False
+            self.events.add(EventName.slowingDownSpeedSound, static=True)
+        elif self.slowing_down_alert:
+            self.events.add(EventName.slowingDownSpeed, static=True)
+
         # controlsd is driven by can recv, expected at 100Hz
         self.rk = Ratekeeper(100, print_delay_threshold=None)
         self.prof = Profiler(False)  # off by default
@@ -309,16 +316,12 @@ class Controls:
 
             # if self.v_cruise_kph > apply_limit_speed:
             if vEgo > apply_limit_speed:
-
                 if not self.slowing_down_alert and not self.slowing_down:
                     self.slowing_down_sound_alert = True
                     self.slowing_down = True
-
                 self.slowing_down_alert = True
-
             else:
                 self.slowing_down_alert = False
-
         else:
             self.slowing_down_alert = False
             self.slowing_down = False
@@ -467,13 +470,6 @@ class Controls:
         if not self.disable_op_fcw and (planner_fcw or model_fcw):
             self.events.add(EventName.fcw)
 
-        # NDA
-        if self.slowing_down_sound_alert:
-            self.slowing_down_sound_alert = False
-            self.events.add(EventName.slowingDownSpeedSound)
-        elif self.slowing_down_alert:
-            self.events.add(EventName.slowingDownSpeed)
-
         if TICI:
             for m in messaging.drain_sock(self.log_sock, wait_for_one=False):
                 try:
@@ -513,54 +509,6 @@ class Controls:
         # if CS.brakePressed and v_future >= self.CP.vEgoStarting \
         #  and self.CP.openpilotLongitudinalControl and CS.vEgo < 0.3:
         #  self.events.add(EventName.noTarget)
-
-        self.add_stock_additions_alerts(CS)
-
-    def add_stock_additions_alerts(self, CS):
-        self.AM.SA_set_frame(self.sm.frame)
-        self.AM.SA_set_enabled(self.enabled)
-        # alert priority is defined by code location, keeping is highest, then lane speed alert, then auto-df alert
-        #if self.sm_smiskol['modelLongButton'].enabled != self.last_model_long:
-        #    extra_text_1 = 'disabled!' if self.last_model_long else 'enabled!'
-        #    extra_text_2 = '' if self.last_model_long else ', model may behave unexpectedly'
-        #    self.AM.SA_add('modelLongAlert', extra_text_1=extra_text_1, extra_text_2=extra_text_2)
-        #    return
-
-        #if self.sm_smiskol['dynamicCameraOffset'].keepingLeft:
-        #    self.AM.SA_add('laneSpeedKeeping', extra_text_1='LEFT', extra_text_2='Oncoming traffic in right lane')
-        #    return
-        #elif self.sm_smiskol['dynamicCameraOffset'].keepingRight:
-        #    self.AM.SA_add('laneSpeedKeeping', extra_text_1='RIGHT', extra_text_2='Oncoming traffic in left lane')
-        #    return
-
-        #ls_state = self.sm_smiskol['laneSpeed'].state
-        #if ls_state != '':
-        #    self.AM.SA_add('lsButtonAlert', extra_text_1=ls_state)
-        #    return
-
-        #faster_lane = self.sm_smiskol['laneSpeed'].fastestLane
-        #if faster_lane in ['left', 'right']:
-        #    ls_alert = 'laneSpeedAlert'
-        #    if not self.sm_smiskol['laneSpeed'].new:
-        #        ls_alert += 'Silent'
-        #    self.AM.SA_add(ls_alert, extra_text_1='{} lane faster'.format(faster_lane).upper(),
-        #                   extra_text_2='Change lanes to faster {} lane'.format(faster_lane))
-        #    return
-
-        """df_out = self.df_manager.update()
-        if df_out.changed:
-            df_alert = 'dfButtonAlert'
-            if df_out.is_auto and df_out.last_is_auto:
-                # only show auto alert if engaged, not hiding auto, and time since lane speed alert not showing
-                # 활성화된 경우에만 자동 경고를 표시하고, 자동을 숨기지 않고, 차선 속도 경고가 표시되지 않은 이후 시간
-                df_alert += 'Silent'
-                self.AM.SA_add(df_alert, extra_text_1=df_out.model_profile_text + ' (auto)')
-                return
-            else:
-                df_alert += 'Silent'
-                self.AM.SA_add(df_alert, extra_text_1=df_out.user_profile_text,
-                               extra_text_2='Dynamic follow: {} profile active'.format(df_out.user_profile_text))
-                return"""
 
     def data_sample(self):
         """Receive data from sockets and update carState"""
