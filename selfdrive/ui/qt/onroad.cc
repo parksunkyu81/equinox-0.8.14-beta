@@ -443,7 +443,7 @@ void NvgWindow::drawHud(QPainter &p) {
   const auto live_params = sm["liveParameters"].getLiveParameters();
   const auto dynamicFollow = sm["dynamicFollowData"].getDynamicFollowData();
 
-  QColor orangeColor = QColor(255, 188, 0, 255);
+  QColor orangeColor = QColor(0, 191, 255, 255);
 
   int x = 730;
   int y = rect().height() - 15;
