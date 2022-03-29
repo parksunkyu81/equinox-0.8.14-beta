@@ -186,6 +186,14 @@ class nTune():
     if self.checkValue("minTR", 0.85, 2.7, 0.9):
       updated = True
 
+    if self.checkValue("leadSafe", 0, 1, 1):
+      updated = True
+
+    if self.checkValue("ratioLeadSafe", 1.0, 2.0, 1.5):
+      updated = True
+
+    if self.checkValue("durationLeadSafe", 1, 5, 2):
+      updated = True
 
     return updated
 

@@ -95,6 +95,19 @@ input[type=text] {
 		var min_tr = {{minTRParam}};
 		document.frm1.min_tr.value = min_tr;
 
+		var lead = {{leadSafeParam}};
+		if( lead == 0 ) {
+			document.frm1.chk_lead_safe[0].checked = true;
+		}else if( lead == 1 ) {
+			document.frm1.chk_lead_safe[1].checked = true;
+		}
+
+		var lead_safe_ratio = {{ratioLeadSafeParam}};
+		document.frm1.lead_safe_ratio.value = lead_safe_ratio;
+
+		var lead_safe_duration = {{durationLeadSafeParam}};
+		document.frm1.lead_safe_duration.value = lead_safe_duration;
+
 	}
 
     function apply_ok() {
@@ -198,6 +211,28 @@ input[type=text] {
 		<p>
 			<font color="GREEN">MIN TR (0.85 ~ 2.7, DEF : 0.9)</font>
 			<br><input type="text" name="min_tr" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<font color="GREEN">LEAD SAFE</font>
+			<br><input type="radio" name="chk_lead_safe" value=0> OFF
+			<br><input type="radio" name="chk_lead_safe" value=1> ON
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<font color="GREEN">LEAD SAFE RATIO (1.0 ~ 2.0, DEF : 1.5)</font>
+			<br><input type="text" name="lead_safe_ratio" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<font color="GREEN">LEAD SAFE DURATION (1 ~ 5, DEF : 2)</font>
+			<br><input type="text" name="lead_safe_duration" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
 		</p>
 		</h3>
 

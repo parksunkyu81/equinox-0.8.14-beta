@@ -18,6 +18,10 @@ DYNAMIC_FOLLOW = ntune_scc_get('dynamicFollow')
 GLOBAL_DF_MOD = ntune_scc_get('globalDfMod')
 MIN_TR = ntune_scc_get('minTR')
 
+LEAD_SAFE = ntune_scc_get('leadSafe')
+RATIO_LEAD_SAFE = ntune_scc_get('ratioLeadSafe')
+DURATION_LEAD_SAFE = ntune_scc_get('durationLeadSafe')
+
 CONF_SCC_FILE = '/data/ntune/scc.json'
 
 @app.route('/')
@@ -25,7 +29,10 @@ def index():
     return render_template('openpilot_control.html',
                             dynamicFollowParam = DYNAMIC_FOLLOW,
                             globalDfModParam = GLOBAL_DF_MOD,
-                            minTRParam = MIN_TR
+                            minTRParam = MIN_TR,
+                            leadSafeParam = LEAD_SAFE,
+                            ratioLeadSafeParam = RATIO_LEAD_SAFE,
+                            durationLeadSafeParam = DURATION_LEAD_SAFE
                            )
 
 
@@ -40,12 +47,23 @@ def apply():
         global MIN_TR
         MIN_TR = request.form['min_tr']
 
+        global LEAD_SAFE
+        LEAD_SAFE = request.form['lead_safe']
+        global RATIO_LEAD_SAFE
+        RATIO_LEAD_SAFE = request.form['ratio_lead_safe']
+        global DURATION_LEAD_SAFE
+        DURATION_LEAD_SAFE = request.form['duration_lead_safe']
+
+
         message = '{\n "dynamicFollow": DYNAMIC_FOLLOW,' \
                    '\n "sccGasFactor": SCC_GAS_FACTOR,' \
                    '\n "sccBrakeFactor": SCC_BRAKE_FACTOR,' \
                    '\n "sccCurvatureFactor": SCC_CURVATURE_FACTOR,' \
                    '\n "globalDfMod": GLOBAL_DF_MOD,' \
-                   '\n "minTR": MIN_TR' \
+                   '\n "minTR": MIN_TR,' \
+                   '\n "leadSafe": LEAD_SAFE,' \
+                   '\n "ratioLeadSafe": RATIO_LEAD_SAFE,' \
+                   '\n "durationLeadSafe": DURATION_LEAD_SAFE' \
                    '\n }\n'
 
         #print("message : ", message)
@@ -57,6 +75,9 @@ def apply():
         message = message.replace('DYNAMIC_FOLLOW', str(DYNAMIC_FOLLOW))
         message = message.replace('GLOBAL_DF_MOD', str(GLOBAL_DF_MOD))
         message = message.replace('MIN_TR', str(MIN_TR))
+        message = message.replace('LEAD_SAFE', str(LEAD_SAFE))
+        message = message.replace('RATIO_LEAD_SAFE', str(RATIO_LEAD_SAFE))
+        message = message.replace('DURATION_LEAD_SAFE', str(DURATION_LEAD_SAFE))
 
 
         # 파일 저장
@@ -67,7 +88,10 @@ def apply():
         return render_template('openpilot_control.html',
                                dynamicFollowParam=DYNAMIC_FOLLOW,
                                globalDfModParam=GLOBAL_DF_MOD,
-                               minTRParam=MIN_TR
+                               minTRParam=MIN_TR,
+                               leadSafeParam=LEAD_SAFE,
+                               ratioLeadSafeParam=RATIO_LEAD_SAFE,
+                               durationLeadSafeParam=DURATION_LEAD_SAFE
                                )
 
 
