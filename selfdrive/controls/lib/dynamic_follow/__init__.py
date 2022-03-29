@@ -170,7 +170,7 @@ class DynamicFollow:
       dat = messaging.new_message('dynamicFollowData')
       dat.dynamicFollowData.mpcTR = self.TR
       dat.dynamicFollowData.profilePred = self.model_profile
-      print("=============== self.model_profile : ", self.model_profile)
+      #print("=============== self.model_profile : ", self.model_profile)
       self.pm.send('dynamicFollowData', dat)
 
   def _store_df_data(self):
@@ -203,7 +203,7 @@ class DynamicFollow:
           pred = predict(np.array(self.auto_df_model_data[::self.skip_every], dtype=np.float32).flatten())
           self.last_predict_time = cur_time
           self.model_profile = int(np.argmax(pred))
-          print('_get_pred ====================================:', self.model_profile)
+          #print('_get_pred ====================================:', self.model_profile)
 
   @staticmethod
   def _remove_old_entries(lst, cur_time, retention):
