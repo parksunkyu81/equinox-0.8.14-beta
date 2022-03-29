@@ -92,8 +92,8 @@ class CarInterface(CarInterfaceBase):
     # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
     ret.steerActuatorDelay = 0.0
     ret.steerRateCost = 0.552
-    ret.steerMaxBP = [0.]
-    ret.steerMaxV = [1.5]
+    #ret.steerMaxBP = [0.]
+    #ret.steerMaxV = [1.5]
 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
