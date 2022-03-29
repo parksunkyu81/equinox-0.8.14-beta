@@ -237,11 +237,11 @@ class Controls:
             self.startup_event = None
 
         # NDA
-        if self.slowing_down_sound_alert:
-            self.slowing_down_sound_alert = False
-            self.events.add(EventName.slowingDownSpeedSound, static=True)
-        elif self.slowing_down_alert:
-            self.events.add(EventName.slowingDownSpeed, static=True)
+        #if self.slowing_down_sound_alert:
+        #    self.slowing_down_sound_alert = False
+        #    self.events.add(EventName.slowingDownSpeedSound, static=True)
+        #elif self.slowing_down_alert:
+        #    self.events.add(EventName.slowingDownSpeed, static=True)
 
         # controlsd is driven by can recv, expected at 100Hz
         self.rk = Ratekeeper(100, print_delay_threshold=None)
