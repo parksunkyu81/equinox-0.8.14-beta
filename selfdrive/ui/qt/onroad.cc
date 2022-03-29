@@ -449,8 +449,7 @@ void NvgWindow::drawHud(QPainter &p) {
   int y = rect().height() - 15;
 
   QString infoText;
-  infoText.sprintf("TR(%.2f) AO(%.2f/%.2f) SR(%.2f) SRC(%.2f) SAD(%.2f)",
-                      dynamicFollow.getMpcTR(),
+  infoText.sprintf("AO(%.2f/%.2f) [LRQ] SR(%.2f) SRC(%.2f) SAD(%.2f)",
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
@@ -581,6 +580,27 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     p.setOpacity(1.0);
   }
 
+  // Dynamic TR
+  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
+  const auto dynamicFollow = sm["dynamicFollowData"].getDynamicFollowData();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(70));
+  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+
+  float textSize = 50.f;
+  textColor = QColor(255, 255, 255, 200);
+
+  QString str;
+  str.sprintf("%.2f", dynamicFollow.getMpcTR());
+
+  configFont(p, "Open Sans", 35, "Bold");
+  drawText(p, x, y2-20, "TR", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y1, str, textColor);
+  p.setOpacity(1.0);
+
 
   // ACC
   //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
@@ -596,8 +616,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(70));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  QString str;
-  float textSize = 50.f;
+  textSize = 50.f;
   QColor textColor = QColor(255, 255, 255, 200);
 
   if(acc_bool == true) {
