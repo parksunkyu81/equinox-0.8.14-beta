@@ -7,9 +7,7 @@ from typing import List, Dict, Optional
 
 from common.basedir import BASEDIR
 from common.params import Params
-from common.realtime import DT_CTRL
 from selfdrive.controls.lib.events import Alert
-from selfdrive.controls.lib.events import EVENTS, ET
 
 
 with open(os.path.join(BASEDIR, "selfdrive/controls/lib/alerts_offroad.json")) as f:
@@ -48,27 +46,6 @@ class AlertManager:
         entry.start_frame = frame
       min_end_frame = entry.start_frame + alert.duration
       entry.end_frame = max(frame + 1, min_end_frame)
-
-  def SA_set_frame(self, frame):
-    self.SA_frame = frame
-
-  def SA_set_enabled(self, enabled):
-    self.SA_enabled = enabled
-
-  def SA_add(self, alert_name, extra_text_1='', extra_text_2=''):
-    alert = EVENTS[alert_name][ET.PERMANENT]  # assume permanent (to display in all states)
-    added_alert = copy.copy(alert)
-    added_alert.start_time = self.SA_frame * DT_CTRL
-    added_alert.alert_text_1 += extra_text_1
-    added_alert.alert_text_2 += extra_text_2
-    added_alert.alert_type = f"{alert_name}/{ET.PERMANENT}"  # fixes alerts being silent
-    added_alert.event_type = ET.PERMANENT
-
-    self.alerts[alert.alert_type].alert = added_alert
-    if not self.alerts[alert.alert_type].active(self.SA_frame):
-      self.alerts[alert.alert_type].start_frame = self.SA_frame
-    min_end_frame = self.alerts[alert.alert_type].start_frame + alert.duration
-    self.alerts[alert.alert_type].end_frame = max(self.SA_frame + 1, min_end_frame)
 
   def process_alerts(self, frame: int, clear_event_types: set) -> Optional[Alert]:
     current_alert = AlertEntry()
