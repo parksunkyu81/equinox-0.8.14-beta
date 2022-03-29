@@ -588,7 +588,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
   float textSize = 50.f;
-  QColor textColor = QColor(255, 255, 255, 200);
+  QColor textColor = QColor(120, 255, 120, 200);
 
   QString str;
   str.sprintf("%.2f", dynamicFollow.getMpcTR());
