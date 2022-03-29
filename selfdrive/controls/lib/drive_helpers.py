@@ -11,6 +11,9 @@ ButtonPrev = ButtonType.unknown
 ButtonCnt = 0
 LongPressed = False
 
+# 경고: 이 값은 모델의 훈련 분포를 기반으로 결정되었으며,
+# 이 속도 이상의 모델 예측은 예측할 수 없습니다.
+
 # kph
 V_CRUISE_MAX = 145
 V_CRUISE_MIN = 25
@@ -22,9 +25,8 @@ LON_MPC_N = 32
 CONTROL_N = 17
 CAR_ROTATION_RADIUS = 0.0
 
-# this corresponds to 80deg/s and 20deg/s steering angle in a toyota corolla
-MAX_CURVATURE_RATES = [0.03762194918267951, 0.003441203371932992]
-MAX_CURVATURE_RATE_SPEEDS = [0, 35]
+# EU guidelines
+MAX_LATERAL_JERK = 5.0
 
 CRUISE_LONG_PRESS = 50
 CRUISE_NEAREST_FUNC = {
@@ -112,17 +114,19 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
   psi = interp(delay, T_IDXS[:CONTROL_N], psis)
   desired_curvature_rate = curvature_rates[0]
 
-  # MPC can plan to turn the wheel and turn back before t_delay. This means
-  # in high delay cases some corrections never even get commanded. So just use
-  # psi to calculate a simple linearization of desired curvature
+  # MPC는 t_delay 전에 바퀴를 돌고 되돌아갈 계획입니다.
+  # 지연 시간이 긴 경우 일부 수정은 명령조차 받지 않습니다.
+  # psi는 원하는 곡률의 단순 선형화를 계산합니다.
   curvature_diff_from_psi = psi / (max(v_ego, 1e-1) * delay) - current_curvature
   desired_curvature = current_curvature + 2 * curvature_diff_from_psi
 
-  max_curvature_rate = interp(v_ego, MAX_CURVATURE_RATE_SPEEDS, MAX_CURVATURE_RATES)
+  v_ego = max(v_ego, 0.1)
+  max_curvature_rate = MAX_LATERAL_JERK / ((v_ego/2)**2)
   safe_desired_curvature_rate = clip(desired_curvature_rate,
                                           -max_curvature_rate,
                                           max_curvature_rate)
   safe_desired_curvature = clip(desired_curvature,
-                                current_curvature - max_curvature_rate,
-                                current_curvature + max_curvature_rate)
+                                     current_curvature - max_curvature_rate * DT_MDL,
+                                     current_curvature + max_curvature_rate * DT_MDL)
+
   return safe_desired_curvature, safe_desired_curvature_rate
