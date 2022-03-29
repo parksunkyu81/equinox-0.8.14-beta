@@ -585,19 +585,19 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(70));
-  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
   float textSize = 50.f;
-  textColor = QColor(255, 255, 255, 200);
+  QColor textColor = QColor(255, 255, 255, 200);
 
   QString str;
   str.sprintf("%.2f", dynamicFollow.getMpcTR());
 
   configFont(p, "Open Sans", 35, "Bold");
-  drawText(p, x, y2-20, "TR", 200);
+  drawText(p, x, y1-20, "TR", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1, str, textColor);
+  drawTextWithColor(p, x, y1+50, str, textColor);
   p.setOpacity(1.0);
 
 
@@ -616,7 +616,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
   textSize = 50.f;
-  QColor textColor = QColor(255, 255, 255, 200);
+  textColor = QColor(255, 255, 255, 200);
 
   if(acc_bool == true) {
     str = "ON";
