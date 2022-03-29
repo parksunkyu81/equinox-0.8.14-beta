@@ -441,7 +441,6 @@ void NvgWindow::drawHud(QPainter &p) {
 
   const auto controls_state = sm["controlsState"].getControlsState();
   const auto live_params = sm["liveParameters"].getLiveParameters();
-  const auto dynamicFollow = sm["dynamicFollowData"].getDynamicFollowData();
 
   QColor orangeColor = QColor(0, 191, 255, 255);
 
@@ -1101,13 +1100,10 @@ void NvgWindow::drawDebugText(QPainter &p) {
   str.sprintf("aEgo: %.3f\n", car_state.getAEgo());
   p.drawText(text_x, y, str);
 
-  auto lead_radar = sm["radarState"].getRadarState().getLeadOne();
   auto lead_one = sm["modelV2"].getModelV2().getLeadsV3()[0];
-
-  float radar_dist = lead_radar.getStatus() && lead_radar.getRadar() ? lead_radar.getDRel() : 0;
   float vision_dist = lead_one.getProb() > .5 ? (lead_one.getX()[0] - 1.5) : 0;
 
   y += height;
-  str.sprintf("Lead: %.1f/%.1f/%.1f\n", radar_dist, vision_dist, (radar_dist - vision_dist));
+  str.sprintf("Lead: %.1f/%.1f/%.1f\n", radar_dist, vision_dist, vision_dist);
   p.drawText(text_x, y, str);
 }
