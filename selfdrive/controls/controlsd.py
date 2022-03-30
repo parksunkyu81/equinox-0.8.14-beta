@@ -576,7 +576,7 @@ class Controls:
             return radar.leadOne
         return None
 
-    def get_long_lead_speed(self, sm, CS, vEgo):
+    def get_long_lead_safe_speed(self, sm, CS, vEgo):
         if CS.cruiseState.enabled:
             lead = self.get_lead(sm)
             if lead is not None:
