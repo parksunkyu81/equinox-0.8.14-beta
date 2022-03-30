@@ -66,7 +66,7 @@ def apply():
                    '\n "durationLeadSafe": DURATION_LEAD_SAFE' \
                    '\n }\n'
 
-        #print("message : ", message)
+        print("before message : ", message)
 
 
         message = message.replace('SCC_GAS_FACTOR', str(ntune_scc_get('sccGasFactor')))
@@ -79,6 +79,7 @@ def apply():
         message = message.replace('RATIO_LEAD_SAFE', str(RATIO_LEAD_SAFE))
         message = message.replace('DURATION_LEAD_SAFE', str(DURATION_LEAD_SAFE))
 
+        print("after message : ", message)
 
         # 파일 저장
         f = open(CONF_SCC_FILE, 'w')
