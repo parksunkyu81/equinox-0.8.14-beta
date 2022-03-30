@@ -1084,7 +1084,7 @@ void NvgWindow::drawDebugText(QPainter &p) {
 
   const char* long_state[] = {"off", "pid", "stopping", "starting"};
 
-  configFont(p, "Open Sans", 45, "Regular");
+  configFont(p, "Open Sans", 50, "Regular");
   p.setPen(QColor(255, 255, 255, 200));
   p.setRenderHint(QPainter::TextAntialiasing);
 
