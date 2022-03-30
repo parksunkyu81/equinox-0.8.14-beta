@@ -48,11 +48,11 @@ def apply():
         MIN_TR = request.form['min_tr']
 
         global LEAD_SAFE
-        LEAD_SAFE = request.form['lead_safe']
+        LEAD_SAFE = request.form['chk_lead_safe']
         global RATIO_LEAD_SAFE
-        RATIO_LEAD_SAFE = request.form['ratio_lead_safe']
+        RATIO_LEAD_SAFE = request.form['lead_safe_ratio']
         global DURATION_LEAD_SAFE
-        DURATION_LEAD_SAFE = request.form['duration_lead_safe']
+        DURATION_LEAD_SAFE = request.form['lead_safe_duration']
 
 
         message = '{\n "dynamicFollow": DYNAMIC_FOLLOW,' \
@@ -66,7 +66,7 @@ def apply():
                    '\n "durationLeadSafe": DURATION_LEAD_SAFE' \
                    '\n }\n'
 
-        print("before message : ", message)
+        #print("before message : ", message)
 
 
         message = message.replace('SCC_GAS_FACTOR', str(ntune_scc_get('sccGasFactor')))
