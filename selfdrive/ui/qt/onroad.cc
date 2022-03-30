@@ -1060,7 +1060,7 @@ void NvgWindow::drawDebugText(QPainter &p) {
   int y = 80;
   const int height = 60;
 
-  const int text_x = width()/2 + 250;
+  const int text_x = width()/2 + 200;
 
   auto controls_state = sm["controlsState"].getControlsState();
   auto car_control = sm["carControl"].getCarControl();
@@ -1084,7 +1084,7 @@ void NvgWindow::drawDebugText(QPainter &p) {
 
   const char* long_state[] = {"off", "pid", "stopping", "starting"};
 
-  configFont(p, "Open Sans", 35, "Regular");
+  configFont(p, "Open Sans", 45, "Regular");
   p.setPen(QColor(255, 255, 255, 200));
   p.setRenderHint(QPainter::TextAntialiasing);
 
