@@ -339,14 +339,16 @@ class Controls:
         if self.duration_limited_lead:
             now = datetime.datetime.now()
             self.now_limited_lead = int(now.strftime('%Y%m%d%H%M%S'))
-            if self.now_limited_lead != self.end_limited_lead:
+            if self.limited_lead and self.now_limited_lead != self.end_limited_lead:
                 print('===================== DIFF SECONDS : ', self.end_limited_lead - self.start_limited_lead)
 
-            if self.now_limited_lead > self.end_limited_lead:
+            elif self.limited_lead and self.now_limited_lead > self.end_limited_lead:
                 self.duration_limited_lead = False
+                self.limited_lead = False    # 안전거리 활성화 초기화
                 self.start_limited_lead = 0
                 self.end_limited_lead = 0
                 self.now_limited_lead = 0
+                print('===================== LEAD SAFE RESET ===========================')
 
         # 안전거리 활성화
         if ntune_scc_get('leadSafe') == 1:
@@ -363,8 +365,10 @@ class Controls:
                       self.start_limited_lead = int(now.strftime('%Y%m%d%H%M%S'))
                       self.end_limited_lead = self.start_limited_lead + int(ntune_scc_get("durationLeadSafe"))
                       self.duration_limited_lead = True
-              else:
-                self.limited_lead = False
+                      print('===================== START SET TIME : ', self.start_limited_lead)
+                      print('===================== END SET TIME : ', self.end_limited_lead)
+              #else:
+              #  self.limited_lead = False
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS)
         # print("update_max_speed() value : ", self.max_speed_clu)
