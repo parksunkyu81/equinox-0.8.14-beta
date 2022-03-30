@@ -35,6 +35,7 @@ from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN
 from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
 from common.params import Params
 from selfdrive.controls.lib.dynamic_follow.df_manager import dfManager
+import datetime
 
 MIN_SET_SPEED_KPH = V_CRUISE_MIN
 MAX_SET_SPEED_KPH = V_CRUISE_MAX
@@ -181,6 +182,10 @@ class Controls:
         # 앞차 거리 (PSK) 2021.10.15
         # 레이더 비전 상태를 저장한다.
         self.limited_lead = False
+        self.duration_limited_lead = False
+        self.start_limited_lead = 0
+        self.end_limited_lead = 0
+        self.now_limited_lead = 0
 
         self.slowing_down = False
         self.slowing_down_alert = False
@@ -330,17 +335,36 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
+        # 현재시간 체크 활성화
+        if self.duration_limited_lead:
+            now = datetime.datetime.now()
+            self.now_limited_lead = int(now.strftime('%Y%m%d%H%M%S'))
+            if self.now_limited_lead != self.end_limited_lead:
+                print('===================== DIFF SECONDS : ', self.end_limited_lead - self.start_limited_lead)
+
+            if self.now_limited_lead > self.end_limited_lead:
+                self.duration_limited_lead = False
+                self.start_limited_lead = 0
+                self.end_limited_lead = 0
+                self.now_limited_lead = 0
+
         # 안전거리 활성화
         if ntune_scc_get('leadSafe') == 1:
-          lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
-          if lead_speed >= self.min_set_speed_clu:
-              if lead_speed < max_speed_clu:
-                max_speed_clu = min(max_speed_clu, lead_speed)
-                if not self.limited_lead:
-                  self.max_speed_clu = vEgo + 3.
-                  self.limited_lead = True
-          else:
-            self.limited_lead = False
+            if not self.duration_limited_lead:
+              lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
+              if lead_speed >= self.min_set_speed_clu:
+                  if lead_speed < max_speed_clu:
+                    max_speed_clu = min(max_speed_clu, lead_speed)
+                    if not self.limited_lead:
+                      self.max_speed_clu = vEgo + 3.
+                      self.limited_lead = True
+                      # 안전거리 활성화 시간을 현재시간으로 설정
+                      now = datetime.datetime.now()
+                      self.start_limited_lead = int(now.strftime('%Y%m%d%H%M%S'))
+                      self.end_limited_lead = self.start_limited_lead + int(ntune_scc_get("durationLeadSafe"))
+                      self.duration_limited_lead = True
+              else:
+                self.limited_lead = False
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS)
         # print("update_max_speed() value : ", self.max_speed_clu)
