@@ -19,8 +19,8 @@ GLOBAL_DF_MOD = ntune_scc_get('globalDfMod')
 MIN_TR = ntune_scc_get('minTR')
 
 LEAD_SAFE = ntune_scc_get('leadSafe')
-RATIO_LEAD_SAFE = ntune_scc_get('ratioLeadSafe')
-DURATION_LEAD_SAFE = ntune_scc_get('durationLeadSafe')
+LEAD_RATIO = ntune_scc_get('ratioLeadSafe')
+LEAD_DURATION = ntune_scc_get('durationLeadSafe')
 
 CONF_SCC_FILE = '/data/ntune/scc.json'
 
@@ -31,8 +31,8 @@ def index():
                             globalDfModParam = GLOBAL_DF_MOD,
                             minTRParam = MIN_TR,
                             leadSafeParam = LEAD_SAFE,
-                            ratioLeadSafeParam = RATIO_LEAD_SAFE,
-                            durationLeadSafeParam = DURATION_LEAD_SAFE
+                            ratioLeadSafeParam = LEAD_RATIO,
+                            durationLeadSafeParam = LEAD_DURATION
                            )
 
 
@@ -76,8 +76,8 @@ def apply():
         message = message.replace('GLOBAL_DF_MOD', str(GLOBAL_DF_MOD))
         message = message.replace('MIN_TR', str(MIN_TR))
         message = message.replace('LEAD_SAFE', str(LEAD_SAFE))
-        message = message.replace('RATIO_LEAD_SAFE', str(LEAD_RATIO))
-        message = message.replace('DURATION_LEAD_SAFE', str(LEAD_DURATION))
+        message = message.replace('LEAD_RATIO', str(LEAD_RATIO))
+        message = message.replace('LEAD_DURATION', str(LEAD_DURATION))
 
         print("after message : ", message)
 
@@ -91,8 +91,8 @@ def apply():
                                globalDfModParam=GLOBAL_DF_MOD,
                                minTRParam=MIN_TR,
                                leadSafeParam=LEAD_SAFE,
-                               ratioLeadSafeParam=RATIO_LEAD_SAFE,
-                               durationLeadSafeParam=DURATION_LEAD_SAFE
+                               ratioLeadSafeParam=LEAD_RATIO,
+                               durationLeadSafeParam=LEAD_DURATION
                                )
 
 
