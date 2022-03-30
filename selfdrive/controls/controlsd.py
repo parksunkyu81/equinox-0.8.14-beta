@@ -186,6 +186,7 @@ class Controls:
         self.start_limited_lead = 0
         self.end_limited_lead = 0
         self.now_limited_lead = 0
+        self.duration_time = 0
 
         self.slowing_down = False
         self.slowing_down_alert = False
@@ -337,10 +338,10 @@ class Controls:
 
         # 현재시간 체크 활성화
         if self.duration_limited_lead:
-            now = datetime.datetime.now()
-            self.now_limited_lead = int(now.strftime('%Y%m%d%H%M%S'))
+            self.now_limited_lead = int(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
             if self.limited_lead and self.now_limited_lead != self.end_limited_lead:
-                print('===================== DIFF SECONDS : ', self.end_limited_lead - self.start_limited_lead)
+                self.duration_time = self.end_limited_lead - self.start_limited_lead
+                print('===================== DIFF SECONDS : ', self.duration_time)
 
             elif self.limited_lead and self.now_limited_lead > self.end_limited_lead:
                 self.duration_limited_lead = False
@@ -348,6 +349,8 @@ class Controls:
                 self.start_limited_lead = 0
                 self.end_limited_lead = 0
                 self.now_limited_lead = 0
+                self.duration_time = 0
+
                 print('===================== LEAD SAFE RESET ===========================')
 
         # 안전거리 활성화
@@ -361,12 +364,11 @@ class Controls:
                       self.max_speed_clu = vEgo + 3.
                       self.limited_lead = True
                       # 안전거리 활성화 시간을 현재시간으로 설정
-                      now = datetime.datetime.now()
-                      self.start_limited_lead = int(now.strftime('%Y%m%d%H%M%S'))
+                      self.start_limited_lead = int(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
                       self.end_limited_lead = self.start_limited_lead + int(ntune_scc_get("durationLeadSafe"))
                       self.duration_limited_lead = True
-                      print('===================== START SET TIME : ', self.start_limited_lead)
-                      print('===================== END SET TIME : ', self.end_limited_lead)
+                      print('===================== SET START TIME : ', self.start_limited_lead)
+                      print('===================== SET END TIME : ', self.end_limited_lead)
               #else:
               #  self.limited_lead = False
 
@@ -1020,6 +1022,7 @@ class Controls:
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
         controlsState.dynamicSelFollow = ntune_scc_get('dynamicFollow')
+        controlsState.durationLeadSafeTime = self.duration_time
 
 
         lat_tuning = self.CP.lateralTuning.which()

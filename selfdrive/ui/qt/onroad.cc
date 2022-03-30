@@ -600,6 +600,29 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   drawTextWithColor(p, x, y1+50, str, textColor);
   p.setOpacity(1.0);
 
+  // Duration Lead Safe Seconds
+  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
+  int duration_time = controls_state.getDurationLeadSafeTime();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(70));
+  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
+
+  textSize = 50.f;
+  textColor = QColor(120, 255, 120, 200);
+
+  str.sprintf("%d", duration_time);
+
+  configFont(p, "Open Sans", 35, "Bold");
+  drawText(p, x, y1-20, "DURATION", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y1+50, str, textColor);
+  p.setOpacity(1.0);
+
+
+  // ================================================================================================================ //
+
 
   // ACC
   //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
@@ -701,6 +724,8 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y2+50, str, textColor);
   p.setOpacity(1.0);
+
+
 
 }
 
