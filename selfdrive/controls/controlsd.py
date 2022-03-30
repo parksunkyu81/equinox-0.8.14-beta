@@ -178,6 +178,10 @@ class Controls:
         self.speed_conv_to_ms = CV.KPH_TO_MS if self.is_metric else CV.MPH_TO_MS
         self.speed_conv_to_clu = CV.MS_TO_KPH if self.is_metric else CV.MS_TO_MPH
 
+        # 앞차 거리 (PSK) 2021.10.15
+        # 레이더 비전 상태를 저장한다.
+        self.limited_lead = False
+
         self.slowing_down = False
         self.slowing_down_alert = False
         self.slowing_down_sound_alert = False
@@ -326,6 +330,17 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
+        # 안전거리 활성화
+        if ntune_scc_get('leadSafe') == 1:
+          lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
+          if lead_speed >= self.min_set_speed_clu:
+              if lead_speed < max_speed_clu:
+                max_speed_clu = min(max_speed_clu, lead_speed)
+                if not self.limited_lead:
+                  self.max_speed_clu = vEgo + 3.
+                  self.limited_lead = True
+          else:
+            self.limited_lead = False
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS)
         # print("update_max_speed() value : ", self.max_speed_clu)
@@ -570,7 +585,7 @@ class Controls:
                 # vRel : Real Speed (- 값이면 내차 속도가 더 빠름)
                 # lead의 vrel(상대속도)에 곱해지는 상수라 커지면 더 멀리서 줄이기 시작합니다
                 # longLeadVision : 비전이 인식한 지정된 거리부터 속도를 줄인다.
-                if 0. < d < -lead.vRel * (9. + 3.) * 2. and lead.vRel < -1.:
+                if 0. < d < -lead.vRel * (9. + 3.) * ntune_scc_get("leadSafeRatio"):
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
