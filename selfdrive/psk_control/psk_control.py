@@ -22,6 +22,8 @@ LEAD_SAFE = ntune_scc_get('leadSafe')
 LEAD_RATIO = ntune_scc_get('ratioLeadSafe')
 LEAD_DURATION = ntune_scc_get('durationLeadSafe')
 
+CURV_FACTOR = ntune_scc_get('sccCurvatureFactor')
+
 CONF_SCC_FILE = '/data/ntune/scc.json'
 
 @app.route('/')
@@ -32,7 +34,8 @@ def index():
                             minTRParam = MIN_TR,
                             leadSafeParam = LEAD_SAFE,
                             ratioLeadSafeParam = LEAD_RATIO,
-                            durationLeadSafeParam = LEAD_DURATION
+                            durationLeadSafeParam = LEAD_DURATION,
+                            curv_factorParam = CURV_FACTOR
                            )
 
 
@@ -53,6 +56,8 @@ def apply():
         LEAD_RATIO = request.form['lead_safe_ratio']
         global LEAD_DURATION
         LEAD_DURATION = request.form['lead_safe_duration']
+        global CURV_FACTOR
+        CURV_FACTOR = request.form['curv_factor']
 
 
         message = '{\n "dynamicFollow": DYNAMIC_FOLLOW,' \
@@ -63,7 +68,8 @@ def apply():
                    '\n "minTR": MIN_TR,' \
                    '\n "leadSafe": LEAD_SAFE,' \
                    '\n "ratioLeadSafe": LEAD_RATIO,' \
-                   '\n "durationLeadSafe": LEAD_DURATION' \
+                   '\n "durationLeadSafe": LEAD_DURATION,' \
+                   '\n "sccCurvatureFactor": CURV_FACTOR' \
                    '\n }\n'
 
         #print("before message : ", message)
@@ -78,6 +84,7 @@ def apply():
         message = message.replace('LEAD_SAFE', str(LEAD_SAFE))
         message = message.replace('LEAD_RATIO', str(LEAD_RATIO))
         message = message.replace('LEAD_DURATION', str(LEAD_DURATION))
+        message = message.replace('CURV_FACTOR', str(CURV_FACTOR))
 
         print("after message : ", message)
 
@@ -92,7 +99,8 @@ def apply():
                                minTRParam=MIN_TR,
                                leadSafeParam=LEAD_SAFE,
                                ratioLeadSafeParam=LEAD_RATIO,
-                               durationLeadSafeParam=LEAD_DURATION
+                               durationLeadSafeParam=LEAD_DURATION,
+                               curv_factorParam=CURV_FACTOR
                                )
 
 

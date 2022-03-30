@@ -89,11 +89,8 @@ input[type=text] {
 			document.frm1.chk_dynamicFollow[4].checked = true;
 		}
 
-		var global_df_mod = {{globalDfModParam}};
-		document.frm1.global_df_mod.value = global_df_mod;
-
-		var min_tr = {{minTRParam}};
-		document.frm1.min_tr.value = min_tr;
+		document.frm1.global_df_mod.value = {{globalDfModParam}};
+		document.frm1.min_tr.value = {{minTRParam}};
 
 		var lead = {{leadSafeParam}};
 		if( lead == 0 ) {
@@ -102,11 +99,10 @@ input[type=text] {
 			document.frm1.chk_lead_safe[1].checked = true;
 		}
 
-		var lead_safe_ratio = {{ratioLeadSafeParam}};
-		document.frm1.lead_safe_ratio.value = lead_safe_ratio;
 
-		var lead_safe_duration = {{durationLeadSafeParam}};
-		document.frm1.lead_safe_duration.value = lead_safe_duration;
+		document.frm1.lead_safe_ratio.value = {{ratioLeadSafeParam}};
+		document.frm1.lead_safe_duration.value = {{durationLeadSafeParam}};
+		document.frm1.curv_factor.value = {{curv_factorParam}};
 
 	}
 
@@ -202,14 +198,14 @@ input[type=text] {
 
 		<h3>
 		<p>
-			<font color="GREEN">GLOBAL DF MOD (0.85 ~ 2.5, DEF : 1.0)</font>
+			<font color="GREEN">GLOBAL DF MOD (0.85 ~ 2.5, DEF : 1.0) seconds</font>
 			<br><input type="text" name="global_df_mod" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
 		</p>
 		</h3>
 
 		<h3>
 		<p>
-			<font color="GREEN">MIN TR (0.85 ~ 2.7, DEF : 0.9)</font>
+			<font color="GREEN">MIN TR (0.85 ~ 2.7, DEF : 0.9) seconds</font>
 			<br><input type="text" name="min_tr" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
 		</p>
 		</h3>
@@ -231,8 +227,15 @@ input[type=text] {
 
 		<h3>
 		<p>
-			<font color="GREEN">LEAD SAFE DURATION (1 ~ 5, DEF : 2)</font>
+			<font color="GREEN">LEAD SAFE DURATION (1 ~ 5, DEF : 2) seconds</font>
 			<br><input type="text" name="lead_safe_duration" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<font color="GREEN">CURVATURE FACTOR (0.5 ~ 1.5, DEF : 0.98) - 굽은 정도</font>
+			<br><input type="text" name="curv_factor" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
 		</p>
 		</h3>
 
