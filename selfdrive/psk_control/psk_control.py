@@ -49,10 +49,10 @@ def apply():
 
         global LEAD_SAFE
         LEAD_SAFE = request.form['chk_lead_safe']
-        global RATIO_LEAD_SAFE
-        RATIO_LEAD_SAFE = request.form['lead_safe_ratio']
-        global DURATION_LEAD_SAFE
-        DURATION_LEAD_SAFE = request.form['lead_safe_duration']
+        global LEAD_RATIO
+        LEAD_RATIO = request.form['lead_safe_ratio']
+        global LEAD_DURATION
+        LEAD_DURATION = request.form['lead_safe_duration']
 
 
         message = '{\n "dynamicFollow": DYNAMIC_FOLLOW,' \
@@ -62,8 +62,8 @@ def apply():
                    '\n "globalDfMod": GLOBAL_DF_MOD,' \
                    '\n "minTR": MIN_TR,' \
                    '\n "leadSafe": LEAD_SAFE,' \
-                   '\n "ratioLeadSafe": RATIO_LEAD_SAFE,' \
-                   '\n "durationLeadSafe": DURATION_LEAD_SAFE' \
+                   '\n "ratioLeadSafe": LEAD_RATIO,' \
+                   '\n "durationLeadSafe": LEAD_DURATION' \
                    '\n }\n'
 
         #print("before message : ", message)
@@ -76,8 +76,8 @@ def apply():
         message = message.replace('GLOBAL_DF_MOD', str(GLOBAL_DF_MOD))
         message = message.replace('MIN_TR', str(MIN_TR))
         message = message.replace('LEAD_SAFE', str(LEAD_SAFE))
-        message = message.replace('RATIO_LEAD_SAFE', str(RATIO_LEAD_SAFE))
-        message = message.replace('DURATION_LEAD_SAFE', str(DURATION_LEAD_SAFE))
+        message = message.replace('RATIO_LEAD_SAFE', str(LEAD_RATIO))
+        message = message.replace('DURATION_LEAD_SAFE', str(LEAD_DURATION))
 
         print("after message : ", message)
 
