@@ -614,12 +614,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   configFont(p, "Open Sans", 35, "Bold");
   drawText(p, x, y1-20, "DURATION", 200);
 
-  if(duration_time == 0) {
-    textColor = QColor(120, 255, 120, 200);
-  }
-  else {
-    textColor = QColor(254, 32, 32, 200);
-  }
+  textColor = QColor(120, 255, 120, 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y1+50, str, textColor);
