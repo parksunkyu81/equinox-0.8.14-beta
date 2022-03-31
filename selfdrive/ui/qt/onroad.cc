@@ -448,7 +448,7 @@ void NvgWindow::drawHud(QPainter &p) {
   int y = rect().height() - 15;
 
   QString infoText;
-  infoText.sprintf("AO(%.2f/%.2f) [LRQ] SR(%.2f) SRC(%.2f) SAD(%.2f)",
+  infoText.sprintf("AO(%.2f/%.2f) [LQR] SR(%.2f) SRC(%.2f) SAD(%.2f)",
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
                       controls_state.getSteerRatio(),
@@ -593,7 +593,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   QString str;
   str.sprintf("%.2f", dynamicFollow.getMpcTR());
 
-  configFont(p, "Open Sans", 35, "Bold");
+  configFont(p, "Open Sans", 45, "Bold");
   drawText(p, x, y1-20, "TR", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
@@ -609,15 +609,21 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
   textSize = 60.f;
-  textColor = QColor(120, 255, 120, 200);
-
   str.sprintf("%d", duration_time);
 
   configFont(p, "Open Sans", 35, "Bold");
   drawText(p, x, y1-20, "DURATION", 200);
 
+  if(duration_time == 0) {
+    textColor = QColor(120, 255, 120, 200);
+  }
+  else {
+    textColor = QColor(254, 32, 32, 200);
+  }
+
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y1+50, str, textColor);
+
   p.setOpacity(1.0);
 
 
@@ -650,7 +656,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     textColor = QColor(254, 32, 32, 200);
   }
 
-  configFont(p, "Open Sans", 35, "Bold");
+  configFont(p, "Open Sans", 45, "Bold");
   drawText(p, x, y2-20, "ACC", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
@@ -682,7 +688,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     textColor = QColor(254, 32, 32, 200);
   }
 
-  configFont(p, "Open Sans", 35, "Bold");
+  configFont(p, "Open Sans", 45, "Bold");
   drawText(p, x, y2-20, "LKAS", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
@@ -718,7 +724,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     textColor = QColor(120, 255, 120, 200);
   }
 
-  configFont(p, "Open Sans", 35, "Bold");
+  configFont(p, "Open Sans", 45, "Bold");
   drawText(p, x, y2-20, "DF", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");

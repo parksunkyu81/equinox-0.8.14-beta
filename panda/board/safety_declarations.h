@@ -112,6 +112,7 @@ bool cruise_engaged_prev = false;
 float vehicle_speed = 0;
 bool vehicle_moving = false;
 bool acc_main_on = false;  // referred to as "ACC off" in ISO 15622:2018
+int cruise_button_prev = 0;
 
 // for safety modes with torque steering control
 int desired_torque_last = 0;       // last desired steer torque
@@ -129,8 +130,6 @@ struct sample_t angle_meas;         // last 3 steer angles
 // It enables features that allow alternative experiences, like not disengaging on gas press
 // It is only either 0 or 1 on mainline comma.ai openpilot
 
-// If using this flag, be very careful about what happens if your fork wants to brake while the
-//   user is pressing the gas. Tesla is careful with this.
 #define ALT_EXP_DISABLE_DISENGAGE_ON_GAS 1
 
 // If using this flag, make sure to communicate to your users that a stock safety feature is now disabled.
