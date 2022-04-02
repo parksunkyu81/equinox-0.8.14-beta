@@ -19,7 +19,7 @@ class CarInterface(CarInterfaceBase):
     #return params.ACCEL_MIN, params.ACCEL_MAX
     v_current_kph = current_speed * CV.MS_TO_KPH
     gas_max_bp = [0.0, 5.0, 9.0, 35.0]  # felger
-    gas_max_v =  [0.35, 0.45, 0.65, 0.7]
+    gas_max_v =  [0.35, 0.45, 0.65, 0.65]
     #gas_max_bp = [0., 10. * CV.KPH_TO_MS, 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
     #gas_max_v = [0.2, 0.25, 0.35, 0.4, 0.45, 0.55, 0.65, 0.7]
     brake_max_bp = [0, 70., 130.]
@@ -116,7 +116,7 @@ class CarInterface(CarInterfaceBase):
     #                               80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
     #ret.longitudinalTuning.kpV = [1.15, 1.02, 0.76, 0.66, 0.65, 0.58, 0.55, 0.54]
     ret.longitudinalTuning.kpBP = [0., 5., 20.]
-    ret.longitudinalTuning.kpV = [1.2, 1.0, 0.7]
+    ret.longitudinalTuning.kpV = [1.2, 1.0, 0.6]
     ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
     ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
     ret.longitudinalTuning.deadzoneBP = [0., 8.05]
