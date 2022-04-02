@@ -13,12 +13,11 @@ from selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import LongitudinalMpc
 from selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import T_IDXS as T_IDXS_MPC
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, CONTROL_N
 from selfdrive.swaglog import cloudlog
-from common.params import Params
 
 LON_MPC_STEP = 0.2  # first step is 0.2s
 AWARENESS_DECEL = -0.2  # car smoothly decel at .2m/s^2 when user is distracted
-A_CRUISE_MIN = -2.5
-A_CRUISE_MAX_VALS = [1.1, 1.1, 0.8, 0.6]
+A_CRUISE_MIN = -1.2
+A_CRUISE_MAX_VALS = [1.2, 1.2, 0.8, 0.6]
 A_CRUISE_MAX_BP = [0., 15., 25., 40.]
 
 # Lookup table for turns
@@ -36,6 +35,8 @@ def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):
   this should avoid accelerating when losing the target in turns
   """
 
+  # FIXME: This function to calculate lateral accel is incorrect and should use the VehicleModel
+  # The lookup table for turns should also be updated if we do this
   a_total_max = interp(v_ego, _A_TOTAL_MAX_BP, _A_TOTAL_MAX_V)
   a_y = v_ego ** 2 * angle_steers * CV.DEG_TO_RAD / (CP.steerRatio * CP.wheelbase)
   a_x_allowed = math.sqrt(max(a_total_max ** 2 - a_y ** 2, 0.))
@@ -58,22 +59,12 @@ class Planner:
     self.j_desired_trajectory = np.zeros(CONTROL_N)
     self.solverExecutionTime = 0.0
 
-    self.use_cluster_speed = Params().get_bool('UseClusterSpeed')
-    self.long_control_enabled = Params().get_bool('LongControlEnabled')
-
   def update(self, sm):
     v_ego = sm['carState'].vEgo
 
     v_cruise_kph = sm['controlsState'].vCruise
     v_cruise_kph = min(v_cruise_kph, V_CRUISE_MAX)
     v_cruise = v_cruise_kph * CV.KPH_TO_MS
-
-    # neokii
-    if not self.use_cluster_speed:
-      vCluRatio = sm['carState'].vCluRatio
-      if vCluRatio > 0.5:
-        v_cruise *= vCluRatio
-        v_cruise = int(v_cruise * CV.MS_TO_KPH + 0.25) * CV.KPH_TO_MS
 
     long_control_state = sm['controlsState'].longControlState
     force_slow_decel = sm['controlsState'].forceDecel
