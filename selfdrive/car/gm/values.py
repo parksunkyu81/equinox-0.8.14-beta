@@ -6,6 +6,9 @@ from common.conversions import Conversions as CV
 SLOW_ON_CURVES = 1     # 슬로우 커브 사용 유무 (0,1)
 MIN_CURVE_SPEED = 41. * CV.KPH_TO_MS    # 커브 속도 설정
 
+MIN_ACC_SPEED = 19. * CV.MPH_TO_MS    # 30 km/h
+PEDAL_TRANSITION = 10. * CV.MPH_TO_MS   # 16 km/h
+
 class CarControllerParams():
   def __init__(self, CP):  
     self.STEER_MAX = 300  # Safety limit, not LKA max. Trucks use 600.
@@ -34,8 +37,8 @@ class CarControllerParams():
     # -3.5 m/s^2 as per planner limits
 
     # TODO if this bump works, it belongs in interface per car
-    self.ACCEL_MAX = 2.   # m/s^2
-    self.ACCEL_MIN = -4.  # m/s^2
+    self.ACCEL_MAX = 1.5   # m/s^2
+    self.ACCEL_MIN = -3.5  # m/s^2
     
     if CP.carFingerprint in NO_ASCM:
       pass

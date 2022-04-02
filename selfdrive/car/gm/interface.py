@@ -15,16 +15,8 @@ GearShifter = car.CarState.GearShifter
 class CarInterface(CarInterfaceBase):
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
-    #params = CarControllerParams(CP)
-    #return params.ACCEL_MIN, params.ACCEL_MAX
-    v_current_kph = current_speed * CV.MS_TO_KPH
-    gas_max_bp = [0.0, 5.0, 9.0, 35.0]  # felger
-    gas_max_v =  [0.35, 0.45, 0.65, 0.65]
-    #gas_max_bp = [0., 10. * CV.KPH_TO_MS, 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
-    #gas_max_v = [0.2, 0.25, 0.35, 0.4, 0.45, 0.55, 0.65, 0.7]
-    brake_max_bp = [0, 70., 130.]
-    brake_max_v = [-4., -3., -2.1]
-    return interp(v_current_kph, brake_max_bp, brake_max_v), interp(v_current_kph, gas_max_bp, gas_max_v)
+    params = CarControllerParams(CP)
+    return params.ACCEL_MIN, params.ACCEL_MAX
 
 
   # Determined by iteratively plotting and minimizing error for f(angle, speed) = steer.
@@ -112,22 +104,12 @@ class CarInterface(CarInterfaceBase):
     ret.tireStiffnessFront, ret.tireStiffnessRear = scale_tire_stiffness(ret.mass, ret.wheelbase, ret.centerToFront,
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
-    #ret.longitudinalTuning.kpBP = [0., 10. * CV.KPH_TO_MS, 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
-    #                               80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kpV = [1.15, 1.02, 0.76, 0.66, 0.65, 0.58, 0.55, 0.54]
-    ret.longitudinalTuning.kpBP = [0., 20. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.1, 0.9, 0.82, 0.75 ]
+    ret.longitudinalTuning.kpBP = [0., 5., 20.]
+    ret.longitudinalTuning.kpV = [1.05, 0.8, 0.56]
     ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
     ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
     ret.longitudinalTuning.deadzoneBP = [0., 8.05]
     ret.longitudinalTuning.deadzoneV = [.0, .14]
-    #ret.longitudinalActuatorDelayLowerBound = 0.13
-    #ret.longitudinalActuatorDelayUpperBound = 0.17
-
-    #ret.longitudinalTuning.kiBP = [0., 110. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kiV = [0.18, 0.12]
-    #ret.longitudinalActuatorDelayLowerBound = 0.5
-    #ret.longitudinalActuatorDelayUpperBound = 0.5
 
     ret.steerLimitTimer = 0.4
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
