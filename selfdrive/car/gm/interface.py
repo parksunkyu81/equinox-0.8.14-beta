@@ -19,7 +19,7 @@ class CarInterface(CarInterfaceBase):
     #return params.ACCEL_MIN, params.ACCEL_MAX
     v_current_kph = current_speed * CV.MS_TO_KPH
     gas_max_bp = [0.0, 5.0, 9.0, 35.0]  # felger
-    gas_max_v = [0.4, 0.5, 0.7, 0.7]
+    gas_max_v = [0.3, 0.4, 0.5, 0.5]
     brake_max_bp = [0, 70., 130.]
     brake_max_v = [-4., -3., -2.1]
     return interp(v_current_kph, brake_max_bp, brake_max_v), interp(v_current_kph, gas_max_bp, gas_max_v)
