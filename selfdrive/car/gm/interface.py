@@ -15,18 +15,8 @@ GearShifter = car.CarState.GearShifter
 class CarInterface(CarInterfaceBase):
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
-    # params = CarControllerParams()
-    # return params.ACCEL_MIN, params.ACCEL_MAX
-    v_current_kph = current_speed * CV.MS_TO_KPH
-
-    gas_max_bp = [0.0, 5.0, 9.0, 35.0]  # felger
-    gas_max_v = [0.2, 0.3, 0.5, 0.5]
-
-    brake_max_bp = [0, 70., 130.]
-    brake_max_v = [-4., -3., -2.1]
-
-    return interp(v_current_kph, brake_max_bp, brake_max_v), interp(v_current_kph, gas_max_bp, gas_max_v)
-
+    params = CarControllerParams()
+    return params.ACCEL_MIN, params.ACCEL_MAX
 
 
   # Determined by iteratively plotting and minimizing error for f(angle, speed) = steer.
@@ -124,9 +114,12 @@ class CarInterface(CarInterfaceBase):
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
     # longitudinal
-    ret.longitudinalTuning.kpBP = [0., 10. * CV.KPH_TO_MS, 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
-                                   80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.10, 0.9, 0.81, 0.76, 0.73, 0.67, 0.64, 0.52]
+    #ret.longitudinalTuning.kpBP = [0., 10. * CV.KPH_TO_MS, 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
+    #                               80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kpV = [1.10, 0.9, 0.81, 0.76, 0.73, 0.67, 0.64, 0.52]
+
+    ret.longitudinalTuning.kpBP = [0., 5., 35.]
+    ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
 
     ret.longitudinalTuning.kiBP = [0., 100. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.18, 0.12]

@@ -21,13 +21,8 @@ def compute_gas_brake(accel, speed):
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
-    self.start_time = 0.
     self.apply_steer_last = 0
-    self.apply_gas = 0
-    self.apply_brake = 0
     self.gas = 0
-
-    self.accel_steady = 0.
 
     self.lka_steering_cmd_counter_last = -1
     self.lka_icon_status_last = (False, False)
@@ -55,6 +50,8 @@ class CarController():
       accel = 0.0
       gas, brake = 0.0, 0.0
 
+    # wind brake from air resistance decel at high speed
+    wind_brake = interp(CS.out.vEgo, [0.0, 2.3, 35.0], [0.001, 0.002, 0.15])
 
     # Steering (50Hz)
     # Avoid GM EPS faults when transmitting messages too close together: skip this transmit if we just received the
@@ -80,20 +77,15 @@ class CarController():
     if CS.CP.openpilotLongitudinalControl:
       # Gas/regen and brakes - all at 25Hz
       if (frame % 4) == 0:
-        if not c.active:
-          # Stock ECU sends max regen when not enabled.
-          self.apply_gas = 0
-
         idx = (frame // 4) % 4
 
         if CS.CP.enableGasInterceptor:
+          # 이것이 없으면 저속에서 너무 공격적입니다.
+          gas_mult = interp(CS.out.vEgo, [0., 10.], [0.4, 1.0])
           if c.active and CS.adaptive_Cruise and CS.out.vEgo > 1 / CV.MS_TO_KPH:
-            #gas_mult = interp(CS.out.vEgo, [0., 5.], [0.65, 1.0])
-            gas_mult = interp(CS.out.vEgo, [0., 10.], [0.4, 1.0])
-            comma_pedal = clip(gas_mult * (gas - brake), 0., 1.)
-            self.gas = comma_pedal
+            self.gas = clip(gas_mult * (gas - brake + wind_brake * 3 / 4), 0., 1.)
           elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= 1 / CV.MS_TO_KPH:
-            self.gas = 0
+            self.gas = 0.0
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.gas, idx))
 
     # Show green icon when LKA torque is applied, and
