@@ -4,23 +4,32 @@ from common.numpy_fast import interp, clip
 from common.conversions import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits, create_gas_interceptor_command
 from selfdrive.car.gm import gmcan
-from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams, MIN_ACC_SPEED, PEDAL_TRANSITION
+from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams
 from opendbc.can.packer import CANPacker
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
 
+VEL = [13.889, 16.667, 25.]  # velocities
+MIN_PEDAL = [0.02, 0.05, 0.1]
 
 def accel_hysteresis(accel, accel_steady):
-
   # for small accel oscillations less than 0.02, don't change the accel command
   if accel > accel_steady + 0.02:
     accel_steady = accel - 0.02
   elif accel < accel_steady - 0.02:
     accel_steady = accel + 0.02
   accel = accel_steady
-
   return accel, accel_steady
+
+def compute_gas_brake(accel, speed):
+  creep_brake = 0.0
+  creep_speed = 2.3
+  creep_brake_value = 0.15
+  if speed < creep_speed:
+    creep_brake = (creep_speed - speed) / creep_speed * creep_brake_value
+  gb = float(accel) / 4.0 - creep_brake
+  return clip(gb, 0.0, 1.0), clip(-gb, 0.0, 1.0)
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
@@ -51,14 +60,13 @@ class CarController():
     can_sends = []
 
     # gas and brake
-    if CS.CP.enableGasInterceptor and c.active:
-      MAX_INTERCEPTOR_GAS = 0.5
-      # RAV4 has very sensitive gas pedal
-      PEDAL_SCALE = interp(CS.out.vEgo, [0.0, MIN_ACC_SPEED, MIN_ACC_SPEED + PEDAL_TRANSITION], [0.15, 0.3, 0.0])
-      # offset for creep and windbrake
-      pedal_offset = interp(CS.out.vEgo, [0.0, 2.3, MIN_ACC_SPEED + PEDAL_TRANSITION], [-.4, 0.0, 0.2])
-      pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
-      interceptor_gas_cmd = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)
+    if c.active:
+      accel = actuators.accel
+      gas, brake = compute_gas_brake(actuators.accel, CS.out.vEgo)
+    else:
+      accel = 0.0
+      gas, brake = 0.0, 0.0
+
 
     # Steering (50Hz)
     # Avoid GM EPS faults when transmitting messages too close together: skip this transmit if we just received the
@@ -92,7 +100,9 @@ class CarController():
 
         if CS.CP.enableGasInterceptor:
           if c.active and CS.adaptive_Cruise and CS.out.vEgo > 1 / CV.MS_TO_KPH:
-            self.gas = interceptor_gas_cmd
+            gas_mult = interp(CS.out.vEgo, [0., 5.], [0.65, 1.0])
+            comma_pedal = clip(gas_mult * (gas - brake), 0., 1.)
+            self.gas = comma_pedal
           elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= 1 / CV.MS_TO_KPH:
             self.gas = 0
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.gas, idx))

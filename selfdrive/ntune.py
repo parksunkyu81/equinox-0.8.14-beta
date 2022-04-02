@@ -132,10 +132,10 @@ class nTune():
     if self.checkValue("steerRatio", 10.0, 20.0, 17.5):
       updated = True
 
-    if self.checkValue("steerActuatorDelay", 0., 0.8, 0.0):
+    if self.checkValue("steerActuatorDelay", 0., 0.8, 0.1925):
       updated = True
 
-    if self.checkValue("steerRateCost", 0.1, 1.5, 0.5):
+    if self.checkValue("steerRateCost", 0.1, 1.5, 0.3625):
       updated = True
 
     if self.checkValue("cameraOffset", -1.0, 1.0, -0.04 if TICI else 0.12):
@@ -146,13 +146,13 @@ class nTune():
   def checkValidLQR(self):
     updated = False
 
-    if self.checkValue("scale", 500.0, 5000.0, 1680.0):
+    if self.checkValue("scale", 500.0, 5000.0, 1975.0):
       updated = True
 
-    if self.checkValue("ki", 0.0, 0.2, 0.01):
+    if self.checkValue("ki", 0.0, 0.2, 0.032):
       updated = True
 
-    if self.checkValue("dcGain", 0.002, 0.004, 0.003):
+    if self.checkValue("dcGain", 0.002, 0.004, 0.00223):
       updated = True
 
     if self.checkValue("c_0", 0.3, 1.1, 1.0):
@@ -181,15 +181,15 @@ class nTune():
     """동적 추적이 사용하는 현재 거리의 승수 범위는 0.85에서 2.5로 제한됩니다.
     값이 작을수록 가까워지고 클수록 멀어집니다.
     이것은 활성화된 프로필로 곱해집니다. 비활성화하려면 1로 설정하십시오."""
-    if self.checkValue("globalDfMod", 0.85, 2.5, 1.0):
+    if self.checkValue("globalDfMod", 0.85, 2.5, 1.2):
       updated = True
 
     """허용되는 최소 추종 거리(초) 기본값은 0.9 초입니다.
     범위는 0.85 에서 2.7로 제한됩니다."""
-    if self.checkValue("minTR", 0.85, 2.7, 0.9):
+    if self.checkValue("minTR", 0.85, 2.7, 1.1):
       updated = True
 
-    if self.checkValue("leadSafe", 0, 1, 1):
+    if self.checkValue("leadSafe", 0, 1, 0):
       updated = True
 
     if self.checkValue("ratioLeadSafe", 1.0, 2.0, 1.5):
