@@ -8,7 +8,7 @@ MIN_CURVE_SPEED = 41. * CV.KPH_TO_MS    # 커브 속도 설정
 
 class CarControllerParams():
   def __init__(self, CP):  
-    self.STEER_MAX = 320  # Safety limit, not LKA max. Trucks use 600.
+    self.STEER_MAX = 300  # Safety limit, not LKA max. Trucks use 600.
     self.STEER_STEP = 2  # control frames per command
     self.STEER_DELTA_UP = 7
     self.STEER_DELTA_DOWN = 17
