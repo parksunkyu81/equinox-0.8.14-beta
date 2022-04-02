@@ -4,7 +4,7 @@ from common.numpy_fast import interp, clip
 from common.conversions import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits, create_gas_interceptor_command
 from selfdrive.car.gm import gmcan
-from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams, MIN_ACC_SPEED, PEDAL_TRANSITION, MAX_INTERCEPTOR_GAS
+from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams
 from opendbc.can.packer import CANPacker
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
@@ -19,6 +19,19 @@ GearShifter = car.CarState.GearShifter
   gb = float(accel) / 4.8 - creep_brake
   return clip(gb, 0.0, 1.0), clip(-gb, 0.0, 1.0)"""
 
+VEL = [13.889, 16.667, 25.]  # velocities
+MIN_PEDAL = [0.02, 0.05, 0.1]
+
+def accel_hysteresis(accel, accel_steady):
+
+  # for small accel oscillations less than 0.02, don't change the accel command
+  if accel > accel_steady + 0.02:
+    accel_steady = accel - 0.02
+  elif accel < accel_steady - 0.02:
+    accel_steady = accel + 0.02
+  accel = accel_steady
+
+  return accel, accel_steady
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
@@ -27,6 +40,8 @@ class CarController():
     self.apply_gas = 0
     self.apply_brake = 0
     self.gas = 0
+
+    self.accel_steady = 0.
 
     self.lka_steering_cmd_counter_last = -1
     self.lka_icon_status_last = (False, False)
@@ -43,7 +58,7 @@ class CarController():
 
     P = self.params
 
-    if CS.CP.enableGasInterceptor and c.active:
+    """if CS.CP.enableGasInterceptor and c.active:
       PEDAL_SCALE = interp(CS.out.vEgo, [0.0, MIN_ACC_SPEED, MIN_ACC_SPEED + PEDAL_TRANSITION], [0.15, 0.3, 0.0])
       # offset for creep and windbrake
       pedal_offset = interp(CS.out.vEgo, [0.0, 2.3, MIN_ACC_SPEED + PEDAL_TRANSITION], [-.4, 0.0, 0.2])
@@ -51,7 +66,7 @@ class CarController():
       interceptor_gas_cmd = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)
     else:
       accel = 0.0
-      gas, brake = 0.0, 0.0
+      gas, brake = 0.0, 0.0"""
 
     # Send CAN commands.
     can_sends = []
@@ -88,9 +103,12 @@ class CarController():
 
         if CS.CP.enableGasInterceptor:
           if c.active and CS.adaptive_Cruise and CS.out.vEgo > 1 / CV.MS_TO_KPH:
-            self.gas = interceptor_gas_cmd
+            min_pedal_speed = interp(CS.out.vEgo, VEL, MIN_PEDAL)
+            pedal_accel = actuators.accel * 0.525
+            comma_pedal = clip(pedal_accel, min_pedal_speed, 1.)
+            self.gas, self.accel_steady = accel_hysteresis(comma_pedal, self.accel_steady)
           elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= 1 / CV.MS_TO_KPH:
-            self.gas = 0.0
+            self.gas = 0
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.gas, idx))
 
     # Show green icon when LKA torque is applied, and
