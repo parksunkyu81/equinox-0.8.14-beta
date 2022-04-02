@@ -6,6 +6,10 @@ from common.conversions import Conversions as CV
 SLOW_ON_CURVES = 1     # 슬로우 커브 사용 유무 (0,1)
 MIN_CURVE_SPEED = 41. * CV.KPH_TO_MS    # 커브 속도 설정
 
+MIN_ACC_SPEED = 5. * CV.KPH_TO_MS
+PEDAL_TRANSITION = 1. * CV.KPH_TO_MS   # 페달 전환
+MAX_INTERCEPTOR_GAS = 0.7   # default 0.5
+
 class CarControllerParams():
   def __init__(self, CP):  
     self.STEER_MAX = 300  # Safety limit, not LKA max. Trucks use 600.

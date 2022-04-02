@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from cereal import car
+from common.numpy_fast import interp
 from math import fabs
 from common.conversions import Conversions as CV
 from selfdrive.car.gm.values import CAR, HIGH_TORQUE, CruiseButtons, \
@@ -14,8 +15,15 @@ GearShifter = car.CarState.GearShifter
 class CarInterface(CarInterfaceBase):
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
-    params = CarControllerParams(CP)
-    return params.ACCEL_MIN, params.ACCEL_MAX
+    #params = CarControllerParams(CP)
+    #return params.ACCEL_MIN, params.ACCEL_MAX
+    v_current_kph = current_speed * CV.MS_TO_KPH
+    gas_max_bp = [0.0, 5.0, 9.0, 35.0]  # felger
+    gas_max_v = [0.4, 0.5, 0.7, 0.7]
+    brake_max_bp = [0, 70., 130.]
+    brake_max_v = [-4., -3., -2.1]
+    return interp(v_current_kph, brake_max_bp, brake_max_v), interp(v_current_kph, gas_max_bp, gas_max_v)
+
 
   # Determined by iteratively plotting and minimizing error for f(angle, speed) = steer.
   @staticmethod
@@ -92,8 +100,6 @@ class CarInterface(CarInterfaceBase):
     # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
     ret.steerActuatorDelay = 0.0
     ret.steerRateCost = 0.552
-    #ret.steerMaxBP = [0.]
-    #ret.steerMaxV = [1.5]
 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
@@ -107,8 +113,15 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpBP = [0., 10. * CV.KPH_TO_MS, 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
                                    80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kpV = [1.20, 1.05, 0.80, 0.64, 0.62, 0.55, 0.54, 0.52]
-    ret.longitudinalTuning.kiBP = [0., 110. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.18, 0.12]
+    ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
+    ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
+    ret.longitudinalTuning.deadzoneBP = [0., 8.05]
+    ret.longitudinalTuning.deadzoneV = [.0, .14]
+    ret.longitudinalActuatorDelayLowerBound = 0.13
+    ret.longitudinalActuatorDelayUpperBound = 0.17
+
+    #ret.longitudinalTuning.kiBP = [0., 110. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kiV = [0.18, 0.12]
     #ret.longitudinalActuatorDelayLowerBound = 0.5
     #ret.longitudinalActuatorDelayUpperBound = 0.5
 

@@ -4,20 +4,20 @@ from common.numpy_fast import interp, clip
 from common.conversions import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits, create_gas_interceptor_command
 from selfdrive.car.gm import gmcan
-from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams
+from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams, MIN_ACC_SPEED, PEDAL_TRANSITION, MAX_INTERCEPTOR_GAS
 from opendbc.can.packer import CANPacker
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
 
-def compute_gas_brake(accel, speed):
+"""def compute_gas_brake(accel, speed):
   creep_brake = 0.0
   creep_speed = 2.3
   creep_brake_value = 0.15
   if speed < creep_speed:
     creep_brake = (creep_speed - speed) / creep_speed * creep_brake_value
   gb = float(accel) / 4.8 - creep_brake
-  return clip(gb, 0.0, 1.0), clip(-gb, 0.0, 1.0)
+  return clip(gb, 0.0, 1.0), clip(-gb, 0.0, 1.0)"""
 
 
 class CarController():
@@ -43,9 +43,12 @@ class CarController():
 
     P = self.params
 
-    if c.active:
-      accel = actuators.accel
-      gas, brake = compute_gas_brake(actuators.accel, CS.out.vEgo)
+    if CS.CP.enableGasInterceptor and c.active:
+      PEDAL_SCALE = interp(CS.out.vEgo, [0.0, MIN_ACC_SPEED, MIN_ACC_SPEED + PEDAL_TRANSITION], [0.15, 0.3, 0.0])
+      # offset for creep and windbrake
+      pedal_offset = interp(CS.out.vEgo, [0.0, 2.3, MIN_ACC_SPEED + PEDAL_TRANSITION], [-.4, 0.0, 0.2])
+      pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
+      interceptor_gas_cmd = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)
     else:
       accel = 0.0
       gas, brake = 0.0, 0.0
@@ -74,32 +77,20 @@ class CarController():
 
       can_sends.append(gmcan.create_steering_control(self.packer_pt, CanBus.POWERTRAIN, apply_steer, idx, lkas_enabled))
 
-    # wind brake from air resistance decel at high speed
-    wind_brake = interp(CS.out.vEgo, [0.0, 2.3, 35.0], [0.001, 0.002, 0.15])
-
     if CS.CP.openpilotLongitudinalControl:
       # Gas/regen and brakes - all at 25Hz
       if (frame % 4) == 0:
         if not c.active:
           # Stock ECU sends max regen when not enabled.
           self.apply_gas = 0
-          self.apply_brake = 0
 
         idx = (frame // 4) % 4
 
         if CS.CP.enableGasInterceptor:
-          # way too aggressive at low speed without this
-          gas_mult = interp(CS.out.vEgo, [0., 10.], [0.4, 1.0])
-          # send exactly zero if apply_gas is zero. Interceptor will send the max between read value and apply_gas.
-          # This prevents unexpected pedal range rescaling
-          # Sending non-zero gas when OP is not enabled will cause the PCM not to respond to throttle as expected
-          # when you do enable.
           if c.active and CS.adaptive_Cruise and CS.out.vEgo > 1 / CV.MS_TO_KPH:
-            self.gas = clip(gas_mult * (gas - brake + wind_brake*3/4), 0., 1.)
-            self.apply_brake = brake + wind_brake * 3/4
+            self.gas = interceptor_gas_cmd
           elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= 1 / CV.MS_TO_KPH:
             self.gas = 0.0
-            self.apply_brake = 0.0
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.gas, idx))
 
     # Show green icon when LKA torque is applied, and
@@ -117,6 +108,5 @@ class CarController():
     new_actuators = actuators.copy()
     new_actuators.steer = self.apply_steer_last / P.STEER_MAX
     new_actuators.gas = self.gas
-    new_actuators.brake = self.apply_brake
 
     return new_actuators, can_sends
