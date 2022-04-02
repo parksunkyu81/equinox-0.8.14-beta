@@ -10,18 +10,6 @@ from opendbc.can.packer import CANPacker
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
 
-VEL = [13.889, 16.667, 25.]  # velocities
-MIN_PEDAL = [0.02, 0.05, 0.1]
-
-def accel_hysteresis(accel, accel_steady):
-  # for small accel oscillations less than 0.02, don't change the accel command
-  if accel > accel_steady + 0.02:
-    accel_steady = accel - 0.02
-  elif accel < accel_steady - 0.02:
-    accel_steady = accel + 0.02
-  accel = accel_steady
-  return accel, accel_steady
-
 def compute_gas_brake(accel, speed):
   creep_brake = 0.0
   creep_speed = 2.3
@@ -100,7 +88,8 @@ class CarController():
 
         if CS.CP.enableGasInterceptor:
           if c.active and CS.adaptive_Cruise and CS.out.vEgo > 1 / CV.MS_TO_KPH:
-            gas_mult = interp(CS.out.vEgo, [0., 5.], [0.65, 1.0])
+            #gas_mult = interp(CS.out.vEgo, [0., 5.], [0.65, 1.0])
+            gas_mult = interp(CS.out.vEgo, [0., 10.], [0.4, 1.0])
             comma_pedal = clip(gas_mult * (gas - brake), 0., 1.)
             self.gas = comma_pedal
           elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= 1 / CV.MS_TO_KPH:
