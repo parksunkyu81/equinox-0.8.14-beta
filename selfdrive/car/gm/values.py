@@ -35,7 +35,7 @@ class CarControllerParams():
 
     # TODO if this bump works, it belongs in interface per car
     self.ACCEL_MAX = 1.5   # m/s^2
-    self.ACCEL_MIN = -3.5  # m/s^2
+    self.ACCEL_MIN = -4.5  # m/s^2
     
     if CP.carFingerprint in NO_ASCM:
       pass
