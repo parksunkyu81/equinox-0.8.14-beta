@@ -114,15 +114,31 @@ class CarInterface(CarInterfaceBase):
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
     # longitudinal
-    #ret.longitudinalTuning.kpBP = [0., 10. * CV.KPH_TO_MS, 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
-    #                               80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kpV = [1.10, 0.9, 0.81, 0.76, 0.73, 0.67, 0.64, 0.52]
+    #ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS,
+    #                               40.*CV.KPH_TO_MS, 60.*CV.KPH_TO_MS, 80.*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kpV = [1.15, 1.05, 0.9, 0.8, 0.78, 0.75, 0.73, 0.65, 0.5]
+    #ret.longitudinalTuning.kiBP = [0., 100. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kiV = [0.18, 0.12]
 
-    ret.longitudinalTuning.kpBP = [0., 5., 35.]
-    ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+    # START OPKR
+    ret.longitudinalTuning.kpBP = [0., 4., 9., 17., 23., 31.]
+    ret.longitudinalTuning.kpV = [1.2, 1.1, 1.0, 0.9, 0.75, 0.65]
+    ret.longitudinalTuning.kiBP = [0., 4., 9., 17., 23., 31.]
+    ret.longitudinalTuning.kiV = [0.27, 0.24, 0.23, 0.2, 0.17, 0.15]
+    ret.longitudinalTuning.kdBP = [0., 4., 9., 17., 23., 31.]
+    ret.longitudinalTuning.kdV = [0.9, 1.0, 0.85, 0.7, 0.5, 0.4]
 
-    ret.longitudinalTuning.kiBP = [0., 100. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.18, 0.12]
+    ret.longitudinalTuning.deadzoneBP = [0., 4.]
+    ret.longitudinalTuning.deadzoneV = [0., 0.1]
+
+    ret.stoppingControl = False
+    ret.vEgoStopping = 0.5  # 1.0, 0.5
+    ret.vEgoStarting = 0.5  # needs to be >= vEgoStopping to avoid state transition oscillation
+    ret.stopAccel = -0.5 # 0.0, -0.5
+    ret.stoppingDecelRate = 3.0 # 0.8, 0.2  # brake_travel/s while trying to stop
+    ret.longitudinalActuatorDelayLowerBound = 1.0
+    ret.longitudinalActuatorDelayUpperBound = 1.0
+    # END OPKR
 
     ret.steerLimitTimer = 0.4
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz

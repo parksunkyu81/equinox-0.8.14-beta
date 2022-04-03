@@ -82,6 +82,7 @@ class CarController():
         if CS.CP.enableGasInterceptor:
           # 이것이 없으면 저속에서 너무 공격적입니다.
           gas_mult = interp(CS.out.vEgo, [0., 10.], [0.4, 1.0])
+          #gas_mult = interp(CS.out.vEgo, [0., 5.], [0.65, 1.0])  # bolt
           if c.active and CS.adaptive_Cruise and CS.out.vEgo > 1 / CV.MS_TO_KPH:
             self.gas = clip(gas_mult * (gas - brake + wind_brake * 3 / 4), 0., 1.)
           elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= 1 / CV.MS_TO_KPH:
