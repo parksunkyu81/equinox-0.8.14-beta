@@ -442,7 +442,7 @@ void NvgWindow::drawHud(QPainter &p) {
   const auto controls_state = sm["controlsState"].getControlsState();
   const auto live_params = sm["liveParameters"].getLiveParameters();
 
-  QColor orangeColor = QColor(0, 191, 255, 255);
+  QColor orangeColor = QColor(52, 197, 66, 255);
 
   int x = 700;
   int y = rect().height() - 15;
