@@ -342,7 +342,7 @@ class Controls:
             if self.limited_lead and self.now_limited_lead <= self.end_limited_lead:
                 self.duration_time = self.end_limited_lead - self.now_limited_lead
                 max_speed_clu = min(max_speed_clu, self.min_set_speed_clu)
-                print('===================== DIFF SECONDS : ', self.duration_time)
+                #print('===================== DIFF SECONDS : ', self.duration_time)
 
             elif self.limited_lead and self.now_limited_lead > self.end_limited_lead:
                 self.duration_limited_lead = False
@@ -352,7 +352,7 @@ class Controls:
                 self.now_limited_lead = 0
                 self.duration_time = 0
 
-                print('===================== LEAD SAFE RESET ===========================')
+                #print('===================== LEAD SAFE RESET ===========================')
 
         # 안전거리 활성화
         if ntune_scc_get('leadSafe') == 1:
@@ -368,10 +368,8 @@ class Controls:
                       self.start_limited_lead = int(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
                       self.end_limited_lead = self.start_limited_lead + int(ntune_scc_get("durationLeadSafe"))
                       self.duration_limited_lead = True
-                      print('===================== SET START TIME : ', self.start_limited_lead)
-                      print('===================== SET END TIME : ', self.end_limited_lead)
-              #else:
-              #  self.limited_lead = False
+                      #print('===================== SET START TIME : ', self.start_limited_lead)
+                      #print('===================== SET END TIME : ', self.end_limited_lead)
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS)
         # print("update_max_speed() value : ", self.max_speed_clu)
@@ -666,7 +664,7 @@ class Controls:
                 v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
             # else:
             elif not self.CP.pcmCruise:
-                v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.button_timers, self.enabled, self.is_metric)
+                v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.enabled, self.is_metric)
         else:
             v_cruise_kph = 0
 
@@ -916,11 +914,8 @@ class Controls:
             r_lane_change_prob = desire_prediction[Desire.laneChangeRight - 1]
 
             lane_lines = model_v2.laneLines
-
-            cameraOffset = ntune_common_get("cameraOffset") + 0.08 if self.wide_camera else ntune_common_get(
-                "cameraOffset")
-            l_lane_close = left_lane_visible and (lane_lines[1].y[0] > -(1.08 + cameraOffset))
-            r_lane_close = right_lane_visible and (lane_lines[2].y[0] < (1.08 - cameraOffset))
+            l_lane_close = left_lane_visible and (lane_lines[1].y[0] > -(1.08 + CAMERA_OFFSET))
+            r_lane_close = right_lane_visible and (lane_lines[2].y[0] < (1.08 - CAMERA_OFFSET))
 
             hudControl.leftLaneDepart = bool(l_lane_change_prob > LANE_DEPARTURE_THRESHOLD and l_lane_close)
             hudControl.rightLaneDepart = bool(r_lane_change_prob > LANE_DEPARTURE_THRESHOLD and r_lane_close)

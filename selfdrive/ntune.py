@@ -138,7 +138,7 @@ class nTune():
     if self.checkValue("steerRateCost", 0.1, 1.5, 0.3625):
       updated = True
 
-    if self.checkValue("cameraOffset", -1.0, 1.0, -0.04 if TICI else 0.12):
+    if self.checkValue("pathOffset", -1.0, 1.0, 0.0):
       updated = True
 
     return updated
