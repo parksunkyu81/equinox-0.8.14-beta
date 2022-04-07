@@ -3,10 +3,12 @@
 #include <QStackedLayout>
 #include <QWidget>
 
+#include "selfdrive/common/util.h"
 #include "selfdrive/ui/qt/widgets/cameraview.h"
 #include "selfdrive/ui/ui.h"
 
 #include <QTimer>
+#include <QMap>
 #include "selfdrive/ui/qt/screenrecorder/screenrecorder.h"
 
 
@@ -45,6 +47,7 @@ protected:
   inline QColor whiteColor(int alpha = 255) { return QColor(255, 255, 255, alpha); }
   inline QColor blackColor(int alpha = 255) { return QColor(0, 0, 0, alpha); }
   double prev_draw_t = 0;
+  FirstOrderFilter fps_filter;
 
   // neokii
   void drawIcon(QPainter &p, int x, int y, QPixmap &img, QBrush bg, float opacity);
@@ -68,15 +71,23 @@ protected:
   QPixmap ic_satellite;
   QPixmap ic_acc;
   QPixmap ic_lkas;
+  
+  QMap<QString, QPixmap> ic_oil_com;
 
   void drawMaxSpeed(QPainter &p);
   void drawSpeed(QPainter &p);
   void drawBottomIcons(QPainter &p);
   void drawSpeedLimit(QPainter &p);
+  void drawRestArea(QPainter &p);
   void drawTurnSignals(QPainter &p);
   void drawGpsStatus(QPainter &p);
   void drawDebugText(QPainter &p);
   void drawHud(QPainter &p);
+
+private:
+  QPixmap get_icon_iol_com(const char* key);
+  void drawRestAreaItem(QPainter &p, int yPos, capnp::Text::Reader image, capnp::Text::Reader title,
+                        capnp::Text::Reader oilPrice, capnp::Text::Reader distance, bool lastItem);
 };
 
 // container for all onroad widgets
