@@ -12,7 +12,7 @@ ENABLE_INC_LANE_PROB = True
 
 TRAJECTORY_SIZE = 33
 # camera offset is meters from center car to camera
-# model path is in the frame of the camera. Empirically 
+# model path is in the frame of the camera. Empirically
 # the model knows the difference between TICI and EON
 # so a path offset is not needed
 PATH_OFFSET = 0.00
@@ -60,10 +60,8 @@ class LanePlanner:
       self.ll_x = lane_lines[1].x
       # only offset left and right lane lines; offsetting path does not make sense
 
-      cameraOffset = ntune_common_get("cameraOffset") + 0.08 if self.wide_camera else ntune_common_get("cameraOffset")
-
-      self.lll_y = np.array(lane_lines[1].y) - cameraOffset
-      self.rll_y = np.array(lane_lines[2].y) - cameraOffset
+      self.lll_y = np.array(lane_lines[1].y) + self.camera_offset
+      self.rll_y = np.array(lane_lines[2].y) + self.camera_offset
       self.lll_prob = md.laneLineProbs[1]
       self.rll_prob = md.laneLineProbs[2]
       self.lll_std = md.laneLineStds[1]
