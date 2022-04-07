@@ -509,7 +509,7 @@ struct CarParams {
     safetyParam @1 :Int16;
   }
   
-  mdpsBus @66: Int8;
+  #mdpsBus @66: Int8;
   sasBus @67: Int8;
   sccBus @68: Int8;
   enableAutoHold @69 :Bool;
