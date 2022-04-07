@@ -330,7 +330,8 @@ void NvgWindow::drawLead(QPainter &painter, const cereal::ModelDataV2::LeadDataV
   float g_yo = sz / 10;
 
   QPointF glow[] = {{x + (sz * 1.35) + g_xo, y + sz + g_yo}, {x, y - g_yo}, {x - (sz * 1.35) - g_xo, y + sz + g_yo}};
-  painter.setBrush(is_radar ? QColor(86, 121, 216, 255) : QColor(218, 202, 37, 255));
+  //painter.setBrush(is_radar ? QColor(86, 121, 216, 255) : QColor(218, 202, 37, 255));
+  painter.setBrush(QColor(86, 121, 216, 255));
   painter.drawPolygon(glow, std::size(glow));
 
   // chevron
@@ -450,8 +451,8 @@ void NvgWindow::drawHud(QPainter &p) {
 
   QColor orangeColor = QColor(52, 197, 66, 255);
 
-  int x = 700;
-  int y = rect().height() - 15;
+  //int x = 700;
+  //int y = rect().height() - 15;
 
   QString infoText;
   infoText.sprintf("AO(%.2f/%.2f) [LQR] SR(%.2f) SRC(%.2f) SAD(%.2f)",
@@ -465,7 +466,8 @@ void NvgWindow::drawHud(QPainter &p) {
   // info
   configFont(p, "Open Sans", 50, "Regular");
   p.setPen(QColor(0xff, 0xff, 0xff, 200));
-  p.drawText(x, y, infoText);
+  p.drawText(rect().left() + 20, rect().height() - 15, infoText);
+
 
   drawBottomIcons(p);
 }
