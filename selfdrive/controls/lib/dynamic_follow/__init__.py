@@ -249,9 +249,9 @@ class DynamicFollow:
 
     # Calculate new TRs
     speeds, mods = [0.], [1.]  # if increasing don't limit
-    if self.global_df_mod < 1:  # if reducing distance
+    if self.global_df_mod < 1:  # 거리를 줄이면
       speeds = [0, self.sng_speed, 18, x_vel[-1]]  # [0, 18 mph, ~40 mph, highest profile mod speed (~78 mph)]
-      mods = [0, 0.25, 0.75, 1]  # how much to limit global_df_mod at each speed, 1 is full effect
+      mods = [0, 0.25, 0.75, 1]  # 각 속도에서 global_df_mod를 제한하는 정도, 1은 최대 효과
 
     return [y - (y * global_df_mod * interp(x, speeds, mods)) for x, y in zip(x_vel, y_dist)]
 
@@ -269,6 +269,13 @@ class DynamicFollow:
     if df_profile == self.df_profiles.traffic:  # for in congested traffic (혼잡한 교통 상황에서)
       x_vel = [0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]  # velocities
       y_dist = [1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
+
+      # NEOKII
+      #AUTO_TR_BP = [0., 30. * CV.KPH_TO_MS, 70. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
+      #AUTO_TR_V = [1.1, 1.2, 1.35, 1.45]
+
+      #x_vel = [0.0, 2.778, 5.556, 8.333, 11.111, 13.889, 16.667, 19.444, 22.222, 25.0, 27.778]  # velocities
+      #y_dist = [1.8, 1.85, 1.9, 1.9, 1.95, 2.0, 2.05, 2.1, 2.2, 2.4, 2.5]
     elif df_profile == self.df_profiles.stock:  # default to stock
       return 1.45
     elif df_profile == self.df_profiles.roadtrip:  # previous stock following distance

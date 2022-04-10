@@ -186,7 +186,7 @@ class nTune():
 
     """허용되는 최소 추종 거리(초) 기본값은 0.9 초입니다.
     범위는 0.85 에서 2.7로 제한됩니다."""
-    if self.checkValue("minTR", 0.85, 2.7, 1.1):
+    if self.checkValue("minTR", 0.85, 1.3, 1.1):
       updated = True
 
     if self.checkValue("leadSafe", 0, 1, 0):

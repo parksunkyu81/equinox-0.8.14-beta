@@ -599,7 +599,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   QColor textColor = QColor(120, 255, 120, 200);
 
   QString str;
-  str.sprintf("%.2f", dynamicFollow.getMpcTR());
+  str.sprintf("%.1f", dynamicFollow.getMpcTR());
 
   configFont(p, "Open Sans", 45, "Bold");
   drawText(p, x, y1-20, "TR", 200);

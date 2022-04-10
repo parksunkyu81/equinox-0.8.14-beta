@@ -122,7 +122,7 @@ class CarInterface(CarInterfaceBase):
 
     # START OPKR
     ret.longitudinalTuning.kpBP = [0., 4., 9., 17., 23., 31.]
-    ret.longitudinalTuning.kpV = [1.2, 1.1, 1.0, 0.9, 0.75, 0.65]
+    ret.longitudinalTuning.kpV = [1.2, 1.15, 1.05, 0.95, 0.75, 0.65]
     ret.longitudinalTuning.kiBP = [0., 4., 9., 17., 23., 31.]
     ret.longitudinalTuning.kiV = [0.27, 0.24, 0.23, 0.2, 0.17, 0.15]
     ret.longitudinalTuning.kdBP = [0., 4., 9., 17., 23., 31.]
