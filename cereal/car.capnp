@@ -652,6 +652,8 @@ struct CarParams {
     programmedFuelInjection @14;
     electricBrakeBooster @15;
     shiftByWire @16;
+
+    debug @17;
   }
 
   enum FingerprintSource {
