@@ -1178,8 +1178,6 @@ void NvgWindow::drawDebugText(QPainter &p) {
   //int sccStockCamAct = (int)controls_state.getSccStockCamAct();
   //int sccStockCamStatus = (int)controls_state.getSccStockCamStatus();
 
-  float vEgo = car_state.getVEgo();
-  float vEgoRaw = car_state.getVEgoRaw();
   int longControlState = (int)controls_state.getLongControlState();
   float vPid = controls_state.getVPid();
   float upAccelCmd = controls_state.getUpAccelCmd();
@@ -1194,10 +1192,6 @@ void NvgWindow::drawDebugText(QPainter &p) {
   p.setRenderHint(QPainter::TextAntialiasing);
 
   str.sprintf("State: %s\n", long_state[longControlState]);
-  p.drawText(text_x, y, str);
-
-  y += height;
-  str.sprintf("vEgo: %.2f/%.2f\n", vEgo*3.6f, vEgoRaw*3.6f);
   p.drawText(text_x, y, str);
 
   y += height;
