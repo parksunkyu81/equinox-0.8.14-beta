@@ -12,7 +12,7 @@ ENABLE_INC_LANE_PROB = True
 
 TRAJECTORY_SIZE = 33
 # camera offset is meters from center car to camera
-# model path is in the frame of the camera. Empirically
+# model path is in the frame of the camera. Empirically 
 # the model knows the difference between TICI and EON
 # so a path offset is not needed
 PATH_OFFSET = 0.00
