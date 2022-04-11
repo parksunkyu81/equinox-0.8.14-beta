@@ -9,6 +9,7 @@ import struct
 from threading import Thread
 from cereal import messaging, log
 from common.numpy_fast import clip
+from common.numpy_fast import interp
 from common.realtime import sec_since_boot
 from common.conversions import Conversions as CV
 
@@ -299,7 +300,7 @@ class RoadSpeedLimiter:
 
       section_limit_speed = self.roadLimitSpeed.sectionLimitSpeed
       section_left_dist = self.roadLimitSpeed.sectionLeftDist
-      camSpeedFactor = clip(self.roadLimitSpeed.camSpeedFactor, 1.0, 1.1)
+      #camSpeedFactor = clip(self.roadLimitSpeed.camSpeedFactor, 1.0, 1.1)
 
       if is_highway is not None:
         if is_highway:
@@ -315,36 +316,44 @@ class RoadSpeedLimiter:
       if cam_type == 22:  # speed bump
         MIN_LIMIT = 10
 
+      v_ego = cluster_speed / 3.6
+
       if cam_limit_speed_left_dist is not None and cam_limit_speed is not None and cam_limit_speed_left_dist > 0:
 
-        v_ego = cluster_speed * (CV.KPH_TO_MS if is_metric else CV.MPH_TO_MS)
-        diff_speed = cluster_speed - (cam_limit_speed * camSpeedFactor)
+        #v_ego = cluster_speed * (CV.KPH_TO_MS if is_metric else CV.MPH_TO_MS)
+        #diff_speed = cluster_speed - (cam_limit_speed * camSpeedFactor)
         #cam_limit_speed_ms = cam_limit_speed * (CV.KPH_TO_MS if is_metric else CV.MPH_TO_MS)
+
+        diff_speed = v_ego * 3.6 - cam_limit_speed
+
+        sec = interp(diff_speed, [10., 30.], [60., 60.])
 
         starting_dist = v_ego * 30.
 
-        if cam_type == 22:
-          safe_dist = v_ego * 3.
-        else:
-          safe_dist = v_ego * 6.
+        #if cam_type == 22:
+        #  safe_dist = v_ego * 3.
+        #else:
+        #  safe_dist = v_ego * 6.
 
         if MIN_LIMIT <= cam_limit_speed <= MAX_LIMIT and (self.slowing_down or cam_limit_speed_left_dist < starting_dist):
           if not self.slowing_down:
-            self.started_dist = cam_limit_speed_left_dist
+            self.started_dist = cam_limit_speed_left_dist * 1.2
             self.slowing_down = True
             first_started = True
           else:
             first_started = False
 
-          td = self.started_dist - safe_dist
-          d = cam_limit_speed_left_dist - safe_dist
+          base = self.start_dist / 1.2 * 0.65
+
+          td = self.started_dist - base
+          d = cam_limit_speed_left_dist - base
 
           if d > 0. and td > 0. and diff_speed > 0. and (section_left_dist is None or section_left_dist < 10):
             pp = (d / td) ** 0.6
           else:
             pp = 0
 
-          return cam_limit_speed * camSpeedFactor + int(pp * diff_speed), \
+          return cam_limit_speed * CAMERA_SPEED_FACTOR + int(pp * diff_speed), \
                  cam_limit_speed, cam_limit_speed_left_dist, first_started, log
 
         self.slowing_down = False
@@ -359,7 +368,7 @@ class RoadSpeedLimiter:
           else:
             first_started = False
 
-          return section_limit_speed * camSpeedFactor, section_limit_speed, section_left_dist, first_started, log
+          return section_limit_speed * CAMERA_SPEED_FACTOR, section_limit_speed, section_left_dist, first_started, log
 
         self.slowing_down = False
         return 0, section_limit_speed, section_left_dist, False, log
