@@ -148,13 +148,14 @@ static int gm_tx_hook(CANPacket_t *to_send) {
 
   // disallow actuator commands if gas or brake (with vehicle moving) are pressed
   // and the the latching controls_allowed flag is True
+  // 브레이크를 밝는 상태에서 엑셀이 상승한다.
   int pedal_pressed = brake_pressed_prev && vehicle_moving;
   bool alt_exp_allow_gas = alternative_experience & ALT_EXP_DISABLE_DISENGAGE_ON_GAS;
   if (!alt_exp_allow_gas) {
     pedal_pressed = pedal_pressed || gas_pressed_prev;
   }
-  //bool current_controls_allowed = controls_allowed; // && !pedal_pressed;
-  bool current_controls_allowed = controls_allowed  && !pedal_pressed;
+  bool current_controls_allowed = controls_allowed;
+  //bool current_controls_allowed = controls_allowed  && !pedal_pressed;
 
   // GAS: safety check (interceptor)
   if (addr == MSG_TX_PEDAL) {
