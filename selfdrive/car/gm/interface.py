@@ -50,15 +50,8 @@ class CarInterface(CarInterfaceBase):
     ret.openpilotLongitudinalControl = True # ASCM vehicles use OP for long
     ret.radarOffCan = False # ASCM vehicles (typically) have radar
 
-    # These cars have been put into dashcam only due to both a lack of users and test coverage.
-    # These cars likely still work fine. Once a user confirms each car works and a test route is
-    # added to selfdrive/test/test_routes, we can remove it from this list.
-    ret.dashcamOnly = candidate in {CAR.CADILLAC_ATS, CAR.HOLDEN_ASTRA, CAR.MALIBU, CAR.BUICK_REGAL}
-
-    # Default to normal torque limits
+     # Default to normal torque limits
     ret.safetyConfigs[0].safetyParam = 0
-
-    tire_stiffness_factor = 0.5
 
     # Start with a baseline lateral tuning for all GM vehicles. Override tuning as needed in each model section below.
     ret.enableGasInterceptor = 0x201 in fingerprint[0]
@@ -75,34 +68,26 @@ class CarInterface(CarInterfaceBase):
     ret.steerRatioRear = 0.
     ret.steerControlType = car.CarParams.SteerControlType.torque
 
+    tire_stiffness_factor = 1.
     ret.maxSteeringAngleDeg = 1000.
 
     # lateral
     ret.lateralTuning.init('lqr')
 
-    """ret.lateralTuning.lqr.scale = 1680.0
+    ret.lateralTuning.lqr.scale = 1600.
     ret.lateralTuning.lqr.ki = 0.01
+    ret.lateralTuning.lqr.dcGain = 0.0027
+
     ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
     ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
     ret.lateralTuning.lqr.c = [1., 0.]
-    ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
-    ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
-    ret.lateralTuning.lqr.dcGain = 0.003"""
-    ret.lateralTuning.lqr.scale = 1975.0
-    ret.lateralTuning.lqr.ki = 0.032
-    ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
-    ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
-    ret.lateralTuning.lqr.c = [1., 0.]
-    ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
-    ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
-    ret.lateralTuning.lqr.dcGain = 0.002237852961363602
+    ret.lateralTuning.lqr.k = [-110., 451.]
+    ret.lateralTuning.lqr.l = [0.33, 0.318]
 
     ret.steerRatio = 17.5
     # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
-    #ret.steerActuatorDelay = 0.0
-    ret.steerActuatorDelay = 0.1925
-    #ret.steerRateCost = 0.552
-    ret.steerRateCost = 0.3625
+    ret.steerActuatorDelay = 0.2
+    ret.steerRateCost = 0.35
 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase

@@ -5,7 +5,7 @@ import numpy as np
 from cereal import log
 import cereal.messaging as messaging
 from common.realtime import Ratekeeper, DT_MDL
-from selfdrive.controls.lib.longcontrol import LongCtrlState
+from selfdrive.controls.lib.longcontrol_shane import LongCtrlState
 from selfdrive.controls.lib.longitudinal_planner import Planner
 
 
