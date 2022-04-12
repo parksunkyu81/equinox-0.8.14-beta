@@ -8,8 +8,6 @@ from selfdrive.swaglog import cloudlog
 from selfdrive.modeld.constants import index_function
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from common.conversions import Conversions as CV
-from selfdrive.controls.lib.dynamic_follow import DynamicFollow
-from common.travis_checker import gh_actions
 
 if __name__ == '__main__':  # generating code
   from pyextra.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
@@ -42,6 +40,16 @@ DANGER_ZONE_COST = 100.
 CRASH_DISTANCE = .5
 LIMIT_COST = 1e6
 ACADOS_SOLVER_TYPE = 'SQP_RTI'
+
+
+CRUISE_GAP_BP = [1., 2., 3., 4.]
+CRUISE_GAP_V = [1.2, 1.35, 1.5, 1.7]
+
+AUTO_TR_BP = [0., 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110.*CV.KPH_TO_MS]
+AUTO_TR_V = [1.1, 1.2, 1.35, 1.45]
+
+AUTO_TR_CRUISE_GAP = 4
+
 
 
 # Fewer timestamps don't hurt performance and lead to
@@ -195,17 +203,16 @@ def gen_long_ocp():
 
 
 class LongitudinalMpc:
-  def __init__(self, e2e=False, desired_TR=T_FOLLOW):
-    self.dynamic_follow = DynamicFollow()
+  def __init__(self, e2e=False):
     self.e2e = e2e
-    self.desired_TR = desired_TR
-    self.v_ego = 0.
+    self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.reset()
     self.source = SOURCES[2]
 
   def reset(self):
-    self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
+    # self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.solver.reset()
+    # self.solver.options_set('print_level', 2)
     self.v_solution = np.zeros(N+1)
     self.a_solution = np.zeros(N+1)
     self.prev_a = np.array(self.a_solution)
@@ -286,23 +293,19 @@ class LongitudinalMpc:
     lead_xv = np.column_stack((x_lead_traj, v_lead_traj))
     return lead_xv
 
-  def process_lead(self, lead, id):
+  def process_lead(self, lead):
     v_ego = self.x0[1]
     if lead is not None and lead.status:
       x_lead = lead.dRel if lead.radar else max(lead.dRel - 1., 0.)
       v_lead = lead.vLead
       a_lead = lead.aLeadK
       a_lead_tau = lead.aLeadTau
-      if id == 0:
-        self.dynamic_follow.update_lead(v_lead, a_lead, x_lead, lead.status, False)
     else:
       # Fake a fast lead car, so mpc can keep running in the same mode
       x_lead = 50.0
       v_lead = v_ego + 10.0
       a_lead = 0.0
       a_lead_tau = _LEAD_ACCEL_TAU
-      if id == 0:
-        self.dynamic_follow.update_lead(new_lead=False)
 
     # MPC will not converge if immediate crash is expected
     # Clip lead distance to what is still possible to brake for
@@ -317,25 +320,25 @@ class LongitudinalMpc:
     self.cruise_min_a = min_a
     self.cruise_max_a = max_a
 
-  def set_desired_TR(self, desired_TR):
-    self.desired_TR = desired_TR
-    self.set_weights()
-
   def update(self, carstate, radarstate, v_cruise):
     v_ego = self.x0[1]
     self.status = radarstate.leadOne.status or radarstate.leadTwo.status
 
-    lead_xv_0 = self.process_lead(radarstate.leadOne, 0)
-    lead_xv_1 = self.process_lead(radarstate.leadTwo, 1)
-
-    if not gh_actions:
-      self.set_desired_TR(self.dynamic_follow.update(carstate))  # 동적 팔로우를 업데이트하고 원하는 TR을 얻습니다.
+    lead_xv_0 = self.process_lead(radarstate.leadOne)
+    lead_xv_1 = self.process_lead(radarstate.leadTwo)
 
     # set accel limits in params
     self.params[:,0] = interp(float(self.status), [0.0, 1.0], [self.cruise_min_a, MIN_ACCEL])
     self.params[:,1] = self.cruise_max_a
 
+    # neokii
+    cruise_gap = int(clip(carstate.cruiseGap, 1., 4.))
+    if cruise_gap == AUTO_TR_CRUISE_GAP:
+      tr = interp(carstate.vEgo, AUTO_TR_BP, AUTO_TR_V)
+    else:
+      tr = interp(float(cruise_gap), CRUISE_GAP_BP, CRUISE_GAP_V)
 
+    self.param_tr = tr
 
     # To estimate a safe distance from a moving lead, we calculate how much stopping
     # distance that lead needs as a minimum. We can add that to the current distance
@@ -350,13 +353,14 @@ class LongitudinalMpc:
     v_cruise_clipped = np.clip(v_cruise * np.ones(N+1),
                                v_lower,
                                v_upper)
-    cruise_obstacle = np.cumsum(T_DIFFS * v_cruise_clipped) + get_safe_obstacle_distance(v_cruise_clipped, self.desired_TR)
+    cruise_obstacle = np.cumsum(T_DIFFS * v_cruise_clipped) + get_safe_obstacle_distance(v_cruise_clipped, tr)
 
     x_obstacles = np.column_stack([lead_0_obstacle, lead_1_obstacle, cruise_obstacle])
     self.source = SOURCES[np.argmin(x_obstacles[0])]
     self.params[:,2] = np.min(x_obstacles, axis=1)
     self.params[:,3] = np.copy(self.prev_a)
-    self.params[:,4] = self.desired_TR
+
+    self.params[:,4] = self.param_tr
 
     self.run()
     if (np.any(lead_xv_0[:,0] - self.x_sol[:,0] < CRASH_DISTANCE) and
@@ -373,9 +377,12 @@ class LongitudinalMpc:
       self.solver.cost_set(i, "yref", self.yref[i])
     self.solver.cost_set(N, "yref", self.yref[N][:COST_E_DIM])
     self.params[:,3] = np.copy(self.prev_a)
+    self.params[:,4] = self.param_tr
     self.run()
 
   def run(self):
+    # t0 = sec_since_boot()
+    # reset = 0
     for i in range(N+1):
       self.solver.set(i, 'p', self.params[i])
     self.solver.constraints_set(0, "lbx", self.x0)
@@ -410,6 +417,8 @@ class LongitudinalMpc:
         self.last_cloudlog_t = t
         cloudlog.warning(f"Long mpc reset, solution_status: {self.solution_status}")
       self.reset()
+      # reset = 1
+    # print(f"long_mpc timings: total internal {self.solve_time:.2e}, external: {(sec_since_boot() - t0):.2e} qp {self.time_qp_solution:.2e}, lin {self.time_linearization:.2e} qp_iter {qp_iter}, reset {reset}")
 
 
 if __name__ == "__main__":
