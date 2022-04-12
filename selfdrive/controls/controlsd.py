@@ -666,7 +666,7 @@ class Controls:
                 v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
             # else:
             elif not self.CP.pcmCruise:
-                v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.enabled, self.is_metric)
+                v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.button_timers, self.enabled, self.is_metric)
         else:
             v_cruise_kph = 0
 
@@ -691,9 +691,9 @@ class Controls:
 
         # if stock cruise is completely disabled, then we can use our own set speed logic
         # if CS.adaptiveCruise:
-        # v_cruise_kph, buttonEvents, button_timers, enabled, metric
+        # update_v_cruise(v_cruise_kph, buttonEvents, button_timers, enabled, metric):
         if not self.CP.pcmCruise:
-            self.v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.enabled, self.is_metric)
+            self.v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.button_timers, self.enabled, self.is_metric)
         elif CS.cruiseState.enabled:
             self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
 
