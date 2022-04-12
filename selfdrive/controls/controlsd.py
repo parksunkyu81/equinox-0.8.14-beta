@@ -565,7 +565,7 @@ class Controls:
         self.sm_smiskol.update(0)
 
         if not self.initialized:
-            all_valid = CS.canValid and self.sm.all_alive_and_valid()
+            all_valid = CS.canValid and self.sm.all_checks()
             if all_valid or self.sm.frame * DT_CTRL > 3.5 or SIMULATION:
                 if not self.read_only:
                     self.CI.init(self.CP, self.can_sock, self.pm.sock['sendcan'])
