@@ -198,13 +198,13 @@ class LongitudinalMpc:
   def __init__(self, e2e=False, desired_TR=T_FOLLOW):
     self.dynamic_follow = DynamicFollow()
     self.e2e = e2e
+    self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.desired_TR = desired_TR
     self.v_ego = 0.
     self.reset()
     self.source = SOURCES[2]
 
   def reset(self):
-    self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.solver.reset()
     self.v_solution = np.zeros(N+1)
     self.a_solution = np.zeros(N+1)

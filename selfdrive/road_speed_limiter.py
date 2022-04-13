@@ -12,8 +12,8 @@ from common.numpy_fast import clip
 from common.realtime import sec_since_boot
 from common.conversions import Conversions as CV
 
-#CAMERA_SPEED_FACTOR = 1.05
-CAMERA_SPEED_FACTOR = 0.94     # 카메라 속도 보정
+CAMERA_SPEED_FACTOR = 1.05
+
 
 class Port:
   BROADCAST_PORT = 2899
@@ -36,9 +36,9 @@ class RoadLimitSpeedServer:
     broadcast.setDaemon(True)
     broadcast.start()
 
-    #gps = Thread(target=self.gps_thread, args=[])
-    #gps.setDaemon(True)
-    #gps.start()
+    # gps = Thread(target=self.gps_thread, args=[])
+    # gps.setDaemon(True)
+    # gps.start()
 
   def gps_thread(self):
 
