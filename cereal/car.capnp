@@ -522,6 +522,8 @@ struct CarParams {
   hasScc14 @71 :Bool;
   hasEms @72 :Bool;
   hasLfaHda @73 :Bool;
+  steerFaultMaxAngle @74 :Int16;
+  steerFaultMaxFrames @75 :Int16;
 
   struct LateralParams {
     torqueBP @0 :List(Int32);
