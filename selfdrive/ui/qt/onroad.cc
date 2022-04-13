@@ -237,7 +237,8 @@ void OnroadAlerts::paintEvent(QPaintEvent *event) {
 
 // NvgWindow
 
-NvgWindow::NvgWindow(VisionStreamType type, QWidget* parent) : last_update_params(0), fps_filter(UI_FREQ, 3, 1. / UI_FREQ), CameraViewWidget("camerad", type, true, parent) {
+NvgWindow::NvgWindow(VisionStreamType type, QWidget* parent) : fps_filter(UI_FREQ, 3, 1. / UI_FREQ), CameraViewWidget("camerad", type, true, parent) {
+
 }
 
 void NvgWindow::initializeGL() {
@@ -383,12 +384,7 @@ void NvgWindow::paintEvent(QPaintEvent *event) {
 void NvgWindow::showEvent(QShowEvent *event) {
   CameraViewWidget::showEvent(event);
 
-  auto now = millis_since_boot();
-  if(now - last_update_params > 1000*5) {
-    last_update_params = now;
-    ui_update_params(uiState());
-  }
-
+  ui_update_params(uiState());
   prev_draw_t = millis_since_boot();
 }
 
