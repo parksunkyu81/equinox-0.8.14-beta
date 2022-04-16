@@ -507,7 +507,7 @@ void NvgWindow::drawHud(QPainter &p) {
                       );
 
   // info
-  configFont(p, "Open Sans", 40, "Regular");
+  configFont(p, "Open Sans", 45, "Regular");
   p.setPen(QColor(120, 255, 120, 200));
   p.drawText(rect().left() + 20, rect().height() - 15, infoText);
 
