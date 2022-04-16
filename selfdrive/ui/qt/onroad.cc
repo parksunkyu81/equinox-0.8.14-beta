@@ -498,7 +498,7 @@ void NvgWindow::drawHud(QPainter &p) {
 
 
   QString infoText;
-  infoText.sprintf("SR(%.2f) POWER (%d) CPU Temp(%.1f) CPU USE(%d) MEM USE(%d)",
+  infoText.sprintf("SR(%.2f) BAT (%d) CPU Temp(%.1f) CPU (%d) MEM (%d)",
                       controls_state.getSteerRatio(),
                       device_State.getBatteryPercent(),
                       cpuTemp,
@@ -507,8 +507,8 @@ void NvgWindow::drawHud(QPainter &p) {
                       );
 
   // info
-  configFont(p, "Open Sans", 50, "Regular");
-  p.setPen(QColor(0xff, 0xff, 0xff, 200));
+  configFont(p, "Open Sans", 40, "Regular");
+  p.setPen(QColor(120, 255, 120, 200));
   p.drawText(rect().left() + 20, rect().height() - 15, infoText);
 
 
