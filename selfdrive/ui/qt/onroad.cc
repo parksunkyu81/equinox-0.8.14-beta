@@ -480,6 +480,7 @@ void NvgWindow::drawHud(QPainter &p) {
   QString infoText;
   infoText.sprintf("SR(%.2f) POWER (%.2f%) CPU (%.2fº) CPU (%d%) MEM (%d%)",
                       controls_state.getSteerRatio(),
+                      device_State.getBatteryPercent(),
                       device_State.getCpuTempC(),
                       device_State.getMemoryUsagePercent()
                       );
