@@ -1474,6 +1474,12 @@ struct NavRoute {
   }
 }
 
+struct EncodeData {
+  data @0 :Data;
+  timestampEof @1 :Int64;
+  idx @2 :UInt32;
+}
+
 struct RoadLimitSpeed {
     active @0 :Int16;
     roadLimitSpeed @1 :Int16;
