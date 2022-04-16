@@ -49,6 +49,8 @@ protected:
   double prev_draw_t = 0;
   FirstOrderFilter fps_filter;
 
+  uint64_t last_update_params;
+
   // neokii
   void drawIcon(QPainter &p, int x, int y, QPixmap &img, QBrush bg, float opacity);
   void drawText(QPainter &p, int x, int y, const QString &text, int alpha = 255);

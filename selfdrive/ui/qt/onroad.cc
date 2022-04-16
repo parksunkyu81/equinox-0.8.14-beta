@@ -1236,10 +1236,6 @@ void NvgWindow::drawDebugText(QPainter &p) {
   str.sprintf("%.3f (%.3f/%.3f)\n", aReqValue, aReqValueMin, aReqValueMax);
   p.drawText(text_x, y, str);
 
-  y += height;
-  str.sprintf("aEgo: %.3f, %.3f\n", car_state.getAEgo(), car_state.getABasis());
-  p.drawText(text_x, y, str);
-
   auto lead_radar = sm["radarState"].getRadarState().getLeadOne();
   auto lead_one = sm["modelV2"].getModelV2().getLeadsV3()[0];
 
