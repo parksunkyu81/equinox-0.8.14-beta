@@ -470,7 +470,7 @@ void NvgWindow::drawHud(QPainter &p) {
 
   const auto controls_state = sm["controlsState"].getControlsState();
   const auto device_State = sm["deviceState"].getDeviceState();
-  const auto live_params = sm["liveParameters"].getLiveParameters();
+  //const auto live_params = sm["liveParameters"].getLiveParameters();
 
   QColor orangeColor = QColor(52, 197, 66, 255);
 
@@ -478,10 +478,10 @@ void NvgWindow::drawHud(QPainter &p) {
   //int y = rect().height() - 15;
 
   QString infoText;
-  infoText.sprintf("SR(%.2f) POWER (%.2f%) CPU (%.2fº) CPU (%d%) MEM (%d%)",
+  infoText.sprintf("SR(%.2f) POWER (%.2f %) CPU (%.2f º) CPU (%d %) MEM (%d %)",
                       controls_state.getSteerRatio(),
                       device_State.getBatteryPercent(),
-                      device_State.getCpuTempC(),
+                      device_State.getCpuUsagePercent(),
                       device_State.getMemoryUsagePercent()
                       );
 
