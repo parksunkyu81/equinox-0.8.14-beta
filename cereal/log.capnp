@@ -1588,6 +1588,9 @@ struct Event {
 
     # *********** debug ***********
     testJoystick @52 :Joystick;
+    roadEncodeData @89 :EncodeData;
+    driverEncodeData @90 :EncodeData;
+    wideRoadEncodeData @91 :EncodeData;
 
     # *********** legacy + deprecated ***********
     model @9 :Legacy.ModelData; # TODO: rename modelV2 and mark this as deprecated
