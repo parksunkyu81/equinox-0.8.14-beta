@@ -128,6 +128,9 @@ class CarInterface(CarInterfaceBase):
 
     return ret
 
+  def _update(self, c: car.CarControl) -> car.CarState:
+    pass
+
   # returns a car.CarState
   def update(self, c, can_strings):
     self.cp.update_strings(can_strings)
