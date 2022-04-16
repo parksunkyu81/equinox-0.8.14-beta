@@ -849,7 +849,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
     #ET.SOFT_DISABLE: soft_disable_alert("System Malfunction: Reboot Your Device"),
     #ET.PERMANENT: NormalPermanentAlert("System Malfunction", "Reboot your Device"),
     #ET.NO_ENTRY: NoEntryAlert("System Malfunction: Reboot Your Device"),
-    ET.NO_ENTRY: NoEntryAlert("시스템 오작동: 장치를 재부팅 하세요"),
+    ET.NO_ENTRY: NoEntryAlert("CPU 과열: 장치를 재부팅 하세요"),
   },
 
   EventName.accFaulted: {
