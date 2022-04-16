@@ -185,7 +185,7 @@ def get_car(logcan, sendcan):
     candidate = selected_car.decode("utf-8")
 
   CarInterface, CarController, CarState = interfaces[candidate]
-  CP = CarInterface.get_params(candidate, fingerprints, car_fw)
+  CP = CarInterface.get_params(candidate, fingerprints, car_fw, disable_radar)
   CP.carVin = vin
   CP.carFw = car_fw
   CP.fingerprintSource = source
