@@ -54,7 +54,7 @@ int safety_rx_hook(CANPacket_t *to_push) {
 }
 
 int safety_tx_hook(CANPacket_t *to_send) {
-  return (relay_malfunction ? -1 : current_hooks->tx(to_send));
+  return (relay_malfunction ? -1 : current_hooks->tx(to_send, get_longitudinal_allowed()));
 }
 
 int safety_tx_lin_hook(int lin_num, uint8_t *data, int len) {
@@ -63,6 +63,10 @@ int safety_tx_lin_hook(int lin_num, uint8_t *data, int len) {
 
 int safety_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
   return (relay_malfunction ? -1 : current_hooks->fwd(bus_num, to_fwd));
+}
+
+bool get_longitudinal_allowed(void) {
+  return controls_allowed && !gas_pressed_prev;
 }
 
 // Given a CRC-8 poly, generate a static lookup table to use with a fast CRC-8
@@ -93,12 +97,6 @@ bool msg_allowed(CANPacket_t *to_send, const CanMsg msg_list[], int len) {
     }
   }
   return allowed;
-}
-
-// compute the time elapsed (in microseconds) from 2 counter samples
-// case where ts < ts_last is ok: overflow is properly re-casted into uint32_t
-uint32_t get_ts_elapsed(uint32_t ts, uint32_t ts_last) {
-  return ts - ts_last;
 }
 
 int get_addr_check_index(CANPacket_t *to_push, AddrCheckStruct addr_list[], const int len) {
