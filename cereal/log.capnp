@@ -1842,7 +1842,7 @@ struct Event {
     lateralPlan @64 :LateralPlan;
     ubloxGnss @34 :UbloxGnss;
     ubloxRaw @39 :Data;
-    qcomGnss @92 :QcomGnss;
+    qcomGnss @31 :QcomGnss;
     gpsLocationExternal @48 :GpsLocationData;
     driverState @59 :DriverState;
     liveParameters @61 :LiveParametersData;
