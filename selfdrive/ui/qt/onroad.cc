@@ -477,11 +477,32 @@ void NvgWindow::drawHud(QPainter &p) {
   //int x = 700;
   //int y = rect().height() - 15;
 
+  float cpuTemp = 0;
+  auto cpuList = device_State.getCpuTempC();
+
+  if (cpuList.size() > 0) {
+     for(int i = 0; i < cpuList.size(); i++)
+         cpuTemp += cpuList[i];
+     cpuTemp /= cpuList.size();
+  }
+
+  int cpuUsage = 0;
+  auto cpuUsageList = device_State.getCpuUsagePercent();
+
+  if (cpuUsageList.size() > 0) {
+     for(int i = 0; i < cpuUsageList.size(); i++)
+         cpuUsage += cpuUsageList[i];
+     cpuUsage /= cpuUsageList.size();
+  }
+
+
+
   QString infoText;
-  infoText.sprintf("SR(%.2f) POWER (%.2f %) CPU (%.2f º) CPU (%d %) MEM (%d %)",
+  infoText.sprintf("SR(%.2f) POWER (%.2f %) CPU (%.1f ℃) CPU (%d %) MEM (%d %)",
                       controls_state.getSteerRatio(),
                       device_State.getBatteryPercent(),
-                      device_State.getCpuUsagePercent(),
+                      cpuTemp,
+                      cpuUsageList,
                       device_State.getMemoryUsagePercent()
                       );
 
