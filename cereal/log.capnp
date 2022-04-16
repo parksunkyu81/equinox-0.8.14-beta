@@ -1909,7 +1909,6 @@ struct Event {
     gpsPlannerPlanDEPRECATED @41 :Legacy.GPSPlannerPlan;
     applanixRawDEPRECATED @42 :Data;
     androidGnssDEPRECATED @30 :Legacy.AndroidGnss;
-    qcomGnssDEPRECATD @31 :Legacy.QcomGnss;
     lidarPtsDEPRECATED @32 :Legacy.LidarPts;
     navStatusDEPRECATED @38 :Legacy.NavStatus;
     trafficEventsDEPRECATED @43 :List(Legacy.TrafficEvent);
