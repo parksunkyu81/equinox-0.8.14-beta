@@ -102,26 +102,30 @@ class CarInterface(CarInterfaceBase):
     ret.tireStiffnessFront, ret.tireStiffnessRear = scale_tire_stiffness(ret.mass, ret.wheelbase, ret.centerToFront,
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
-    ret.longitudinalTuning.kpBP = [0., 4., 9., 17., 23., 31.]
-    ret.longitudinalTuning.kpV = [1.1, 1.05, 1.0, 0.9, 0.75, 0.65]
-    ret.longitudinalTuning.kiBP = [0., 4., 9., 17., 23., 31.]
-    ret.longitudinalTuning.kiV = [0.27, 0.24, 0.23, 0.2, 0.17, 0.15]
+    ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
+                                   50. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.25, 1.1, 1.05, 1.0, 0.92, 0.85, 0.48]
+    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kiV = [0.08, 0.03]
+    ret.longitudinalTuning.kfBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
+                                   50. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kfV = [1., 1., 1., 1., 1., 1., 1.]
 
-    ret.longitudinalTuning.deadzoneBP = [0., 4.]
-    ret.longitudinalTuning.deadzoneV = [0., 0.1]
-    ret.longitudinalTuning.kdBP = [0., 4., 9., 17., 23., 31.]
-    ret.longitudinalTuning.kdV = [0.9, 1.0, 0.85, 0.7, 0.5, 0.4]
-    ret.longitudinalTuning.kfBP = [0., 4., 9., 17., 23., 31.]
-    ret.longitudinalTuning.kfV = [1., 1., 1., 1., 1., 1.]
+    #ret.longitudinalTuning.deadzoneBP = [0., 4.]
+    #ret.longitudinalTuning.deadzoneV = [0., 0.1]
+    #ret.longitudinalTuning.kdBP = [0., 4., 9., 17., 23., 31.]
+    #ret.longitudinalTuning.kdV = [0.9, 1.0, 0.85, 0.7, 0.5, 0.4]
+    #ret.longitudinalTuning.kfBP = [0., 4., 9., 17., 23., 31.]
+    #ret.longitudinalTuning.kfV = [1., 1., 1., 1., 1., 1.]
 
     ret.stoppingControl = False
-    ret.vEgoStopping = 0.5  # 1.0, 0.5
+    ret.vEgoStopping = 0.6  # 1.0, 0.5
     ret.vEgoStarting = 0.5  # needs to be >= vEgoStopping to avoid state transition oscillation
-    ret.stopAccel = -0.5  # 0.0, -0.5
-    ret.stoppingDecelRate = 3.0  # 0.8, 0.2  # brake_travel/s while trying to stop
+    ret.stopAccel = -2.0
+    ret.stoppingDecelRate = 0.6  # brake_travel/s while trying to stop
 
-    ret.longitudinalActuatorDelayLowerBound = 1.0
-    ret.longitudinalActuatorDelayUpperBound = 1.0
+    ret.longitudinalActuatorDelayLowerBound = 0.3
+    ret.longitudinalActuatorDelayUpperBound = 0.3
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
