@@ -515,99 +515,10 @@ void NvgWindow::drawHud(QPainter &p) {
   drawBottomIcons(p);
 }
 
-/*
-static const QColor get_tpms_color(float tpms) {
-    if(tpms < 5 || tpms > 60) // N/A
-        return QColor(255, 255, 255, 220);
-    if(tpms < 31)
-        return QColor(255, 90, 90, 220);
-    return QColor(255, 255, 255, 220);
-}
-
-static const QString get_tpms_text(float tpms) {
-    if(tpms < 5 || tpms > 60)
-        return "";
-
-    char str[32];
-    snprintf(str, sizeof(str), "%.0f", round(tpms));
-    return QString(str);
-}*/
-
 void NvgWindow::drawBottomIcons(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
   auto controls_state = sm["controlsState"].getControlsState();
-
-  // tire pressure
-  /*
-  {
-    const int w = 58;
-    const int h = 126;
-    const int x = 110;
-    const int y = height() - h - 85;
-
-    auto tpms = car_state.getTpms();
-    const float fl = tpms.getFl();
-    const float fr = tpms.getFr();
-    const float rl = tpms.getRl();
-    const float rr = tpms.getRr();
-
-    p.setOpacity(0.8);
-    p.drawPixmap(x, y, w, h, ic_tire_pressure);
-
-    configFont(p, "Open Sans", 38, "Bold");
-
-    QFontMetrics fm(p.font());
-    QRect rcFont = fm.boundingRect("9");
-
-    int center_x = x + 3;
-    int center_y = y + h/2;
-    const int marginX = (int)(rcFont.width() * 2.7f);
-    const int marginY = (int)((h/2 - rcFont.height()) * 0.7f);
-
-    drawText2(p, center_x-marginX, center_y-marginY-rcFont.height(), Qt::AlignRight, get_tpms_text(fl), get_tpms_color(fl));
-    drawText2(p, center_x+marginX, center_y-marginY-rcFont.height(), Qt::AlignLeft, get_tpms_text(fr), get_tpms_color(fr));
-    drawText2(p, center_x-marginX, center_y+marginY, Qt::AlignRight, get_tpms_text(rl), get_tpms_color(rl));
-    drawText2(p, center_x+marginX, center_y+marginY, Qt::AlignLeft, get_tpms_text(rr), get_tpms_color(rr));
-  }
-  */
-
-/*
-  int x = radius / 2 + (bdr_s * 2) + (radius + 50);
-  const int y = rect().bottom() - footer_h / 2 - 10;
-
-  // cruise gap
-  int gap = car_state.getCruiseGap();
-  bool longControl = scc_smoother.getLongControl();
-  int autoTrGap = scc_smoother.getAutoTrGap();
-
-  p.setPen(Qt::NoPen);
-  p.setBrush(QBrush(QColor(0, 0, 0, 255 * .1f)));
-  p.drawEllipse(x - radius / 2, y - radius / 2, radius, radius);
-
-  QString str;
-  float textSize = 50.f;
-  QColor textColor = QColor(255, 255, 255, 200);
-
-  if(gap <= 0) {
-    str = "N/A";
-  }
-  else if(longControl && gap == autoTrGap) {
-    str = "AUTO";
-    textColor = QColor(120, 255, 120, 200);
-  }
-  else {
-    str.sprintf("%d", (int)gap);
-    textColor = QColor(120, 255, 120, 200);
-    textSize = 70.f;
-  }
-
-  configFont(p, "Open Sans", 35, "Bold");
-  drawText(p, x, y-20, "GAP", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y+50, str, textColor);
-  */
 
   // brake
   int x = 140;
@@ -629,49 +540,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
     p.setOpacity(1.0);
   }
-
-  // Dynamic TR
-  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
-  const auto dynamicFollow = sm["dynamicFollowData"].getDynamicFollowData();
-
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(80));
-  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
-
-  float textSize = 60.f;
-  QColor textColor = QColor(120, 255, 120, 200);
-
-  QString str;
-  str.sprintf("%.1f", dynamicFollow.getMpcTR());
-
-  configFont(p, "Open Sans", 45, "Bold");
-  drawText(p, x, y1-20, "TR", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1+50, str, textColor);
-  p.setOpacity(1.0);
-
-  // Duration Lead Safe Seconds
-  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
-  int duration_time = controls_state.getDurationLeadSafeTime();
-
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(80));
-  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
-
-  textSize = 60.f;
-  str.sprintf("%d", duration_time);
-
-  configFont(p, "Open Sans", 35, "Bold");
-  drawText(p, x, y1-20, "DURATION", 200);
-
-  textColor = QColor(120, 255, 120, 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1+50, str, textColor);
-
-  p.setOpacity(1.0);
-
 
   // ================================================================================================================ //
 
@@ -740,44 +608,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y2+50, str, textColor);
   p.setOpacity(1.0);
-
-
-  // dynamic follow
-  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
-  int dynamic_follow = controls_state.getDynamicSelFollow();
-
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(80));
-  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
-
-  textSize = 40.f;
-  textColor = QColor(255, 255, 255, 200);
-
-  if(dynamic_follow == 0) {
-    str = "TRAFFIC";
-    textColor = QColor(120, 255, 120, 200);
-  }
-  else if(dynamic_follow == 1) {
-    str = "STOCK";
-    textColor = QColor(120, 255, 120, 200);
-  }
-  else if(dynamic_follow == 2) {
-    str = "ROADTRIP";
-    textColor = QColor(120, 255, 120, 200);
-  }
-  else if(dynamic_follow == 3) {
-    str = "AUTO";
-    textColor = QColor(120, 255, 120, 200);
-  }
-
-  configFont(p, "Open Sans", 45, "Bold");
-  drawText(p, x, y2-20, "DF", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y2+50, str, textColor);
-  p.setOpacity(1.0);
-
-
 
 }
 
