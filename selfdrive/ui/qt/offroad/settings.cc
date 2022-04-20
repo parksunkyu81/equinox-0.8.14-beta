@@ -536,16 +536,16 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   QVBoxLayout* vlayout = new QVBoxLayout(homeScreen);
   vlayout->setContentsMargins(0, 20, 0, 20);
 
-  QString selected = QString::fromStdString(Params().get("SelectedCar"));
+  //QString selected = QString::fromStdString(Params().get("SelectedCar"));
 
-  QPushButton* selectCarBtn = new QPushButton(selected.length() ? selected : "Select your car");
-  selectCarBtn->setObjectName("selectCarBtn");
+  //QPushButton* selectCarBtn = new QPushButton(selected.length() ? selected : "Select your car");
+  //selectCarBtn->setObjectName("selectCarBtn");
   //selectCarBtn->setStyleSheet("margin-right: 30px;");
   //selectCarBtn->setFixedSize(350, 100);
-  connect(selectCarBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(selectCar); });
-  vlayout->addSpacing(10);
-  vlayout->addWidget(selectCarBtn, 0, Qt::AlignRight);
-  vlayout->addSpacing(10);
+  //connect(selectCarBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(selectCar); });
+  //vlayout->addSpacing(10);
+  //vlayout->addWidget(selectCarBtn, 0, Qt::AlignRight);
+  //vlayout->addSpacing(10);
 
   homeWidget = new QWidget(this);
   QVBoxLayout* toggleLayout = new QVBoxLayout(homeWidget);
@@ -557,15 +557,15 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
 
   main_layout->addWidget(homeScreen);
 
-  selectCar = new SelectCar(this);
-  connect(selectCar, &SelectCar::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
-  connect(selectCar, &SelectCar::selectedCar, [=]() {
+  //selectCar = new SelectCar(this);
+  //connect(selectCar, &SelectCar::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
+  //connect(selectCar, &SelectCar::selectedCar, [=]() {
 
-     QString selected = QString::fromStdString(Params().get("SelectedCar"));
-     selectCarBtn->setText(selected.length() ? selected : "Select your car");
-     main_layout->setCurrentWidget(homeScreen);
-  });
-  main_layout->addWidget(selectCar);
+  //   QString selected = QString::fromStdString(Params().get("SelectedCar"));
+  //   selectCarBtn->setText(selected.length() ? selected : "Select your car");
+  //   main_layout->setCurrentWidget(homeScreen);
+  //});
+  //main_layout->addWidget(selectCar);
 
   QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
   if(lateral_control.length() == 0)
@@ -588,7 +588,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   QHBoxLayout* layoutBtn = new QHBoxLayout(homeWidget);
   layoutBtn->addWidget(lateralControlBtn);
   layoutBtn->addSpacing(10);
-  layoutBtn->addWidget(selectCarBtn);
+  //layoutBtn->addWidget(selectCarBtn);
   vlayout->addSpacing(10);
   vlayout->addLayout(layoutBtn, 0);
   vlayout->addSpacing(10);
@@ -648,11 +648,11 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_road.png",
                                             this));
 
-  /*toggles.append(new ParamControl("SccSmootherSlowOnCurves",
+  toggles.append(new ParamControl("SccSmootherSlowOnCurves",
                                             "Enable Slow On Curves",
                                             "",
                                             "../assets/offroad/icon_road.png",
-                                            this));*/
+                                            this));
 
   /*toggles.append(new ParamControl("SccSmootherSyncGasPressed",
                                             "Sync set speed on gas pressed",
@@ -710,56 +710,6 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   }
 }
 
-SelectCar::SelectCar(QWidget* parent): QWidget(parent) {
-
-  QVBoxLayout* main_layout = new QVBoxLayout(this);
-  main_layout->setMargin(20);
-  main_layout->setSpacing(20);
-
-  // Back button
-  QPushButton* back = new QPushButton("Back");
-  back->setObjectName("back_btn");
-  back->setFixedSize(500, 100);
-  connect(back, &QPushButton::clicked, [=]() { emit backPress(); });
-  main_layout->addWidget(back, 0, Qt::AlignLeft);
-
-  QListWidget* list = new QListWidget(this);
-  list->setStyleSheet("QListView {padding: 40px; background-color: #393939; border-radius: 15px; height: 140px;} QListView::item{height: 100px}");
-  //list->setAttribute(Qt::WA_AcceptTouchEvents, true);
-  QScroller::grabGesture(list->viewport(), QScroller::LeftMouseButtonGesture);
-  list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
-  list->addItem("[ Not selected ]");
-
-  QStringList items = get_list("/data/params/d/SupportedCars");
-  list->addItems(items);
-  list->setCurrentRow(0);
-
-  QString selected = QString::fromStdString(Params().get("SelectedCar"));
-
-  int index = 0;
-  for(QString item : items) {
-    if(selected == item) {
-        list->setCurrentRow(index + 1);
-        break;
-    }
-    index++;
-  }
-
-  QObject::connect(list, QOverload<QListWidgetItem*>::of(&QListWidget::itemClicked),
-    [=](QListWidgetItem* item){
-
-    if(list->currentRow() == 0)
-        Params().remove("SelectedCar");
-    else
-        Params().put("SelectedCar", list->currentItem()->text().toStdString());
-
-    emit selectedCar();
-    });
-
-  main_layout->addWidget(list);
-}
-
 LateralControl::LateralControl(QWidget* parent): QWidget(parent) {
 
   QVBoxLayout* main_layout = new QVBoxLayout(this);
@@ -779,7 +729,7 @@ LateralControl::LateralControl(QWidget* parent): QWidget(parent) {
   QScroller::grabGesture(list->viewport(), QScroller::LeftMouseButtonGesture);
   list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
-  QStringList items = {"LQR", "INDI", "TORQUE"};
+  QStringList items = {"LQR", "INDI", "HYBRID"};
   list->addItems(items);
   list->setCurrentRow(0);
 
