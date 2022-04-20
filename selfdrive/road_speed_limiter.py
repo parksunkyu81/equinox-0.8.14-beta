@@ -12,7 +12,7 @@ from common.numpy_fast import clip
 from common.realtime import sec_since_boot
 from common.conversions import Conversions as CV
 
-CAMERA_SPEED_FACTOR = 0.97
+CAMERA_SPEED_FACTOR = 0.92
 
 
 class Port:
