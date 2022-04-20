@@ -920,9 +920,6 @@ class Controls:
         controlsState.sccGasFactor = ntune_scc_get('sccGasFactor')
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
-        controlsState.dynamicSelFollow = ntune_scc_get('dynamicFollow')
-        controlsState.durationLeadSafeTime = self.duration_time
-
 
         lat_tuning = self.CP.lateralTuning.which()
         if self.joystick_mode:
