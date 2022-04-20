@@ -106,7 +106,7 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpV = [1.25, 1.1, 1.0, 0.95, 0.85, 0.8, 0.48]
     ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.1, 0.05]
-    ret.longitudinalActuatorDelayLowerBound = 0.3
+    ret.longitudinalActuatorDelayLowerBound = 0.3   # 추정 자동차 특정 지연, 지금은 0.3초 사용
     ret.longitudinalActuatorDelayUpperBound = 0.3
 
 
