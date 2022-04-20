@@ -108,7 +108,7 @@ class CarInterface(CarInterfaceBase):
     ret.steerActuatorDelay = 0.1
     ret.steerRateCost = 0.35
     #ret.steerLimitTimer = 0.4   # DEFAULT
-    ret.steerLimitTimer = 2.5   # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
+    ret.steerLimitTimer = 0.8   # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
@@ -122,14 +122,18 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpBP = [0., 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS,
                                    30.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
     ret.longitudinalTuning.kpV = [1.25, 1.1, 1.0, 0.95, 0.85, 0.8, 0.48]
-    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.1, 0.05]
-    ret.longitudinalActuatorDelayLowerBound = 2.5   # 추정 자동차 특정 지연, 지금은 0.3초 사용 (2.5초 까지 미래에 대한 예상 움직임이 나온다)
-    ret.longitudinalActuatorDelayUpperBound = 2.5
+    #ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kiV = [0.1, 0.05]
+
+    ret.longitudinalTuning.kiBP = [0., 35.]
+    ret.longitudinalTuning.kiV = [0.18, 0.12]
+
+    ret.longitudinalActuatorDelayLowerBound = 0.3   # 추정 자동차 특정 지연, 지금은 0.3초 사용 (2.5초 까지 미래에 대한 예상 움직임이 나온다)
+    ret.longitudinalActuatorDelayUpperBound = 0.3
 
     ret.stoppingControl = False   # 자동차가 정지할 때 저속에서도 완전히 제어 여부
-    ret.vEgoStopping = V_CRUISE_MIN / CV.MS_TO_KPH
-    ret.vEgoStarting = V_CRUISE_MIN / CV.MS_TO_KPH
+    #ret.vEgoStopping = V_CRUISE_MIN / CV.MS_TO_KPH
+    #ret.vEgoStarting = V_CRUISE_MIN / CV.MS_TO_KPH
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
