@@ -586,7 +586,7 @@ struct ControlsState @0x97ff69c53601abf1 {
     lqrState @55 :LateralLQRState;
     angleState @58 :LateralAngleState;
     debugState @59 :LateralDebugState;
-    hybridState @74 :LateralHybridState;
+    hybridState @78 :LateralHybridState;
   }
 
   angleSteers @60 :Float32;
@@ -611,8 +611,6 @@ struct ControlsState @0x97ff69c53601abf1 {
   roadLimitSpeedActive @75 :Int32;
   roadLimitSpeed @76 :UInt32;
   roadLimitSpeedLeftDist @77 :UInt32;
-  dynamicSelFollow @78 :Int16;
-  durationLeadSafeTime @79 :Int16;
 
   enum OpenpilotState @0xdbe58b96d2d1ac61 {
     disabled @0;
