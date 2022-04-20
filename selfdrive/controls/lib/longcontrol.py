@@ -1,10 +1,9 @@
 from cereal import car
 from common.numpy_fast import clip, interp
 from common.realtime import DT_CTRL
-from selfdrive.controls.lib.pid import LongPIDController
+from selfdrive.controls.lib.pid import PIDController
 from selfdrive.controls.lib.drive_helpers import CONTROL_N
 from selfdrive.modeld.constants import T_IDXS
-from selfdrive.ntune import ntune_scc_get
 
 LongCtrlState = car.CarControl.Actuators.LongControlState
 
@@ -54,15 +53,9 @@ def long_control_state_trans(CP, active, long_control_state, v_ego, v_target,
 class LongControl():
   def __init__(self, CP):
     self.long_control_state = LongCtrlState.off  # initialized to off
-    #self.pid = PIDController((CP.longitudinalTuning.kpBP, CP.longitudinalTuning.kpV),
-    #                         (CP.longitudinalTuning.kiBP, CP.longitudinalTuning.kiV),
-    #                         k_f = CP.longitudinalTuning.kf, rate=1 / DT_CTRL)
-
-    self.pid = LongPIDController((CP.longitudinalTuning.kpBP, CP.longitudinalTuning.kpV),
-                                 (CP.longitudinalTuning.kiBP, CP.longitudinalTuning.kiV),
-                                 (CP.longitudinalTuning.kdBP, CP.longitudinalTuning.kdV),
-                                 (CP.longitudinalTuning.kfBP, CP.longitudinalTuning.kfV),
-                                 rate=1 / DT_CTRL)
+    self.pid = PIDController((CP.longitudinalTuning.kpBP, CP.longitudinalTuning.kpV),
+                             (CP.longitudinalTuning.kiBP, CP.longitudinalTuning.kiV),
+                             k_f = CP.longitudinalTuning.kf, rate=1 / DT_CTRL)
     self.v_pid = 0.0
     self.last_output_accel = 0.0
 
@@ -108,7 +101,7 @@ class LongControl():
       self.reset(CS.vEgo)
       output_accel = 0.
 
-    # tracking objects and driving
+    # 물체 추적 및 운전
     elif self.long_control_state == LongCtrlState.pid:
       self.v_pid = v_target
 
@@ -120,9 +113,7 @@ class LongControl():
 
       error = self.v_pid - CS.vEgo
       error_deadzone = apply_deadzone(error, deadzone)
-      #output_accel = self.pid.update(error_deadzone, speed=CS.vEgo, feedforward=a_target, freeze_integrator=freeze_integrator)
-      output_accel = self.pid.update(self.v_pid, CS.vEgo, speed=CS.vEgo, deadzone=deadzone, feedforward=a_target,
-                                     freeze_integrator=freeze_integrator)
+      output_accel = self.pid.update(error_deadzone, speed=CS.vEgo, feedforward=a_target, freeze_integrator=freeze_integrator)
 
       if prevent_overshoot:
         output_accel = min(output_accel, 0.0)
@@ -131,8 +122,7 @@ class LongControl():
     elif self.long_control_state == LongCtrlState.stopping:
       # Keep applying brakes until the car is stopped
       if not CS.standstill or output_accel > CP.stopAccel:
-        output_accel -= CP.stoppingDecelRate * DT_CTRL * \
-                        interp(output_accel, [CP.stopAccel, CP.stopAccel/2., CP.stopAccel/4., 0.], [0.3, 0.65, 1., 3.])
+        output_accel -= CP.stoppingDecelRate * DT_CTRL
       output_accel = clip(output_accel, accel_limits[0], accel_limits[1])
       self.reset(CS.vEgo)
 
