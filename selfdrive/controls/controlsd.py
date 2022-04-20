@@ -34,7 +34,6 @@ from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN
 from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
 from common.params import Params
-from selfdrive.controls.lib.dynamic_follow.df_manager import dfManager
 import datetime
 
 MIN_SET_SPEED_KPH = V_CRUISE_MIN
@@ -99,10 +98,6 @@ class Controls:
                  'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
                  'managerState', 'liveParameters', 'radarState'] + self.camera_packets + joystick_packet,
                 ignore_alive=ignore, ignore_avg_freq=['radarState', 'longitudinalPlan'])
-
-        self.sm_smiskol = messaging.SubMaster(['dynamicFollowData'])
-
-        self.df_manager = dfManager()
 
         self.can_sock = can_sock
         if can_sock is None:
@@ -182,15 +177,6 @@ class Controls:
 
         self.speed_conv_to_ms = CV.KPH_TO_MS if self.is_metric else CV.MPH_TO_MS
         self.speed_conv_to_clu = CV.MS_TO_KPH if self.is_metric else CV.MS_TO_MPH
-
-        # 앞차 거리 (PSK) 2021.10.15
-        # 레이더 비전 상태를 저장한다.
-        self.limited_lead = False
-        self.duration_limited_lead = False
-        self.start_limited_lead = 0
-        self.end_limited_lead = 0
-        self.now_limited_lead = 0
-        self.duration_time = 0
 
         self.slowing_down = False
         self.slowing_down_alert = False
@@ -339,41 +325,6 @@ class Controls:
         else:
             self.slowing_down_alert = False
             self.slowing_down = False
-
-        # 현재시간 체크 활성화
-        if self.duration_limited_lead:
-            self.now_limited_lead = int(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
-            if self.limited_lead and self.now_limited_lead <= self.end_limited_lead:
-                self.duration_time = self.end_limited_lead - self.now_limited_lead
-                max_speed_clu = min(max_speed_clu, self.min_set_speed_clu)
-                #print('===================== DIFF SECONDS : ', self.duration_time)
-
-            elif self.limited_lead and self.now_limited_lead > self.end_limited_lead:
-                self.duration_limited_lead = False
-                self.limited_lead = False    # 안전거리 활성화 초기화
-                self.start_limited_lead = 0
-                self.end_limited_lead = 0
-                self.now_limited_lead = 0
-                self.duration_time = 0
-
-                #print('===================== LEAD SAFE RESET ===========================')
-
-        # 안전거리 활성화
-        if ntune_scc_get('leadSafe') == 1:
-            if not self.duration_limited_lead:
-              lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
-              if lead_speed >= self.min_set_speed_clu:
-                  if lead_speed < max_speed_clu:
-                    max_speed_clu = min(max_speed_clu, lead_speed)
-                    if not self.limited_lead:
-                      self.max_speed_clu = vEgo + 3.
-                      self.limited_lead = True
-                      # 안전거리 활성화 시간을 현재시간으로 설정
-                      self.start_limited_lead = int(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
-                      self.end_limited_lead = self.start_limited_lead + int(ntune_scc_get("durationLeadSafe"))
-                      self.duration_limited_lead = True
-                      #print('===================== SET START TIME : ', self.start_limited_lead)
-                      #print('===================== SET END TIME : ', self.end_limited_lead)
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS)
         # print("update_max_speed() value : ", self.max_speed_clu)
@@ -568,7 +519,6 @@ class Controls:
         CS = self.CI.update(self.CC, can_strs)
 
         self.sm.update(0)
-        self.sm_smiskol.update(0)
 
         if not self.initialized:
             all_valid = CS.canValid and self.sm.all_checks()
@@ -605,59 +555,6 @@ class Controls:
 
         return CS
 
-    def get_lead(self, sm):
-        radar = sm['radarState']
-        if radar.leadOne.status:
-            return radar.leadOne
-        return None
-
-    def get_long_lead_safe_speed(self, sm, CS, vEgo):
-        if CS.cruiseState.enabled:
-            lead = self.get_lead(sm)
-            if lead is not None:
-                # d : 비전 레이더 거리
-                d = lead.dRel - 5.
-                # vRel : Real Speed (- 값이면 내차 속도가 더 빠름)
-                # lead의 vrel(상대속도)에 곱해지는 상수라 커지면 더 멀리서 줄이기 시작합니다
-                # longLeadVision : 비전이 인식한 지정된 거리부터 속도를 줄인다.
-                if 0. < d < -lead.vRel * (9. + 3.) * ntune_scc_get("ratioLeadSafe"):
-                    t = d / lead.vRel
-                    accel = -(lead.vRel / t) * self.speed_conv_to_clu
-                    accel *= 1.2
-
-                    if accel < 0.:
-                        target_speed = vEgo + accel
-                        target_speed = max(target_speed, self.min_set_speed_clu)
-                        return target_speed
-
-        return 0
-
-    """def cal_curve_speed(self, sm, v_ego, frame):
-
-        if frame % 10 == 0:
-            md = sm['modelV2']
-            if md is not None and len(md.position.x) == TRAJECTORY_SIZE and len(md.position.y) == TRAJECTORY_SIZE:
-                x = md.position.x
-                y = md.position.y
-                dy = np.gradient(y, x)
-                d2y = np.gradient(dy, x)
-                curv = d2y / (1 + dy ** 2) ** 1.5
-                curv = curv[5:TRAJECTORY_SIZE - 10]
-                a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
-                v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
-                model_speed = np.mean(v_curvature) * 0.70
-
-                if model_speed < v_ego:
-                    self.curve_speed_ms = float(max(model_speed, 32. * CV.KPH_TO_MS))
-                else:
-                    self.curve_speed_ms = 255.
-
-                if np.isnan(self.curve_speed_ms):
-                    self.curve_speed_ms = 255.
-            else:
-                self.curve_speed_ms = 255.
-
-        return self.curve_speed_ms"""
 
     def update_cruise_buttons(self, CS):  # called by controlds's state_transition
 
@@ -804,10 +701,6 @@ class Controls:
             self.LoC.reset(v_pid=CS.vEgo)
 
         if not self.joystick_mode:
-            """extras_loc = {'lead_one': self.sm_smiskol['radarState'].leadOne,
-                          'mpc_TR': self.sm_smiskol['dynamicFollowData'].mpcTR,  # TODO: just pass the services
-                          'live_tracks': self.sm_smiskol['liveTracks'], 'has_lead': long_plan.hasLead}"""
-
             # accel PID loop
             pid_accel_limits = self.CI.get_pid_accel_limits(self.CP, CS.vEgo, self.v_cruise_kph * CV.KPH_TO_MS)
             t_since_plan = (self.sm.frame - self.sm.rcv_frame['longitudinalPlan']) * DT_CTRL
