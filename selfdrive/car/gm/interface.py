@@ -7,6 +7,7 @@ from selfdrive.car.gm.values import CAR, HIGH_TORQUE, CruiseButtons, \
                                     AccState, CarControllerParams, NO_ASCM
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
+from selfdrive.controls.lib.drive_helpers import V_CRUISE_MIN
 
 ButtonType = car.CarState.ButtonEvent.Type
 EventName = car.CarEvent.EventName
@@ -109,6 +110,9 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalActuatorDelayLowerBound = 0.3   # 추정 자동차 특정 지연, 지금은 0.3초 사용
     ret.longitudinalActuatorDelayUpperBound = 0.3
 
+    ret.stoppingControl = False   # 자동차가 정지할 때 저속에서도 완전히 제어 여부
+    ret.vEgoStopping = V_CRUISE_MIN / CV.MS_TO_KPH
+    ret.vEgoStarting = V_CRUISE_MIN / CV.MS_TO_KPH
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
