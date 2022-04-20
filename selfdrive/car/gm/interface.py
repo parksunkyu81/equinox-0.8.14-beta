@@ -108,7 +108,7 @@ class CarInterface(CarInterfaceBase):
     ret.steerActuatorDelay = 0.1
     ret.steerRateCost = 0.35
     #ret.steerLimitTimer = 0.4   # DEFAULT
-    ret.steerLimitTimer = 2.5   # steerLimitAlert 가 발행되기 전의 시간
+    ret.steerLimitTimer = 2.5   # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
