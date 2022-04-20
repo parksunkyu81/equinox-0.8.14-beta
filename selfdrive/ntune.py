@@ -9,7 +9,7 @@ import numpy as np
 CONF_PATH = '/data/ntune/'
 CONF_LAT_LQR_FILE = '/data/ntune/lat_lqr.json'
 CONF_LAT_INDI_FILE = '/data/ntune/lat_indi.json'
-CONF_LAT_TORQUE_FILE = '/data/ntune/lat_torque.json'
+CONF_LAT_TORQUE_FILE = '/data/ntune/lat_torque_v2.json'
 
 ntunes = {}
 
@@ -169,7 +169,7 @@ class nTune():
     if self.checkValue("useLiveSteerRatio", 0., 1., 1.):
       updated = True
 
-    if self.checkValue("steerRatio", 10.0, 20.0, 17.5):
+    if self.checkValue("steerRatio", 10.0, 20.0, 16.5):
       updated = True
 
     if self.checkValue("steerActuatorDelay", 0., 0.8, 0.2):
@@ -186,16 +186,16 @@ class nTune():
   def checkValidLQR(self):
     updated = False
 
-    if self.checkValue("scale", 500.0, 5000.0, 1700.0):
+    if self.checkValue("scale", 500.0, 5000.0, 1600.0):
       updated = True
 
-    if self.checkValue("ki", 0.0, 0.2, 0.03):
+    if self.checkValue("ki", 0.0, 0.2, 0.01):
       updated = True
 
-    if self.checkValue("dcGain", 0.002, 0.004, 0.003):
+    if self.checkValue("dcGain", 0.002, 0.004, 0.0026):
       updated = True
 
-    if self.checkValue("steerLimitTimer", 0.5, 3.0, 0.4):
+    if self.checkValue("steerLimitTimer", 0.5, 3.0, 2.5):
       updated = True
 
     return updated
@@ -219,15 +219,11 @@ class nTune():
 
     if self.checkValue("useSteeringAngle", 0., 1., 1.):
       updated = True
-    if self.checkValue("kp", 0.5, 3.0, 2.0):
+    if self.checkValue("maxTorque", 1.0, 4.0, 2.5):
       updated = True
-    if self.checkValue("kf", 0.0, 0.5, 0.05):
+    if self.checkValue("friction", 0.0, 0.1, 0.02):
       updated = True
-    if self.checkValue("friction", 0.0, 1.5, 0.01):
-      updated = True
-    if self.checkValue("ki", 0.0, 0.5, 0.05):
-      updated = True
-    if self.checkValue("kd", 0.0, 1.5, 0.7):
+    if self.checkValue("kd", 0.0, 1.5, 0.0):
       updated = True
 
     return updated
@@ -259,7 +255,6 @@ class nTune():
   def updateIndi(self):
     indi = self.get_ctrl()
     if indi is not None:
-      indi.use_steering_angle = float(self.config["useSteeringAngle"]) > 0.5
       indi._RC = ([0.], [float(self.config["timeConstant"])])
       indi._G = ([0.], [float(self.config["actuatorEffectiveness"])])
       indi._outer_loop_gain = ([0.], [float(self.config["outerLoopGain"])])
@@ -270,10 +265,12 @@ class nTune():
   def updateTorque(self):
     torque = self.get_ctrl()
     if torque is not None:
-      torque.pid._k_p = [[0], [float(self.config["kp"])]]
-      torque.pid._k_i = [[0], [float(self.config["ki"])]]
+      torque.use_steering_angle = float(self.config["useSteeringAngle"]) > 0.5
+      max_torque = float(self.config["maxTorque"])
+      torque.pid._k_p = [[0], [2.0 / max_torque]]
+      torque.pid.k_f = 1.0 / max_torque
+      torque.pid._k_i = [[0], [0.5 / max_torque]]
       torque.pid._k_d = [[0], [float(self.config["kd"])]]
-      torque.pid.k_f = float(self.config["kf"])
       torque.friction = float(self.config["friction"])
       torque.reset()
 

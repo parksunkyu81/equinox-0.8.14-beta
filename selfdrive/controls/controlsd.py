@@ -175,6 +175,8 @@ class Controls:
         self.roadLimitSpeed = 0
         self.roadLimitSpeedLeftDist = 0
 
+        self.slow_on_curves = Params().get_bool('SccSmootherSlowOnCurves')
+
         self.min_set_speed_clu = self.kph_to_clu(MIN_SET_SPEED_KPH)
         self.max_set_speed_clu = self.kph_to_clu(MAX_SET_SPEED_KPH)
 
@@ -297,10 +299,8 @@ class Controls:
         # print("first_started : ", first_started)
         # print("max_speed_log : ", max_speed_log)
 
-        # self, sm, v_ego, frame
         self.cal_curve_speed(sm, vEgo, frame)
-
-        if SLOW_ON_CURVES and self.curve_speed_ms >= MIN_CURVE_SPEED:
+        if self.slow_on_curves and SLOW_ON_CURVES and self.curve_speed_ms >= MIN_CURVE_SPEED:
             max_speed_clu = min(self.v_cruise_kph * CV.KPH_TO_MS, self.curve_speed_ms) * self.speed_conv_to_clu
         else:
             max_speed_clu = self.kph_to_clu(self.v_cruise_kph)
