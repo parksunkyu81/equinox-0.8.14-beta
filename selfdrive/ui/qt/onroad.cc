@@ -518,7 +518,7 @@ void NvgWindow::drawHud(QPainter &p) {
 void NvgWindow::drawBottomIcons(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
-  auto controls_state = sm["controlsState"].getControlsState();
+  //auto controls_state = sm["controlsState"].getControlsState();
 
   // brake
   int x = 140;
