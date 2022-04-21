@@ -470,6 +470,8 @@ void NvgWindow::drawHud(QPainter &p) {
 
   const auto controls_state = sm["controlsState"].getControlsState();
   const auto device_State = sm["deviceState"].getDeviceState();
+  const auto car_control = sm["carControl"].getCarControl();
+
   //const auto live_params = sm["liveParameters"].getLiveParameters();
 
   QColor orangeColor = QColor(52, 197, 66, 255);
@@ -495,10 +497,9 @@ void NvgWindow::drawHud(QPainter &p) {
      cpuUsage /= cpuUsageList.size();
   }
 
-
-
   QString infoText;
-  infoText.sprintf("SR(%.2f) BAT (%d) CPU Temp(%.1f) CPU (%d) MEM (%d)",
+  infoText.sprintf("PEDAL(%.2f) SR(%.2f) BAT(%d) CPU Temp(%.1f) CPU(%d) MEM(%d)",
+                      car_control.getActuators().getCommaPedal()
                       controls_state.getSteerRatio(),
                       device_State.getBatteryPercent(),
                       cpuTemp,
@@ -507,7 +508,7 @@ void NvgWindow::drawHud(QPainter &p) {
                       );
 
   // info
-  configFont(p, "Open Sans", 45, "Regular");
+  configFont(p, "Open Sans", 40, "Regular");
   p.setPen(QColor(120, 255, 120, 200));
   p.drawText(rect().left() + 20, rect().height() - 15, infoText);
 

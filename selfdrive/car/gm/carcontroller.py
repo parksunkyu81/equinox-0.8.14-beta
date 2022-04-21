@@ -69,6 +69,7 @@ class CarController():
           acc_mult = interp(CS.out.vEgo, [0., 5.], [0.17, 0.24])
           if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_MIN / CV.MS_TO_KPH:
             self.comma_pedal = clip(actuators.accel * acc_mult, 0., 1.)
+            actuators.commaPedal = self.comma_pedal  # for debug value
           elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_MIN / CV.MS_TO_KPH:
             self.comma_pedal = 0.0
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.comma_pedal, idx))
