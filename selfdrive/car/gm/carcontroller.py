@@ -88,6 +88,6 @@ class CarController():
 
     new_actuators = actuators.copy()
     new_actuators.steer = self.apply_steer_last / P.STEER_MAX
-    new_actuators.gas = self.gas
+    new_actuators.gas = self.comma_pedal
 
     return new_actuators, can_sends
