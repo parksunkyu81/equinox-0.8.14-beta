@@ -106,13 +106,6 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kiBP = [0., 35.]
     ret.longitudinalTuning.kiV = [0.18, 0.12]
 
-    #ret.longitudinalActuatorDelayLowerBound = 0.3   # 추정 자동차 특정 지연, 지금은 0.3초 사용 (2.5초 까지 미래에 대한 예상 움직임이 나온다)
-    #ret.longitudinalActuatorDelayUpperBound = 0.3
-
-    ret.stoppingControl = False   # 자동차가 정지할 때 저속에서도 완전히 제어 여부
-    #ret.vEgoStopping = V_CRUISE_MIN / CV.MS_TO_KPH
-    #ret.vEgoStarting = V_CRUISE_MIN / CV.MS_TO_KPH
-
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
     return ret
