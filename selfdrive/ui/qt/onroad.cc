@@ -498,7 +498,8 @@ void NvgWindow::drawHud(QPainter &p) {
   }
 
   QString infoText;
-  infoText.sprintf("PEDAL(%.3f) SR(%.2f) BAT(%d) CPU Temp(%.1f) CPU(%d) MEM(%d)",
+  infoText.sprintf("ACCEL(%.3f) PEDAL(%.3f) SR(%.2f) BAT(%d) CPU Temp(%.1f) CPU(%d) MEM(%d)",
+                      car_control.getActuators().getAccel(),
                       car_control.getActuators().getCommaPedal(),
                       controls_state.getSteerRatio(),
                       device_State.getBatteryPercent(),
