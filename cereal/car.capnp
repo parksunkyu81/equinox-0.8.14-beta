@@ -481,6 +481,7 @@ struct CarParams {
     indi @27 :LateralINDITuning;
     lqr @40 :LateralLQRTuning;
     hybrid @76 :LateralHybridTuning;
+    torque @76 :LateralTorqueTuning;
   }
 
   steerLimitAlert @28 :Bool;
@@ -582,9 +583,15 @@ struct CarParams {
     l @7 :List(Float32);  # Kalman gain
   }
 
-  struct LateralHybridTuning {
-
+  struct LateralTorqueTuning {
+    useSteeringAngle @0 :Bool;
+    kp @1 :Float32;
+    ki @2 :Float32;
+    friction @3 :Float32;
+    kf @4 :Float32;
+    kd @5 :Float32;
   }
+
 
   enum SafetyModel {
     silent @0;
