@@ -135,14 +135,21 @@ class CarInterface(CarInterfaceBase):
     #너무 올리면 아주 멀리서 정차를 하고 기어가듯 가까이 차에 붙거든요
     #KI 조절은 0.01 ~ 0.001 씩 조절
 
-    #ret.longitudinalTuning.kpBP = [0., 20. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 65. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kpV = [1.35, 1.20, 1.1, 1.0, 0.73, 0.65]
+    """tune.deadzoneBP = [0., 8.05]
+    tune.deadzoneV = [.0, .14]
+    tune.kpBP = [0., 5., 20.]
+    tune.kpV = [1.3, 1.0, 0.7]
+    tune.kiBP = [0., 5., 12., 20., 27.]
+    tune.kiV = [.35, .23, .20, .17, .1]"""
 
     ret.longitudinalTuning.kpBP = [0., 20. * CV.KPH_TO_MS, 70. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.5, 1.2, 0.7]
+    ret.longitudinalTuning.kpV = [1.3, 1.0, 0.7]
 
-    ret.longitudinalTuning.kiBP = [0., 40. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.14, 0.17, 0.18, 0.12]
+    ret.longitudinalTuning.kiBP = [0., 20. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 70. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
+
+    ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.deadzoneV = [.0, 0.14]
 
     ret.longitudinalActuatorDelayLowerBound = 0.1
     ret.longitudinalActuatorDelayUpperBound = 0.13
@@ -155,12 +162,6 @@ class CarInterface(CarInterfaceBase):
     #ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
     #ret.longitudinalTuning.deadzoneV = [0., 0.10]
 
-
-    #ret.stopAccel = -2.0
-    #ret.stoppingDecelRate = 4.0
-    #ret.vEgoStopping = 0.5
-    #ret.vEgoStarting = 0.5
-    #ret.stoppingControl = True
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
