@@ -136,24 +136,42 @@ class CarInterface(CarInterfaceBase):
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
     # longitudinal
-    ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.35, 1.20, 0.85, 0.73, 0.65]
+    # 월급, 시급
+    # 증여재산을 넉넉히 주어 빨리 액셀에서 발을 때도록 시켜야 멀리서 브레이킹을 한다.
+    # 일단 로우 바운드를 낮추면 앞차에 움직임에 내차가 조금 예민해집니다
 
-    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.18, 0.12]
 
-    ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.deadzoneV = [0., 0.10]
-    ret.longitudinalActuatorDelayLowerBound = 0.13
-    ret.longitudinalActuatorDelayUpperBound = 0.15
+    #보통 Ki는 브레이킹의 시점을 가지고 튜닝합니다
+    #앞차가 가까워지는데 브레이킹 잘 안하면 ki 를 조금씩 올립니다
+    #너무 올리면 아주 멀리서 정차를 하고 기어가듯 가까이 차에 붙거든요
+    #KI 조절은 0.01 ~ 0.001 씩 조절
 
-    # ret.startAccel = -0.8 #### REMOVED
-    ret.stopAccel = -2.0
-    # ret.startingAccelRate = 5.0 #### REMOVED
-    ret.stoppingDecelRate = 4.0
-    ret.vEgoStopping = 0.5
-    ret.vEgoStarting = 0.5
-    ret.stoppingControl = True
+    #ret.longitudinalTuning.kpBP = [0., 20. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 65. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kpV = [1.35, 1.20, 1.1, 1.0, 0.73, 0.65]
+
+    ret.longitudinalTuning.kpBP = [0., 20. * CV.KPH_TO_MS, 70. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.3, 1.0, 0.7]
+
+    ret.longitudinalTuning.kiBP = [0., 40. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kiV = [0.14, 0.17, 0.18, 0.12]
+
+    ret.longitudinalActuatorDelayLowerBound = 0.1
+    ret.longitudinalActuatorDelayUpperBound = 0.13
+
+    # 저는 요새 어퍼랑 로우로 예전에 kf로 튜닝하던 예민함고 무딤을 보통 튜닝합니다
+    # Kp는 가속을 하고 정차를 하는 속도가 적당한 그래프를 만드는 정도로 튜닝해서 맞춰놨고
+
+
+    # 시속 30킬로에서 영점 조절이 바뀐걸테니
+    #ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.deadzoneV = [0., 0.10]
+
+
+    #ret.stopAccel = -2.0
+    #ret.stoppingDecelRate = 4.0
+    #ret.vEgoStopping = 0.5
+    #ret.vEgoStarting = 0.5
+    #ret.stoppingControl = True
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
