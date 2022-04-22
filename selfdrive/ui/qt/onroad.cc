@@ -471,6 +471,7 @@ void NvgWindow::drawHud(QPainter &p) {
   const auto controls_state = sm["controlsState"].getControlsState();
   const auto device_State = sm["deviceState"].getDeviceState();
   const auto car_control = sm["carControl"].getCarControl();
+  const auto live_params = sm["liveParameters"].getLiveParameters();
 
   //const auto live_params = sm["liveParameters"].getLiveParameters();
 
@@ -498,8 +499,12 @@ void NvgWindow::drawHud(QPainter &p) {
   }
 
   QString infoText;
-  infoText.sprintf("PEDAL(%.3f) SR(%.2f) BAT(%d) CPU Temp(%.1f) CPU(%d) MEM(%d)",
-                      car_control.getActuators().getCommaPedal()
+  infoText.sprintf("%s AO(%.2f/%.2f) ACCEL(%.3f) PEDAL(%.3f) SR(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d)",
+                      s->lat_control.c_str(),
+                      live_params.getAngleOffsetDeg(),
+                      live_params.getAngleOffsetAverageDeg(),
+                      car_control.getActuators().getAccel(),
+                      car_control.getActuators().getCommaPedal(),
                       controls_state.getSteerRatio(),
                       device_State.getBatteryPercent(),
                       cpuTemp,

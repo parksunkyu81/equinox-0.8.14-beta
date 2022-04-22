@@ -21,7 +21,7 @@ from selfdrive.controls.lib.longcontrol import LongControl
 from selfdrive.controls.lib.latcontrol_pid import LatControlPID
 from selfdrive.controls.lib.latcontrol_indi import LatControlINDI
 from selfdrive.controls.lib.latcontrol_lqr import LatControlLQR
-from selfdrive.controls.lib.latcontrol_hybrid import LatControlHybrid
+from selfdrive.controls.lib.latcontrol_torque import LatControlTorque
 from selfdrive.controls.lib.latcontrol_angle import LatControlAngle
 from selfdrive.controls.lib.events import Events, ET
 from selfdrive.controls.lib.alertmanager import AlertManager, set_offroad_alert
@@ -156,8 +156,9 @@ class Controls:
             self.LaC = LatControlINDI(self.CP, self.CI)
         elif self.CP.lateralTuning.which() == 'lqr':
             self.LaC = LatControlLQR(self.CP, self.CI)
-        elif self.CP.lateralTuning.which() == 'hybrid':
-            self.LaC = LatControlHybrid(self.CP, self.CI)
+        elif self.CP.lateralTuning.which() == 'torque':
+            self.LaC = LatControlTorque(self.CP, self.CI)
+
 
         self.initialized = False
         self.state = State.disabled
@@ -923,15 +924,17 @@ class Controls:
 
         lat_tuning = self.CP.lateralTuning.which()
         if self.joystick_mode:
-            controlsState.lateralControlState.debugState = lac_log
+          controlsState.lateralControlState.debugState = lac_log
         elif self.CP.steerControlType == car.CarParams.SteerControlType.angle:
-            controlsState.lateralControlState.angleState = lac_log
+          controlsState.lateralControlState.angleState = lac_log
         elif lat_tuning == 'pid':
-            controlsState.lateralControlState.pidState = lac_log
+          controlsState.lateralControlState.pidState = lac_log
         elif lat_tuning == 'lqr':
-            controlsState.lateralControlState.lqrState = lac_log
+          controlsState.lateralControlState.lqrState = lac_log
         elif lat_tuning == 'indi':
-            controlsState.lateralControlState.indiState = lac_log
+          controlsState.lateralControlState.indiState = lac_log
+        elif lat_tuning == 'torque':
+          controlsState.lateralControlState.torqueState = lac_log
 
         self.pm.send('controlsState', dat)
 

@@ -6,7 +6,7 @@ from selfdrive.car import apply_std_steer_torque_limits, create_gas_interceptor_
 from selfdrive.car.gm import gmcan
 from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams
 from opendbc.can.packer import CANPacker
-from selfdrive.controls.lib.drive_helpers import V_CRUISE_MIN
+from selfdrive.controls.lib.drive_helpers import V_CRUISE_ENABLE_MIN
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
@@ -67,10 +67,10 @@ class CarController():
         if CS.CP.enableGasInterceptor:
           # 이것이 없으면 저속에서 너무 공격적입니다.
           acc_mult = interp(CS.out.vEgo, [0., 5.], [0.17, 0.24])
-          if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_MIN / CV.MS_TO_KPH:
+          if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
             self.comma_pedal = clip(actuators.accel * acc_mult, 0., 1.)
             actuators.commaPedal = self.comma_pedal  # for debug value
-          elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_MIN / CV.MS_TO_KPH:
+          elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
             self.comma_pedal = 0.0
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.comma_pedal, idx))
 
@@ -88,6 +88,6 @@ class CarController():
 
     new_actuators = actuators.copy()
     new_actuators.steer = self.apply_steer_last / P.STEER_MAX
-    new_actuators.gas = self.gas
+    new_actuators.gas = self.comma_pedal
 
     return new_actuators, can_sends

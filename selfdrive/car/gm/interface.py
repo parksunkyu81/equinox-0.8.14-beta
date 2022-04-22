@@ -76,15 +76,49 @@ class CarInterface(CarInterfaceBase):
     tire_stiffness_factor = 1.
     ret.maxSteeringAngleDeg = 1000.
 
-    ret.lateralTuning.init('lqr')
-    ret.lateralTuning.lqr.scale = 1700.0
-    ret.lateralTuning.lqr.ki = 0.03
-    ret.lateralTuning.lqr.dcGain = 0.003
-    ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
-    ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
-    ret.lateralTuning.lqr.c = [1., 0.]
-    ret.lateralTuning.lqr.k = [-105.0, 450.0]
-    ret.lateralTuning.lqr.l = [0.22, 0.318]
+    lateral_control = Params().get("LateralControl", encoding='utf-8')
+    if lateral_control == 'INDI':
+      ret.lateralTuning.init('indi')
+      ret.lateralTuning.indi.innerLoopGainBP = [0.]
+      ret.lateralTuning.indi.innerLoopGainV = [3.3]
+      ret.lateralTuning.indi.outerLoopGainBP = [0.]
+      ret.lateralTuning.indi.outerLoopGainV = [2.8]
+      ret.lateralTuning.indi.timeConstantBP = [0.]
+      ret.lateralTuning.indi.timeConstantV = [1.4]
+      ret.lateralTuning.indi.actuatorEffectivenessBP = [0.]
+      ret.lateralTuning.indi.actuatorEffectivenessV = [1.8]
+    elif lateral_control == 'LQR':
+      """ret.lateralTuning.init('lqr')
+      ret.lateralTuning.lqr.scale = 1700.0
+      ret.lateralTuning.lqr.ki = 0.03
+      ret.lateralTuning.lqr.dcGain = 0.003
+      ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+      ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+      ret.lateralTuning.lqr.c = [1., 0.]
+      ret.lateralTuning.lqr.k = [-105.0, 450.0]
+      ret.lateralTuning.lqr.l = [0.22, 0.318]"""
+
+      ret.lateralTuning.init('lqr')
+
+      ret.lateralTuning.lqr.scale = 1950.0
+      ret.lateralTuning.lqr.ki = 0.032
+      ret.lateralTuning.lqr.dcGain = 0.002237852961363602
+
+      ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+      ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+      ret.lateralTuning.lqr.c = [1., 0.]
+      ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
+      ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
+    else:
+      ret.lateralTuning.init('torque')
+      ret.lateralTuning.torque.useSteeringAngle = True
+      max_lat_accel = 2.5
+      ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
+      ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
+      ret.lateralTuning.torque.friction = 0.6
+      ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
+
+
 
     ret.steerRatio = 17.5
     # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
@@ -101,10 +135,25 @@ class CarInterface(CarInterfaceBase):
     ret.tireStiffnessFront, ret.tireStiffnessRear = scale_tire_stiffness(ret.mass, ret.wheelbase, ret.centerToFront,
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
-    ret.longitudinalTuning.kpBP = [0., 5., 35.]
-    ret.longitudinalTuning.kpV = [1.1, 0.75, 0.5]
-    ret.longitudinalTuning.kiBP = [0., 35.]
+    # longitudinal
+    ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.35, 1.20, 0.85, 0.73, 0.65]
+
+    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.18, 0.12]
+
+    ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.deadzoneV = [0., 0.10]
+    ret.longitudinalActuatorDelayLowerBound = 0.13
+    ret.longitudinalActuatorDelayUpperBound = 0.15
+
+    # ret.startAccel = -0.8 #### REMOVED
+    ret.stopAccel = -2.0
+    # ret.startingAccelRate = 5.0 #### REMOVED
+    ret.stoppingDecelRate = 4.0
+    ret.vEgoStopping = 0.5
+    ret.vEgoStarting = 0.5
+    ret.stoppingControl = True
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
