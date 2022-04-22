@@ -11,15 +11,6 @@ from selfdrive.controls.lib.drive_helpers import V_CRUISE_ENABLE_MIN
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
 
-def compute_gas_brake(accel, speed):
-  creep_brake = 0.0
-  creep_speed = 2.3
-  creep_brake_value = 0.15
-  if speed < creep_speed:
-    creep_brake = (creep_speed - speed) / creep_speed * creep_brake_value
-  gb = float(accel) / 4.8 - creep_brake
-  return clip(gb, 0.0, 1.0), clip(-gb, 0.0, 1.0)
-
 class CarController():
   def __init__(self, dbc_name, CP, VM):
     self.apply_steer_last = 0
@@ -42,14 +33,6 @@ class CarController():
 
     # Send CAN commands.
     can_sends = []
-
-    # gas and brake
-    if CS.adaptive_Cruise:
-      accel = actuators.accel
-      gas, brake = compute_gas_brake(actuators.accel, CS.out.vEgo)
-    else:
-      accel = 0.0
-      gas, brake = 0.0, 0.0
 
     # Steering (50Hz)
     # Avoid GM EPS faults when transmitting messages too close together: skip this transmit if we just received the
@@ -74,12 +57,67 @@ class CarController():
 
       if CS.CP.enableGasInterceptor:
         # 이것이 없으면 저속에서 너무 공격적입니다.
-        gas_mult = interp(CS.out.vEgo, [0., 10.], [0.4, 1.0])
+        acc_mult = interp(CS.out.vEgo, [0., 5.], [0.17, 0.24])
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
-          self.comma_pedal = clip(gas_mult * (gas - brake), 0., 1.)
+          self.comma_pedal = clip(actuators.accel * acc_mult, 0., 1.)
           actuators.commaPedal = self.comma_pedal  # for debug value
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0
+
+          ###발차시점, 처음 0~6초까지 , 1.5-6초간만 페달에 0.1775를 더한다.
+
+          d = 0
+          lead = self.scc_smoother.get_lead(controls.sm)
+          if lead is not None:
+            d = lead.dRel
+
+          frameDivider = 25  # , 상태변화 해상도를 염려하여, 틱당 0.25초 기준으로한다.
+          stoppingStateWindowsActiveCounterLimitstoMS = 1250
+          if not self.stoppingStateWindowsActive:
+            actuators.pedalStartingAdder = 0
+            actuators.pedalDistanceAdder = 0
+            if (self.frame % frameDivider) == 0:
+              self.beforeStoppingState = self.currentStoppingState
+              self.currentStoppingState = (controls.LoC.long_control_state == LongCtrlState.stopping)
+
+          if self.beforeStoppingState and not self.currentStoppingState and not self.stoppingStateWindowsActive:
+            self.stoppingStateWindowsActive = True
+
+          if self.stoppingStateWindowsActive:
+            self.stoppingStateWindowsActiveCounter += 1
+            if self.stoppingStateWindowsActiveCounter > (0):
+              actuators.pedalStartingAdder = interp(CS.out.vEgo, [0.0, 9 * CV.KPH_TO_MS, 18.0 * CV.KPH_TO_MS],
+                                                    [0.1875, 0.2075, 0.0050])
+              if d > 0:
+                actuators.pedalDistanceAdder = interp(d, [1, 10, 25, 40], [-0.0250, -0.0075, 0.0075, 0.0550])
+
+            if self.stoppingStateWindowsActiveCounter > (stoppingStateWindowsActiveCounterLimitstoMS) or (
+                    controls.LoC.long_control_state == LongCtrlState.stopping) or CS.out.vEgo > 30 * CV.KPH_TO_MS:
+              self.stoppingStateWindowsActive = False
+              self.stoppingStateWindowsActiveCounter = 0
+              self.beforeStoppingState = False
+              self.currentStoppingState = False
+              actuators.pedalStartingAdder = 0
+              actuators.pedalDistanceAdder = 0
+
+            actuators.pedalAdderFinal = (actuators.pedalStartingAdder + actuators.pedalDistanceAdder)
+            self.comma_pedal += interp(self.stoppingStateWindowsActiveCounter,
+                                       [0, stoppingStateWindowsActiveCounterLimitstoMS], [actuators.pedalAdderFinal, 0])
+
+            # 발차 .. ? frame 1 당 0.01초
+
+          actuators.commaPedal = self.comma_pedal  # for debug value
+
+          if actuators.accel < 0.105:
+            can_sends.append(gmcan.create_regen_paddle_command(self.packer_pt, CanBus.POWERTRAIN))
+            actuators.regenPaddle = True  # for icon
+
+
+          elif controls.LoC.pid.f < - 0.625:
+            can_sends.append(gmcan.create_regen_paddle_command(self.packer_pt, CanBus.POWERTRAIN))
+            actuators.regenPaddle = True  # for icon
+        else:
+          self.comma_pedal = 0.0  # Must be set by zero, otherwise cannot re-acceling when stopped. - jc01rho.
 
         if (frame % 4) == 0:
           idx = (frame // 4) % 4
