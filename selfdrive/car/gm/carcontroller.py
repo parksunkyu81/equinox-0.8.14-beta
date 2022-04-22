@@ -11,6 +11,15 @@ from selfdrive.controls.lib.drive_helpers import V_CRUISE_ENABLE_MIN
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
 
+def compute_gas_brake(accel, speed):
+  creep_brake = 0.0
+  creep_speed = 2.3
+  creep_brake_value = 0.15
+  if speed < creep_speed:
+    creep_brake = (creep_speed - speed) / creep_speed * creep_brake_value
+  gb = float(accel) / 4.8 - creep_brake
+  return clip(gb, 0.0, 1.0), clip(-gb, 0.0, 1.0)
+
 class CarController():
   def __init__(self, dbc_name, CP, VM):
     self.apply_steer_last = 0
@@ -35,8 +44,12 @@ class CarController():
     can_sends = []
 
     # gas and brake
-    if not c.active or not enabled or not CS.adaptive_Cruise or not CS.CP.enableGasInterceptor:
-      self.comma_pedal = 0.0
+    if CS.adaptive_Cruise:
+      accel = actuators.accel
+      gas, brake = compute_gas_brake(actuators.accel, CS.out.vEgo)
+    else:
+      accel = 0.0
+      gas, brake = 0.0, 0.0
 
     # Steering (50Hz)
     # Avoid GM EPS faults when transmitting messages too close together: skip this transmit if we just received the
@@ -59,19 +72,17 @@ class CarController():
 
       can_sends.append(gmcan.create_steering_control(self.packer_pt, CanBus.POWERTRAIN, apply_steer, idx, lkas_enabled))
 
-    if CS.CP.openpilotLongitudinalControl:
-      # Gas/regen and brakes - all at 25Hz
-      if (frame % 4) == 0:
-        idx = (frame // 4) % 4
+      if CS.CP.enableGasInterceptor:
+        # 이것이 없으면 저속에서 너무 공격적입니다.
+        gas_mult = interp(CS.out.vEgo, [0., 10.], [0.4, 1.0])
+        if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
+          self.comma_pedal = clip(gas_mult * (gas - brake), 0., 1.)
+          actuators.commaPedal = self.comma_pedal  # for debug value
+        elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
+          self.comma_pedal = 0
 
-        if CS.CP.enableGasInterceptor:
-          # 이것이 없으면 저속에서 너무 공격적입니다.
-          if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
-            acc_mult = interp(CS.out.vEgo, [0., 5.], [0.18, 0.24])
-            self.comma_pedal = clip(actuators.accel * acc_mult, 0., 1.)
-            actuators.commaPedal = self.comma_pedal  # for debug value
-          elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
-            self.comma_pedal = 0.0
+        if (frame % 4) == 0:
+          idx = (frame // 4) % 4
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.comma_pedal, idx))
 
     # Show green icon when LKA torque is applied, and
@@ -88,6 +99,6 @@ class CarController():
 
     new_actuators = actuators.copy()
     new_actuators.steer = self.apply_steer_last / P.STEER_MAX
-    new_actuators.gas = self.comma_pedal
+    #new_actuators.gas = self.comma_pedal
 
     return new_actuators, can_sends
