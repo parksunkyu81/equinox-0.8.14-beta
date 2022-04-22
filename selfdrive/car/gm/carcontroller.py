@@ -15,6 +15,7 @@ class CarController():
   def __init__(self, dbc_name, CP, VM):
     self.apply_steer_last = 0
     self.comma_pedal = 0.
+    self.accel = 0
 
     self.lka_steering_cmd_counter_last = -1
     self.lka_icon_status_last = (False, False)
@@ -55,14 +56,19 @@ class CarController():
 
       can_sends.append(gmcan.create_steering_control(self.packer_pt, CanBus.POWERTRAIN, apply_steer, idx, lkas_enabled))
 
+      self.accel = clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
+
       if CS.CP.enableGasInterceptor:
         # 이것이 없으면 저속에서 너무 공격적입니다.
-        acc_mult = interp(CS.out.vEgo, [0., 5.], [0.17, 0.24])
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
-          self.comma_pedal = clip(actuators.accel * acc_mult, 0., 1.)
+          MAX_INTERCEPTOR_GAS = 0.5
+          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.3, 0.0])
+          pedal_offset = interp(CS.out.vEgo, [0.0, 2.3, 29.], [-.4, 0.0, 0.2])
+          pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
+          self.comma_pedal = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)
           actuators.commaPedal = self.comma_pedal  # for debug value
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
-          self.comma_pedal = 0
+          self.comma_pedal = 0.
 
         if (frame % 4) == 0:
           idx = (frame // 4) % 4
@@ -82,6 +88,7 @@ class CarController():
 
     new_actuators = actuators.copy()
     new_actuators.steer = self.apply_steer_last / P.STEER_MAX
-    #new_actuators.gas = self.comma_pedal
+    new_actuators.accel = self.accel
+    new_actuators.gas = self.comma_pedal
 
     return new_actuators, can_sends

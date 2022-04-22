@@ -149,23 +149,14 @@ class CarInterface(CarInterfaceBase):
 
     # longitudinal
     ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.35, 1.20, 0.85, 0.73, 0.65]
+    ret.longitudinalTuning.kpV = [1.5, 1.3, 0.85, 0.73, 0.65]
 
-    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.18, 0.12]
+    ret.longitudinalTuning.kiBP = [0., 40. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kiV = [0.14, 0.17, 0.18, 0.12]
 
-    ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.deadzoneV = [0., 0.10]
-    ret.longitudinalActuatorDelayLowerBound = 0.13
-    ret.longitudinalActuatorDelayUpperBound = 0.15
+    ret.longitudinalActuatorDelayLowerBound = 0.1
+    ret.longitudinalActuatorDelayUpperBound = 0.13
 
-    # ret.startAccel = -0.8 #### REMOVED
-    ret.stopAccel = -2.0
-    # ret.startingAccelRate = 5.0 #### REMOVED
-    ret.stoppingDecelRate = 4.0
-    ret.vEgoStopping = 0.5
-    ret.vEgoStarting = 0.5
-    ret.stoppingControl = True
 
     # 저는 요새 어퍼랑 로우로 예전에 kf로 튜닝하던 예민함고 무딤을 보통 튜닝합니다
     # Kp는 가속을 하고 정차를 하는 속도가 적당한 그래프를 만드는 정도로 튜닝해서 맞춰놨고

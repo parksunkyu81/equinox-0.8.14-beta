@@ -7,6 +7,8 @@ SLOW_ON_CURVES = 1     # 슬로우 커브 사용 유무 (0,1)
 MIN_CURVE_SPEED = 41. * CV.KPH_TO_MS    # 커브 속도 설정
 
 class CarControllerParams():
+  ACCEL_MAX = 2.0  # m/s^2
+  ACCEL_MIN = -3.5  # m/s^2
   def __init__(self, CP):  
     self.STEER_MAX = 300  # Safety limit, not LKA max. Trucks use 600.
     self.STEER_STEP = 2  # control frames per command
