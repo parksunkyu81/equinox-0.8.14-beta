@@ -67,7 +67,7 @@ class CarController():
         if CS.CP.enableGasInterceptor:
           # 이것이 없으면 저속에서 너무 공격적입니다.
           if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
-            acc_mult = interp(CS.out.vEgo, [0., 5.], [0.19, 0.24])
+            acc_mult = interp(CS.out.vEgo, [0., 5.], [0.18, 0.24])
             self.comma_pedal = clip(actuators.accel * acc_mult, 0., 1.)
             actuators.commaPedal = self.comma_pedal  # for debug value
           elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
