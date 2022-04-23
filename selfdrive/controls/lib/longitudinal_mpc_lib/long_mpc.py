@@ -205,9 +205,7 @@ class LongitudinalMpc:
     self.source = SOURCES[2]
 
   def reset(self):
-    # self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.solver.reset()
-    # self.solver.options_set('print_level', 2)
     self.v_solution = np.zeros(N+1)
     self.a_solution = np.zeros(N+1)
     self.prev_a = np.array(self.a_solution)
@@ -337,6 +335,8 @@ class LongitudinalMpc:
     self.params[:,0] = interp(float(self.status), [0.0, 1.0], [self.cruise_min_a, MIN_ACCEL])
     self.params[:,1] = self.cruise_max_a
 
+
+
     # To estimate a safe distance from a moving lead, we calculate how much stopping
     # distance that lead needs as a minimum. We can add that to the current distance
     # and then treat that as a stopped car/obstacle at this new distance.
@@ -376,8 +376,6 @@ class LongitudinalMpc:
     self.run()
 
   def run(self):
-    # t0 = sec_since_boot()
-    # reset = 0
     for i in range(N+1):
       self.solver.set(i, 'p', self.params[i])
     self.solver.constraints_set(0, "lbx", self.x0)
@@ -412,8 +410,6 @@ class LongitudinalMpc:
         self.last_cloudlog_t = t
         cloudlog.warning(f"Long mpc reset, solution_status: {self.solution_status}")
       self.reset()
-      # reset = 1
-    # print(f"long_mpc timings: total internal {self.solve_time:.2e}, external: {(sec_since_boot() - t0):.2e} qp {self.time_qp_solution:.2e}, lin {self.time_linearization:.2e} qp_iter {qp_iter}, reset {reset}")
 
 
 if __name__ == "__main__":
