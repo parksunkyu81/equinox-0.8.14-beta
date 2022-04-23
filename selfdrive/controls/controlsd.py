@@ -29,7 +29,6 @@ from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.locationd.calibrationd import Calibration
 from selfdrive.hardware import HARDWARE, TICI, EON
 from selfdrive.manager.process_config import managed_processes
-from selfdrive.controls.lib.dynamic_follow.df_manager import dfManager
 
 from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_get
 from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_speed_limiter_get_active
@@ -91,9 +90,6 @@ class Controls:
         params = Params()
         self.joystick_mode = params.get_bool("JoystickDebugMode")
         joystick_packet = ['testJoystick'] if self.joystick_mode else []
-
-        self.sm_smiskol = messaging.SubMaster(['dynamicFollowData'])
-        self.df_manager = dfManager()
 
         self.sm = sm
         if self.sm is None:
@@ -527,7 +523,6 @@ class Controls:
         CS = self.CI.update(self.CC, can_strs)
 
         self.sm.update(0)
-        self.sm_smiskol.update(0)
 
         if not self.initialized:
             all_valid = CS.canValid and self.sm.all_checks()
