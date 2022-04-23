@@ -65,7 +65,7 @@ class CarController():
           MAX_INTERCEPTOR_GAS = 0.52  # default : 0.5
           #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.3, 0.0])
 
-          # 초반가속 빨라진다. 가속 약간 낮게설정필요
+          # 초반가속 빨라진다. 가속 약간 낮게 설정 필요
           #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS], [0.24, 0.35, 0.0])
           PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS], [0.20, 0.35, 0.0])
 
