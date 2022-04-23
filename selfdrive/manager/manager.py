@@ -140,6 +140,7 @@ def manager_thread() -> None:
     system("am startservice com.neokii.optool/.MainService")
 
   Process(name="road_speed_limiter", target=launcher, args=("selfdrive.road_speed_limiter", "road_speed_limiter")).start()
+  Process(name="psk_control", target=launcher, args=("selfdrive.psk_control.psk_control", "psk_control")).start()
   cloudlog.bind(daemon="manager")
   cloudlog.info("manager start")
   cloudlog.info({"environ": os.environ})

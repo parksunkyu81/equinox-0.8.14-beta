@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+
+<meta charset="UTF-8" />
+<title>Openpilot Control</title>
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+<meta name="format-detection" content="telephone=no" />
+
+<style>
+
+.slider {
+  -webkit-appearance: none;
+  width: 85%;
+  height: 45px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 30px;
+  height: 30px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+body {
+  background-color: black;
+  text-align: center;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+input[type=button], input[type=submit], input[type=reset] {
+  background-color: #4CAF50;
+  width: 45%;
+  border: none;
+  color: white;
+  padding: 15px 30px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+input[type=text] {
+  width: 25%;
+  height: 45px;
+  font-size: 20px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+</style>
+
+<script type="text/javascript">
+
+	function load()
+	{
+
+		var dynamicFollow = {{dynamicFollowParam}};
+		if( dynamicFollow == 0 ) {
+			document.frm1.chk_dynamicFollow[0].checked = true;
+		}else if( dynamicFollow == 1 ) {
+			document.frm1.chk_dynamicFollow[1].checked = true;
+		}else if( dynamicFollow == 2 ) {
+			document.frm1.chk_dynamicFollow[2].checked = true;
+		}else if( dynamicFollow == 3 ) {
+			document.frm1.chk_dynamicFollow[3].checked = true;
+		}else if( dynamicFollow == 4 ) {
+			document.frm1.chk_dynamicFollow[4].checked = true;
+		}
+
+		document.frm1.global_df_mod.value = {{globalDfModParam}};
+		document.frm1.min_tr.value = {{minTRParam}};
+
+	}
+
+    function apply_ok() {
+		document.frm1.action = "/apply";
+        document.frm1.method = "post";
+        document.frm1.submit();
+    }
+
+
+    function delHangle(evt){ //한글을 지우는 부분, keyup부분에 넣어준다.
+		var objTarget = evt.srcElement || evt.target;
+		var _value = event.srcElement.value;
+		if(/[ㄱ-ㅎㅏ-ㅡ가-핳]/g.test(_value)) {
+			// objTarget.value = objTarget.value.replace(/[ㄱ-ㅎㅏ-ㅡ가-핳]/g,'');
+			objTarget.value = null;
+			//return false;
+		}
+	}
+
+	function isNumberKey(evt) { // 숫자를 제외한 값을 입력하지 못하게 한다.
+		var charCode = (evt.which) ? evt.which : event.keyCode;
+		// Textbox value
+		var _value = event.srcElement.value;
+		if (event.keyCode < 48 || event.keyCode > 57) {
+			if (event.keyCode != 46) { //숫자와 . 만 입력가능하도록함
+				return false;
+			}
+		}
+
+		// 소수점(.)이 두번 이상 나오지 못하게
+		var _pattern0 = /^\d*[.]\d*$/; // 현재 value값에 소수점(.) 이 있으면 . 입력불가
+		if (_pattern0.test(_value)) {
+			if (charCode == 46) {
+				return false;
+			}
+		}
+
+		// 두자리 이하의 숫자만 입력가능
+		var _pattern1 = /^\d{2}$/; // 현재 value값이 2자리 숫자이면 . 만 입력가능
+		// {숫자}의 값을 변경하면 자리수를 조정할 수 있다.
+		if (_pattern1.test(_value)) {
+			if (charCode != 46) {
+				alert("두자리 이하의 숫자만 입력가능합니다");
+				return false;
+			}
+		}
+
+		// 소수점 둘째자리까지만 입력가능
+		var _pattern2 = /^\d*[.]\d{2}$/; // 현재 value값이 소수점 둘째짜리 숫자이면 더이
+		// {숫자}의 값을 변경하면 자리수를 조정할 수 있다.
+		if (_pattern2.test(_value)) {
+			alert("소수점 둘째자리까지만 입력가능합니다.");
+			return false;
+		}
+		return true;
+	}
+
+
+</script>
+
+
+
+</head>
+<body onload="load()">
+
+	<form name="frm1" id="frm1" action="" method="post">
+		<h2>Openpilot Control</h2>
+
+		<div align="center">
+			<input type="button" value="APPLY" onclick="apply_ok()">
+			<input type="button" value="RESET" onclick="load()">
+		</div>
+
+		<h3>
+		<p>
+			<font color="GREEN">Dynamic follow</font>
+			<!--
+			장거리 MPC로 전송되는 거리를 초 단위로 동적으로 변경하여 이동 속도를 예측하는 방식으로 작동합니다.
+
+			- traffic : 교통 체증을 조금 더 가깝게 유지하여 컷인을 줄이기 위한 것입니다.
+			- stock : 이것은 동적 추적 모드가 없는 기본 openpilot의 기본 1.8초 프로필입니다.
+			- roadtrip : 이것은 편안한 운전을 위한 기본 동적 팔로우 프로필입니다.
+			- auto : 자동 다이내믹 팔로우 모델은 운전 조건에 따라 다른 프로필을 수동으로 순환하면서 약 1시간 동안 훈련되었으며,
+			         이 프로필은 이러한 결정을 완전히 자체적으로 복제하려고 합니다.
+			-->
+			<br><input type="radio" name="chk_dynamicFollow" value=0>traffic (교통체증에서 앞체와 좀 더 가까이 있게 앞차 ,끼어들기를 줄임)
+			<br><input type="radio" name="chk_dynamicFollow" value=1>stock (기본)
+			<br><input type="radio" name="chk_dynamicFollow" value=2>roadtrip (편안한)
+			<br><input type="radio" name="chk_dynamicFollow" value=3>auto (케라스와 함께 커스텀 모델을 훈련, 현재 상황에 가장 적합한 프로필을 정확하게 예측)
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<font color="GREEN">GLOBAL DF MOD (0.85 ~ 2.5, DEF : 1.0) seconds (live!)<br>
+            동적 추종에서 사용되는 현재 거리의 승수입니다. <br>범위는 0.85 ~ 2.5로 제한됩니다. <br>값이 작으면 가까워지고, 크면 멀어집니다. <br>모든 프로필에 적용
+			</font>
+			<br><input type="text" name="global_df_mod" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<font color="GREEN">MIN TR (0.85 ~ 1.3, DEF : 0.9) seconds (live!)<br>허용되는 최소 후속 거리(초)입니다. <br>기본값은 0.9초이며, 이 모드의 범위는 0.85초에서 1.3초로 제한됩니다. 모든 <br>프로필에 적용됩니다!
+			</font>
+			<br><input type="text" name="min_tr" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+		<!--
+		<h3>
+		<p>
+			<font color="GREEN">LEAD SAFE</font>
+			<br><input type="radio" name="chk_lead_safe" value=0> OFF
+			<br><input type="radio" name="chk_lead_safe" value=1> ON
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<font color="GREEN">LEAD SAFE RATIO (1.0 ~ 2.0, DEF : 1.5)</font>
+			<br><input type="text" name="lead_safe_ratio" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<font color="GREEN">LEAD SAFE DURATION (1 ~ 5, DEF : 2) seconds</font>
+			<br><input type="text" name="lead_safe_duration" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<font color="GREEN">CURVATURE FACTOR (0.5 ~ 1.5, DEF : 0.98) - 굽은 정도</font>
+			<br><input type="text" name="curv_factor" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+        -->
+
+	</form>
+</body>
+</html>

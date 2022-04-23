@@ -547,6 +547,27 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     p.setOpacity(1.0);
   }
 
+  // Dynamic TR
+  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
+  const auto dynamicFollow = sm["dynamicFollowData"].getDynamicFollowData();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(80));
+  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
+
+  float textSize = 60.f;
+  QColor textColor = QColor(120, 255, 120, 200);
+
+  QString str;
+  str.sprintf("%.1f", dynamicFollow.getMpcTR());
+
+  configFont(p, "Open Sans", 45, "Bold");
+  drawText(p, x, y1-20, "TR", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y1+50, str, textColor);
+  p.setOpacity(1.0);
+
   // ================================================================================================================ //
 
 
@@ -611,6 +632,41 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   configFont(p, "Open Sans", 45, "Bold");
   drawText(p, x, y2-20, "LKAS", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y2+50, str, textColor);
+  p.setOpacity(1.0);
+
+  // dynamic follow
+  x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
+  int dynamic_follow = controls_state.getDynamicSelFollow();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(80));
+  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+
+  textSize = 40.f;
+  textColor = QColor(255, 255, 255, 200);
+
+  if(dynamic_follow == 0) {
+    str = "TRAFFIC";
+    textColor = QColor(120, 255, 120, 200);
+  }
+  else if(dynamic_follow == 1) {
+    str = "STOCK";
+    textColor = QColor(120, 255, 120, 200);
+  }
+  else if(dynamic_follow == 2) {
+    str = "ROADTRIP";
+    textColor = QColor(120, 255, 120, 200);
+  }
+  else if(dynamic_follow == 3) {
+    str = "AUTO";
+    textColor = QColor(120, 255, 120, 200);
+  }
+
+  configFont(p, "Open Sans", 45, "Bold");
+  drawText(p, x, y2-20, "DF", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y2+50, str, textColor);
