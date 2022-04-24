@@ -325,7 +325,7 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        self.update_max_speed(int(max_speed_clu + 0.5),
+        self.update_max_speed(int(max_speed_clu + 0.5), CS,
                               curv_limit != 0 and curv_limit == int(max_speed_clu))
         # print("update_max_speed() value : ", self.max_speed_clu)
 
