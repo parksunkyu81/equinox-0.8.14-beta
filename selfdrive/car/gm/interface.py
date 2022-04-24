@@ -18,8 +18,14 @@ class CarInterface(CarInterfaceBase):
 
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
-    params = CarControllerParams(CP)
-    return params.ACCEL_MIN, params.ACCEL_MAX
+    #params = CarControllerParams(CP)
+    #return params.ACCEL_MIN, params.ACCEL_MAX
+    v_current_kph = current_speed * CV.MS_TO_KPH
+
+    gas_max_bp = [10., 20., 50., 70., 130., 150.]
+    gas_max_v = [1.5, 1.1, 0.65, 0.47, 0.16, 0.1]
+
+    return CarControllerParams.ACCEL_MIN, interp(v_current_kph, gas_max_bp, gas_max_v)
 
 
 
@@ -104,7 +110,7 @@ class CarInterface(CarInterfaceBase):
       max_lat_accel = 2.5
       ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
       ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-      ret.lateralTuning.torque.friction = 0.6
+      ret.lateralTuning.torque.friction = 0.01
       ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
 
 
@@ -113,7 +119,7 @@ class CarInterface(CarInterfaceBase):
     # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
     ret.steerActuatorDelay = 0.1
     ret.steerRateCost = 0.35
-    ret.steerLimitTimer = 0.4   # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
+    ret.steerLimitTimer = 0.5   # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
@@ -148,8 +154,8 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kiV = [0.14, 0.17, 0.18, 0.12]"""
 
     # longitudinal
-    ret.longitudinalTuning.kpBP = [0., 10. * CV.KPH_TO_MS, 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.6, 1.5, 1.3, 0.85, 0.73, 0.65]
+    ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.5, 1.3, 0.85, 0.73, 0.65]
 
     ret.longitudinalTuning.kiBP = [0., 40. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.14, 0.17, 0.18, 0.12]

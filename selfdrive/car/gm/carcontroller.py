@@ -67,7 +67,7 @@ class CarController():
 
           # 초반가속 빨라진다. 가속 약간 낮게 설정 필요
           #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS], [0.24, 0.35, 0.0])
-          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS], [0.15, 0.35, 0.0])
+          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS], [0.20, 0.30, 0.0])
 
           pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.4, 0.0, 0.2])
           pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)

@@ -3,6 +3,7 @@ import os
 import math
 import numpy as np
 from numbers import Number
+from math import sqrt
 
 from cereal import car, log
 from common.numpy_fast import clip, interp, mean
@@ -262,30 +263,22 @@ class Controls:
 
     def cal_curve_speed(self, sm, v_ego, frame):
 
-        if frame % 20 == 0:
-            md = sm['modelV2']
-            if len(md.position.x) == TRAJECTORY_SIZE and len(md.position.y) == TRAJECTORY_SIZE:
-                x = md.position.x
-                y = md.position.y
-                dy = np.gradient(y, x)
-                d2y = np.gradient(dy, x)
-                curv = d2y / (1 + dy ** 2) ** 1.5
+        lateralPlan = sm['lateralPlan']
+        if len(lateralPlan.curvatures) == CONTROL_N:
+            curv = lateralPlan.curvatures[-1]
+            a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
+            v_curvature = sqrt(a_y_max / max(abs(curv), 1e-4))
+            model_speed = v_curvature * 0.85 * ntune_scc_get("sccCurvatureFactor")
 
-                start = int(interp(v_ego, [10., 27.], [10, TRAJECTORY_SIZE - 10]))
-                curv = curv[start:min(start + 10, TRAJECTORY_SIZE)]
-                a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
-                v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
-                model_speed = np.mean(v_curvature) * 0.85 * ntune_scc_get("sccCurvatureFactor")
-
-                if model_speed < v_ego:
-                    self.curve_speed_ms = float(max(model_speed, MIN_CURVE_SPEED))
-                else:
-                    self.curve_speed_ms = 255.
-
-                if np.isnan(self.curve_speed_ms):
-                    self.curve_speed_ms = 255.
+            if model_speed < v_ego:
+                self.curve_speed_ms = float(max(model_speed, MIN_CURVE_SPEED))
             else:
                 self.curve_speed_ms = 255.
+
+            if np.isnan(self.curve_speed_ms):
+                self.curve_speed_ms = 255.
+        else:
+            self.curve_speed_ms = 255.
 
 
     # [크루즈 MAX 속도 설정] #
@@ -300,9 +293,11 @@ class Controls:
         # print("first_started : ", first_started)
         # print("max_speed_log : ", max_speed_log)
 
+        curv_limit = 0
         self.cal_curve_speed(sm, vEgo, frame)
         if self.slow_on_curves and SLOW_ON_CURVES and self.curve_speed_ms >= MIN_CURVE_SPEED:
             max_speed_clu = min(self.v_cruise_kph * CV.KPH_TO_MS, self.curve_speed_ms) * self.speed_conv_to_clu
+            curv_limit = int(max_speed_clu)
         else:
             max_speed_clu = self.kph_to_clu(self.v_cruise_kph)
 
@@ -330,16 +325,17 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        self.update_max_speed(int(max_speed_clu + 0.5), CS)
+        self.update_max_speed(int(max_speed_clu + 0.5),
+                              curv_limit != 0 and curv_limit == int(max_speed_clu))
         # print("update_max_speed() value : ", self.max_speed_clu)
 
         return road_limit_speed, left_dist, max_speed_log
 
-    def update_max_speed(self, max_speed, CS):
+    def update_max_speed(self, max_speed, CS, limited_curv):
         if not CS.cruiseState.enabled or self.max_speed_clu <= 0:
             self.max_speed_clu = max_speed
         else:
-            kp = 0.01
+            kp = 0.02 if limited_curv else 0.01
             error = max_speed - self.max_speed_clu
             self.max_speed_clu = self.max_speed_clu + error * kp
 
