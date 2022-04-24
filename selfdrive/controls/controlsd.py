@@ -33,8 +33,8 @@ from selfdrive.manager.process_config import managed_processes
 
 from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_get
 from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_speed_limiter_get_active
-from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN
-from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED, CONTROL_N
+from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, CONTROL_N
+from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
 from common.params import Params
 import datetime
 
