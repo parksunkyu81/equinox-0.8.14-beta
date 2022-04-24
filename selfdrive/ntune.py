@@ -234,7 +234,7 @@ class nTune():
   def checkValidISCC(self):
     updated = False
 
-    if self.checkValue("sccGasFactor", 0.5, 1.5, 1.0):
+    if self.checkValue("sccGasFactor", 0.5, 1.0, 0.5):
       updated = True
 
     if self.checkValue("sccBrakeFactor", 0.5, 1.5, 1.0):

@@ -209,14 +209,14 @@ class Controls:
         # scc smoother
         self.is_cruise_enabled = False
         self.applyMaxSpeed = 0
-        self.apply_accel = 0.
+        #self.apply_accel = 0.
         self.fused_accel = 0.
         self.lead_drel = 0.
-        self.aReqValue = 0.
-        self.aReqValueMin = 0.
-        self.aReqValueMax = 0.
-        self.sccStockCamStatus = 0
-        self.sccStockCamAct = 0
+        #self.aReqValue = 0.
+        #self.aReqValueMin = 0.
+        #self.aReqValueMax = 0.
+        #self.sccStockCamStatus = 0
+        #self.sccStockCamAct = 0
 
         self.left_lane_visible = False
         self.right_lane_visible = False
@@ -898,12 +898,12 @@ class Controls:
         controlsState.canErrorCounter = self.can_rcv_error_counter
 
         controlsState.angleSteers = steer_angle_without_offset * CV.RAD_TO_DEG
-        controlsState.applyAccel = self.apply_accel
-        controlsState.aReqValue = self.aReqValue
-        controlsState.aReqValueMin = self.aReqValueMin
-        controlsState.aReqValueMax = self.aReqValueMax
-        controlsState.sccStockCamAct = self.sccStockCamAct
-        controlsState.sccStockCamStatus = self.sccStockCamStatus
+        #controlsState.applyAccel = self.apply_accel
+        #controlsState.aReqValue = self.aReqValue
+        #controlsState.aReqValueMin = self.aReqValueMin
+        #controlsState.aReqValueMax = self.aReqValueMax
+        #controlsState.sccStockCamAct = self.sccStockCamAct
+        #controlsState.sccStockCamStatus = self.sccStockCamStatus
 
         # NDA
         controlsState.roadLimitSpeedActive = road_speed_limiter_get_active()

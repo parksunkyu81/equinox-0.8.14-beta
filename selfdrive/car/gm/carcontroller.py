@@ -7,6 +7,7 @@ from selfdrive.car.gm import gmcan
 from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams
 from opendbc.can.packer import CANPacker
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_ENABLE_MIN
+from selfdrive.ntune import ntune_scc_get
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
@@ -62,17 +63,22 @@ class CarController():
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           #MAX_INTERCEPTOR_GAS = 0.55
-          MAX_INTERCEPTOR_GAS = 0.5  # default : 0.5
+          MAX_INTERCEPTOR_GAS = ntune_scc_get("sccGasFactor")  # default : 0.5
           #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.3, 0.0])
 
           # 초반가속 빨라진다. 가속 약간 낮게 설정 필요
           #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS], [0.24, 0.35, 0.0])
-          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS], [0.28, 0.35, 0.0])
+          # 0., 18.0 * CV.KPH_TO_MS, 25* CV.KPH_TO_MS, 42.5* CV.KPH_TO_MS
+          #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 18.0 * CV.KPH_TO_MS, 25* CV.KPH_TO_MS, 42.5* CV.KPH_TO_MS], [0.28, 0.35, 0.0])
+          #pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.4, 0.0, 0.2])
+          #pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
 
-          pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.4, 0.0, 0.2])
-          pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
+          pedal_command = interp(CS.out.vEgo,
+                                 [0., 18.0 * CV.KPH_TO_MS, 25 * CV.KPH_TO_MS, 42.5 * CV.KPH_TO_MS],
+                                 [0.17, 0.24, 0.265, 0.24])
+
           self.comma_pedal = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)
-          actuators.commaPedal = self.comma_pedal  # for debug value
+
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.
 

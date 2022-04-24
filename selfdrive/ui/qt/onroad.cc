@@ -470,9 +470,7 @@ void NvgWindow::drawHud(QPainter &p) {
 
   const auto controls_state = sm["controlsState"].getControlsState();
   const auto device_State = sm["deviceState"].getDeviceState();
-  const auto car_control = sm["carControl"].getCarControl();
-  const auto live_params = sm["liveParameters"].getLiveParameters();
-
+  //const auto car_control = sm["carControl"].getCarControl();
   //const auto live_params = sm["liveParameters"].getLiveParameters();
 
   QColor orangeColor = QColor(52, 197, 66, 255);
@@ -499,13 +497,10 @@ void NvgWindow::drawHud(QPainter &p) {
   }
 
   QString infoText;
-  infoText.sprintf("%s AO(%.2f/%.2f) ACCEL(%.3f) PEDAL(%.3f) SR(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d)",
+  infoText.sprintf("%s SR(%.2f) PEDAL(%.1f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d)",
                       s->lat_control.c_str(),
-                      live_params.getAngleOffsetDeg(),
-                      live_params.getAngleOffsetAverageDeg(),
-                      car_control.getActuators().getAccel(),
-                      car_control.getActuators().getCommaPedal(),
                       controls_state.getSteerRatio(),
+                      controls_state.getSccGasFactor(),
                       device_State.getBatteryPercent(),
                       cpuTemp,
                       cpuUsage,
@@ -524,6 +519,7 @@ void NvgWindow::drawHud(QPainter &p) {
 void NvgWindow::drawBottomIcons(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
+  auto car_control = sm["carControl"].getCarControl();
   //auto controls_state = sm["controlsState"].getControlsState();
 
   // brake
@@ -547,26 +543,56 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     p.setOpacity(1.0);
   }
 
+  // VISION DIST
+  QString str;
+  QColor textColor = QColor(255, 255, 255, 200);
+
+  x = radius / 2 + (bdr_s * 3) + (radius + 50);
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(80));
+  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
+
+  float textSize = 60.f;
+  QColor textColor = QColor(255, 255, 255, 200);
+
+  auto lead_vision = (*s->sm)["modelV2"].getModelV2().getLeadsV3()[0];
+  float vision_dist = lead_vision.getProb() > .5 ? (lead_vision.getX()[0] - 1.5) : 0;
+
+  // Orange Color if less than 15ｍ / Red Color if less than 5ｍ
+  if (lead_vision.getProb()) {
+    if (vision_dist < 15) {
+      textColor = QColor(255, 127, 0, 200);
+    }
+    if (vision_dist < 5) {
+      textColor = QColor(255, 0, 0, 200);
+    }
+    str.sprintf("%.1f ｍ", vision_dist);
+  } else {
+    str = "──";
+  }
+
+  configFont(p, "Open Sans", 45, "Bold");
+  drawText(p, x, y1-20, "DIST", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y1+50, str, textColor);
+  p.setOpacity(1.0);
+
   // ================================================================================================================ //
 
 
   // ACC
-  //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
   x = 140;
   const int y2 = rect().bottom() - (footer_h / 2) - (radius + 50) - 10;
 
   bool acc_bool = car_state.getAdaptiveCruise();
-  //img_alpha = acc_bool ? 1.0f : 0.15f;
-  //bg_alpha = acc_bool ? 0.3f : 0.1f;
-  //drawIcon(p, x, y2, ic_acc, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
-  //p.setOpacity(1.0);
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(80));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  QString str;
-  float textSize = 60.f;
-  QColor textColor = QColor(255, 255, 255, 200);
+  textSize = 60.f;
+  textColor = QColor(255, 255, 255, 200);
 
   if(acc_bool == true) {
     str = "ON";
@@ -585,13 +611,8 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setOpacity(1.0);
 
   // LKAS
-  //x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
   x = radius / 2 + (bdr_s * 2) + (radius + 50);
   bool lkas_bool = car_state.getLkasEnable();
-  //img_alpha = lkas_bool ? 1.0f : 0.15f;
-  //bg_alpha = lkas_bool ? 0.3f : 0.1f;
-  //drawIcon(p, x, y2, ic_lkas, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
-  //p.setOpacity(1.0);
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(80));
@@ -611,6 +632,37 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   configFont(p, "Open Sans", 45, "Bold");
   drawText(p, x, y2-20, "LKAS", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y2+50, str, textColor);
+  p.setOpacity(1.0);
+
+  // ACCEL
+  x = radius / 2 + (bdr_s * 3) + (radius + 50);
+  float accel = car_control.getActuators().getAccel();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(80));
+  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+
+  textSize = 60.f;
+  textColor = QColor(255, 255, 255, 200);
+
+  if(accel > 0) {
+    str = "ACCEL";
+    textColor = QColor(120, 255, 120, 200);
+  }
+  else if(accel == 0.0) {
+    str = "--";
+    textColor = QColor(255, 185, 15, 200);
+  }
+  else {
+    str = "DECEL";
+    textColor = QColor(254, 32, 32, 200);
+  }
+
+  configFont(p, "Open Sans", 45, "Bold");
+  drawText(p, x, y2-20, "SPEED", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y2+50, str, textColor);
@@ -1035,11 +1087,10 @@ void NvgWindow::drawDebugText(QPainter &p) {
   auto car_control = sm["carControl"].getCarControl();
   auto car_state = sm["carState"].getCarState();
 
-  float applyAccel = controls_state.getApplyAccel();
-
-  float aReqValue = controls_state.getAReqValue();
-  float aReqValueMin = controls_state.getAReqValueMin();
-  float aReqValueMax = controls_state.getAReqValueMax();
+  //float applyAccel = controls_state.getApplyAccel();
+  //float aReqValue = controls_state.getAReqValue();
+  //float aReqValueMin = controls_state.getAReqValueMin();
+  //float aReqValueMax = controls_state.getAReqValueMax();
 
   //int sccStockCamAct = (int)controls_state.getSccStockCamAct();
   //int sccStockCamStatus = (int)controls_state.getSccStockCamStatus();
@@ -1086,21 +1137,21 @@ void NvgWindow::drawDebugText(QPainter &p) {
   str.sprintf("Accel: %.3f\n", accel);
   p.drawText(text_x, y, str);
 
-  y += height;
-  str.sprintf("Apply: %.3f, Stock: %.3f\n", applyAccel, aReqValue);
-  p.drawText(text_x, y, str);
+  //y += height;
+  //str.sprintf("Apply: %.3f, Stock: %.3f\n", applyAccel, aReqValue);
+  //p.drawText(text_x, y, str);
 
-  y += height;
-  str.sprintf("%.3f (%.3f/%.3f)\n", aReqValue, aReqValueMin, aReqValueMax);
-  p.drawText(text_x, y, str);
+  //y += height;
+  //str.sprintf("%.3f (%.3f/%.3f)\n", aReqValue, aReqValueMin, aReqValueMax);
+  //p.drawText(text_x, y, str);
 
-  auto lead_radar = sm["radarState"].getRadarState().getLeadOne();
-  auto lead_one = sm["modelV2"].getModelV2().getLeadsV3()[0];
+  //auto lead_radar = sm["radarState"].getRadarState().getLeadOne();
+  //auto lead_one = sm["modelV2"].getModelV2().getLeadsV3()[0];
 
-  float radar_dist = lead_radar.getStatus() && lead_radar.getRadar() ? lead_radar.getDRel() : 0;
-  float vision_dist = lead_one.getProb() > .5 ? (lead_one.getX()[0] - 1.5) : 0;
+  //float radar_dist = lead_radar.getStatus() && lead_radar.getRadar() ? lead_radar.getDRel() : 0;
+  //float vision_dist = lead_one.getProb() > .5 ? (lead_one.getX()[0] - 1.5) : 0;
 
-  y += height;
-  str.sprintf("Lead: %.1f/%.1f/%.1f\n", radar_dist, vision_dist, (radar_dist - vision_dist));
-  p.drawText(text_x, y, str);
+  //y += height;
+  //str.sprintf("Lead: %.1f/%.1f/%.1f\n", radar_dist, vision_dist, (radar_dist - vision_dist));
+  //p.drawText(text_x, y, str);
 }
