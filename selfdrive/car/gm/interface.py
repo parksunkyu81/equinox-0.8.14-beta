@@ -155,7 +155,7 @@ class CarInterface(CarInterfaceBase):
 
     # longitudinal
     ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.5, 1.3, 0.85, 0.73, 0.65]
+    ret.longitudinalTuning.kpV = [1.55, 1.3, 0.85, 0.73, 0.65]
 
     ret.longitudinalTuning.kiBP = [0., 40. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
     ret.longitudinalTuning.kiV = [0.14, 0.17, 0.18, 0.12]
