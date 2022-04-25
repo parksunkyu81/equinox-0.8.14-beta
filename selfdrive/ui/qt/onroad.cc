@@ -554,9 +554,9 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
   float textSize = 60.f;
-  QColor textColor = QColor(255, 255, 255, 200);
+  textColor = QColor(255, 255, 255, 200);
 
-  auto lead_vision = (*s->sm)["modelV2"].getModelV2().getLeadsV3()[0];
+  auto lead_vision = sm["modelV2"].getModelV2().getLeadsV3()[0];
   float vision_dist = lead_vision.getProb() > .5 ? (lead_vision.getX()[0] - 1.5) : 0;
 
   // Orange Color if less than 15ｍ / Red Color if less than 5ｍ
