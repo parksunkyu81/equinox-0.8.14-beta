@@ -547,7 +547,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   QString str;
   QColor textColor = QColor(255, 255, 255, 200);
 
-  x = radius / 2 + (bdr_s * 3) + (radius + 50);
+  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 2);
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(80));
@@ -638,7 +638,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setOpacity(1.0);
 
   // ACCEL
-  x = radius / 2 + (bdr_s * 3) + (radius + 50);
+  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 2);
   float accel = car_control.getActuators().getAccel();
 
   p.setPen(Qt::NoPen);

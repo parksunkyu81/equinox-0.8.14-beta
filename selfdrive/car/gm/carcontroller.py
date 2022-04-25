@@ -66,16 +66,10 @@ class CarController():
           MAX_INTERCEPTOR_GAS = ntune_scc_get("sccGasFactor")  # default : 0.5
           #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.3, 0.0])
 
-          # 초반가속 빨라진다. 가속 약간 낮게 설정 필요
-          #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS], [0.24, 0.35, 0.0])
-          # 0., 18.0 * CV.KPH_TO_MS, 25* CV.KPH_TO_MS, 42.5* CV.KPH_TO_MS
-          #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 18.0 * CV.KPH_TO_MS, 25* CV.KPH_TO_MS, 42.5* CV.KPH_TO_MS], [0.28, 0.35, 0.0])
-          #pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.4, 0.0, 0.2])
-          #pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
-
-          pedal_command = interp(CS.out.vEgo,
-                                 [0., 18.0 * CV.KPH_TO_MS, 25 * CV.KPH_TO_MS, 42.5 * CV.KPH_TO_MS],
-                                 [0.17, 0.24, 0.265, 0.24])
+          # 초반가속 빨라진다. 가속 약간 낮게 설정 필요c
+          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS], [0.28, 0.35, 0.0])
+          pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.4, 0.0, 0.2])
+          pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
 
           self.comma_pedal = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)
 
