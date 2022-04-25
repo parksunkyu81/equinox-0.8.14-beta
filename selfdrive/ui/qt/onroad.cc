@@ -563,9 +563,10 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   if (lead_vision.getProb()) {
     if (vision_dist < 15) {
       textColor = QColor(255, 127, 0, 200);
-    }
-    if (vision_dist < 5) {
+    } selse if (vision_dist < 5) {
       textColor = QColor(255, 0, 0, 200);
+    } else {
+      textColor = QColor(120, 255, 120, 200);
     }
     str.sprintf("%.1f ｍ", vision_dist);
   } else {
