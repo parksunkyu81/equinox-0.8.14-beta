@@ -497,7 +497,7 @@ void NvgWindow::drawHud(QPainter &p) {
   }
 
   QString infoText;
-  infoText.sprintf("%s SR(%.2f) PEDAL(%.2f) BAT(%d) HW(CPU %.1f ℃, %d %, MEM %d %)",
+  infoText.sprintf("%s SR(%.2f) PEDAL(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d)",
                       s->lat_control.c_str(),
                       controls_state.getSteerRatio(),
                       controls_state.getSccGasFactor(),
