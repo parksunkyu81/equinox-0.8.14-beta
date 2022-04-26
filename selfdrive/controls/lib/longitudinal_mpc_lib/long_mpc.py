@@ -45,9 +45,10 @@ ACADOS_SOLVER_TYPE = 'SQP_RTI'
 #AUTO_TR_BP = [0., 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110.*CV.KPH_TO_MS]
 #AUTO_TR_V = [1.1, 1.2, 1.33, 1.45]
 
-AUTO_TR_BP = [0., 1.*CV.KPH_TO_MS, 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 25.*CV.KPH_TO_MS,
-              35.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
-AUTO_TR_V = [0.336, 0.4, 0.5, 0.9, 2.4, 2.8, 2.94, 3.5, 3.8]
+# 저속에서는 짧게, 중고속에서는 길게
+AUTO_TR_BP = [0., 1.*CV.KPH_TO_MS, 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS,
+              30.*CV.KPH_TO_MS, 35.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
+AUTO_TR_V = [0.336, 0.4, 0.5, 0.9, 1.4, 2.5, 2.9, 3.0, 3.5, 3.8]
 
 # 1 Seconds = 12 Meter
 # 1 Meter = 0.084
