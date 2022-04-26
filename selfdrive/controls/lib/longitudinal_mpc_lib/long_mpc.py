@@ -49,13 +49,21 @@ ACADOS_SOLVER_TYPE = 'SQP_RTI'
 # 1 Meter = 0.084
 # 2 Seconds = 24 Meter
 
-# 현재 6미터가 되어야지 엑셀 시작
+# 현재 4미터가 되어야지 엑셀 시작
+# 1km : 4 m : 0.336s
+# 2km : 4.2m : 0.3528s
+# 3km : 4.9m : 0.4116s
+# 4km : 5.9m : 0.4956s
+# 5km : 7.4m : 0.621s
+
+#=========================================================================#
+
 
 # 아주 저속에선 20킬로 속도까지 붙여서 가고, 25부터는 쫌 띄워서 가기 시작한다.
 
-AUTO_TR_BP = [0., 4.*CV.KPH_TO_MS, 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 25.*CV.KPH_TO_MS,
+AUTO_TR_BP = [0., 1.*CV.KPH_TO_MS, 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 25.*CV.KPH_TO_MS,
               35.*CV.KPH_TO_MS, 40.*CV.KPH_TO_MS, 70*CV.KPH_TO_MS, 110.*CV.KPH_TO_MS]
-AUTO_TR_V = [0.336, 0.31, 0.5,0.55, 0.9, 1.0, 1.1, 1.2, 1.33, 1.45]
+AUTO_TR_V = [0.336, 0.34, 0.42, 0.45, 0.9, 1.0, 1.1, 1.2, 1.33, 1.45]
 
 DIFF_RADAR_VISION = 1.5
 
