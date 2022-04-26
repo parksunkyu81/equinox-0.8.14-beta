@@ -45,6 +45,10 @@ ACADOS_SOLVER_TYPE = 'SQP_RTI'
 #AUTO_TR_BP = [0., 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110.*CV.KPH_TO_MS]
 #AUTO_TR_V = [1.1, 1.2, 1.33, 1.45]
 
+AUTO_TR_BP = [0., 1.*CV.KPH_TO_MS, 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 25.*CV.KPH_TO_MS,
+              35.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
+AUTO_TR_V = [0.336, 0.33, 0.32, 0.9, 1.68, 2.1, 2.94, 3.5, 3.8]
+
 # 1 Seconds = 12 Meter
 # 1 Meter = 0.084
 # 2 Seconds = 24 Meter
@@ -57,13 +61,26 @@ ACADOS_SOLVER_TYPE = 'SQP_RTI'
 # 5km : 7.4m : 0.621s
 
 #=========================================================================#
-
+# 52km : 22m : 1.848
 
 # 아주 저속에선 20킬로 속도까지 붙여서 가고, 25부터는 쫌 띄워서 가기 시작한다.
+# 40 , 60 속도가 제일 많으면 당연 50근방 어딘가에서 tr 늘리기를 시작해야 40에서 속도 올릴때는 따라가고 60에서 속도를 줄일때는 탄력주행
+# 도로 흐름상 속도 어디까지가 엑셀을 밟아서 올라가는 시점이 많은지 , 어느 정도 속도 올라가면 브레이크 밟아서 속도가 줄어드는 구간이 많은지
+# 몇킬로에서 가속 몇킬로에서 감속이 많은지를 찾아보시면 그걸 보간해서 몸튜닝
 
-AUTO_TR_BP = [0., 1.*CV.KPH_TO_MS, 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 25.*CV.KPH_TO_MS,
-              35.*CV.KPH_TO_MS, 40.*CV.KPH_TO_MS, 70*CV.KPH_TO_MS, 110.*CV.KPH_TO_MS]
-AUTO_TR_V = [0.336, 0.34, 0.42, 0.45, 0.9, 1.0, 1.1, 1.2, 1.33, 1.45]
+# 운전을 하다가 48키로 정도에서 37미터가 남았을때 수동으로 브레이크를 밟는다.
+# 25키로 정도에서 앞차 거리 25메터 정도되면 Decel
+# 50km 앞차가 35미터 정도 였을때 Decel 을 하고 싶다.
+
+# 안전거리
+# 60km : 36m
+# 80km : 64m
+# 100km : 100m
+# 120km : 144m
+
+#AUTO_TR_BP = [0., 1.*CV.KPH_TO_MS, 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS,
+#              30.*CV.KPH_TO_MS, 40.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 70*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS]
+#AUTO_TR_V = [0.336, 0.34, 0.42, 0.45, 0.9, 1.0, 1.1, 1.2, 1.33, 1.45]
 
 DIFF_RADAR_VISION = 1.5
 
