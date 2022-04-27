@@ -66,7 +66,7 @@ class CarController():
           MAX_INTERCEPTOR_GAS = ntune_scc_get("sccGasFactor")  # default : 0.5
           #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.3, 0.0])
 
-          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 15. * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS],
+          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 10. * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS],
                                             [0.25, 0.2, 0.3, 0.0])
 
           #pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.4, 0.0, 0.2])
