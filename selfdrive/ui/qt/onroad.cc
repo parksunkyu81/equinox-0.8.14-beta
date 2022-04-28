@@ -743,18 +743,14 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
 
   if (is_cruise_set) {
     configFont(p, "Open Sans", 55, "Bold");
-    //drawTextWithColor(p, rc.center().x(), 100, applyMaxSpeedQstr, yellowColor);
-    drawTextWithColor(p, rc.center().x()/2, 100, applyMaxSpeedQstr, yellowColor);
+    drawTextWithColor(p, rc.center().x(), 100, applyMaxSpeedQstr, yellowColor);
     configFont(p, "Open Sans", 76, "Bold");
-    //drawTextWithColor(p, rc.center().x(), 195, cruiseMaxSpeedQstr, whiteColor);
-    drawTextWithColor(p, rc.center().x()/2, 195, cruiseMaxSpeedQstr, whiteColor);
+    drawTextWithColor(p, rc.center().x(), 195, cruiseMaxSpeedQstr, whiteColor);
   } else {
     configFont(p, "Open Sans", 55, "sans-semibold");
-    //drawTextWithColor(p, rc.center().x(), 100, "SET", yellowColor);
-    drawTextWithColor(p, rc.center().x()/2, 100, "SET", yellowColor);
+    drawTextWithColor(p, rc.center().x(), 100, "SET", yellowColor);
     configFont(p, "Open Sans", 76, "sans-semibold");
-    //drawTextWithColor(p, rc.center().x(), 195, "──", whiteColor);
-    drawTextWithColor(p, rc.center().x()/2, 195, "──", whiteColor);
+    drawTextWithColor(p, rc.center().x(), 195, "──", whiteColor);
   }
 
 }
