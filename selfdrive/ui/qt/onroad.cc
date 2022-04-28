@@ -893,7 +893,7 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
   }
 }
 
-void OnroadHud::drawSteer(QPainter &p) {
+void NvgWindow::drawSteer(QPainter &p) {
 
   //int x = 30;
   int x = 150;
