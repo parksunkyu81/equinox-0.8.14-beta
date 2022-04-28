@@ -46,9 +46,15 @@ ACADOS_SOLVER_TYPE = 'SQP_RTI'
 #AUTO_TR_V = [1.1, 1.2, 1.33, 1.45]
 
 # 저속에서는 짧게, 중고속에서는 길게
-AUTO_TR_BP = [0., 3.*CV.KPH_TO_MS, 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS,
+# 10m 에서 accel
+
+#AUTO_TR_BP = [0., 3.*CV.KPH_TO_MS, 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS,
+#              30.*CV.KPH_TO_MS, 35.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
+#AUTO_TR_V = [0.0, 0.6, 0.2, 0.9, 1.45, 2.55, 3.3, 3.5, 3.8, 4.2]
+
+AUTO_TR_BP = [0., 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS,
               30.*CV.KPH_TO_MS, 35.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
-AUTO_TR_V = [0.0, 0.6, 0.3, 0.9, 1.4, 2.5, 2.9, 3.0, 3.5, 3.8]
+AUTO_TR_V = [0.0, 0.3, 0.5, 1.45, 2.55, 3.3, 3.5, 3.8, 4.2]
 
 # 1 Seconds = 12 Meter
 # 1 Meter = 0.084
@@ -60,6 +66,7 @@ AUTO_TR_V = [0.0, 0.6, 0.3, 0.9, 1.4, 2.5, 2.9, 3.0, 3.5, 3.8]
 # 3km : 4.9m : 0.4116s
 # 4km : 5.9m : 0.4956s
 # 5km : 7.4m : 0.621s
+# 10Km : 10m : 0.84s
 
 #=========================================================================#
 # 52km : 22m : 1.848
