@@ -149,9 +149,7 @@ class CarInterface(CarInterfaceBase):
     # 앞차가 가까워지는데 브레이킹 잘 안하면 ki 를 조금씩 올립니다
     #ret.longitudinalTuning.kiV = [0.15, 0.18, 0.19, 0.12]
 
-    #ret.longitudinalTuning.kiV = [0.14, 0.17, 0.18, 0.12]
-
-    # KF
+    # [KF]
     ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
     ret.longitudinalActuatorDelayUpperBound = 0.1
     #ret.longitudinalActuatorDelayUpperBound = 0.13
@@ -159,12 +157,6 @@ class CarInterface(CarInterfaceBase):
 
     # 저는 요새 어퍼랑 로우로 예전에 [kf로 튜닝]하던 예민함고 무딤을 보통 튜닝합니다
     # Kp는 가속을 하고 정차를 하는 속도가 적당한 그래프를 만드는 정도로 튜닝해서 맞춰놨고
-
-
-    # 시속 30킬로에서 영점 조절이 바뀐걸테니
-    #ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.deadzoneV = [0., 0.10]
-
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 

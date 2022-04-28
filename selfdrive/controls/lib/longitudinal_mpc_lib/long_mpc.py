@@ -52,6 +52,7 @@ ACADOS_SOLVER_TYPE = 'SQP_RTI'
 #              30.*CV.KPH_TO_MS, 35.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
 #AUTO_TR_V = [0.0, 0.6, 0.2, 0.9, 1.45, 2.55, 3.3, 3.5, 3.8, 4.2]
 
+# 초반은 민첩하게, 중후반은 멀리보게 (퓨얼컷)
 AUTO_TR_BP = [0., 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS,
               30.*CV.KPH_TO_MS, 35.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
 AUTO_TR_V = [0.0, 0.3, 0.5, 1.45, 2.55, 3.3, 3.5, 3.8, 4.2]
