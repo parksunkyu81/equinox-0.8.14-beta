@@ -529,6 +529,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   QString str;
   QString str2;
+  float img_alpha;
   QColor textColor = QColor(255, 255, 255, 200);
 
   float steer_angle = car_state.getSteeringAngleDeg();
@@ -628,7 +629,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   x = 140;
   const int y2 = rect().bottom() - (footer_h / 2) - (radius + 50) - 10;
 
-  float cur_speed = std::max(0.0, car_state.getVEgo() * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH));
+  float cur_speed = std::max(0.0, car_state.getVEgo() * MS_TO_KPH);
   float accel = car_state.getAEgo();
 
   p.setPen(Qt::NoPen);
@@ -642,13 +643,13 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     int a = (int)(255.f - (180.f * (accel/2.f)));
     a = std::min(a, 255);
     a = std::max(a, 80);
-    color = QColor(a, a, 255, 230);
+    textColor = QColor(a, a, 255, 230);
   }
   else {
     int a = (int)(255.f - (255.f * (-accel/3.f)));
     a = std::min(a, 255);
     a = std::max(a, 60);
-    color = QColor(255, a, a, 230);
+    textColor = QColor(255, a, a, 230);
   }
 
   configFont(p, "Open Sans", 45, "Bold");
@@ -719,7 +720,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   // 4. brake
   x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 3);
   bool brake_valid = car_state.getBrakePressed();
-  float img_alpha = brake_valid ? 1.0f : 0.15f;
+  img_alpha = brake_valid ? 1.0f : 0.15f;
   float bg_alpha = brake_valid ? 0.3f : 0.1f;
   drawIcon(p, x, y2+50, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   p.setOpacity(1.0);
