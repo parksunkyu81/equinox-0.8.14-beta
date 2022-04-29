@@ -139,10 +139,10 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpV = [1.5, 1.4, 0.85, 0.73, 0.65]
 
     #ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
+    ret.longitudinalTuning.kiV = [.38, .25, .20, .17, .1]
 
-    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.15, 0.12]
+    #ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kiV = [0.15, 0.12]
 
     #ret.longitudinalTuning.kiBP = [0., 40. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
     # 브레이킹의 시점 : 0.01, 0.001 씩 조절
@@ -152,7 +152,6 @@ class CarInterface(CarInterfaceBase):
     # [KF]
     ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
     ret.longitudinalActuatorDelayUpperBound = 0.1
-    #ret.longitudinalActuatorDelayUpperBound = 0.13
 
 
     # 저는 요새 어퍼랑 로우로 예전에 [kf로 튜닝]하던 예민함고 무딤을 보통 튜닝합니다
