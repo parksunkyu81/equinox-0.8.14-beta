@@ -3,11 +3,10 @@ from cereal import car
 from common.numpy_fast import interp
 from math import fabs
 from common.conversions import Conversions as CV
-from selfdrive.car.gm.values import CAR, HIGH_TORQUE, CruiseButtons, \
-                                    AccState, CarControllerParams, NO_ASCM
+from selfdrive.ntune import ntune_scc_get
+from selfdrive.car.gm.values import CAR,  CruiseButtons, CarControllerParams, NO_ASCM
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
-from selfdrive.controls.lib.drive_helpers import V_CRUISE_MIN
 from common.params import Params
 
 ButtonType = car.CarState.ButtonEvent.Type
@@ -96,7 +95,6 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.lqr.c = [1., 0.]
       ret.lateralTuning.lqr.k = [-105.0, 450.0]
       ret.lateralTuning.lqr.l = [0.22, 0.318]
-
     else:
       ret.lateralTuning.init('torque')
       ret.lateralTuning.torque.useSteeringAngle = True
@@ -105,8 +103,6 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
       ret.lateralTuning.torque.friction = 0.01
       ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
-
-
 
     ret.steerRatio = 17.5
     # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
@@ -124,39 +120,25 @@ class CarInterface(CarInterfaceBase):
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
     # longitudinal
-    # 월급, 시급
-    # 증여재산을 넉넉히 주어 빨리 액셀에서 발을 때도록 시켜야 멀리서 브레이킹을 한다.
-    # 일단 로우 바운드를 낮추면 앞차에 움직임에 내차가 조금 예민해집니다
+    ret.longitudinalTuning.kpBP = [0., 15. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
+                                   80. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kpV = [1.5, 1.4, 1.0, 0.9, 0.75, 0.65]
+    ret.longitudinalTuning.kpV = [ntune_scc_get('kp1'), ntune_scc_get('kp2'), ntune_scc_get('kp3'),
+                                  ntune_scc_get('kp4'), ntune_scc_get('kp5'), ntune_scc_get('kp6')]
+
+    ret.longitudinalTuning.kiBP = [0., 15. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
+                                   80. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kiV = [0.25, 0.24, 0.23, 0.2, 0.17, 0.15]
+    ret.longitudinalTuning.kiV = [ntune_scc_get('ki1'), ntune_scc_get('ki2'), ntune_scc_get('ki3'),
+                                  ntune_scc_get('ki4'), ntune_scc_get('ki5'), ntune_scc_get('ki6')]
 
 
-    # 보통 Ki는 브레이킹의 시점을 가지고 튜닝합니다
-    # 앞차가 가까워지는데 브레이킹 잘 안하면 ki 를 조금씩 올립니다
-    # 너무 올리면 아주 멀리서 정차를 하고 기어가듯 가까이 차에 붙거든요
-    # KI 조절은 0.01 ~ 0.001 씩 조절
+    # [KD] : 앞차 인식을 반응하는 속도
+    ret.longitudinalActuatorDelayLowerBound = 1.0
+    ret.longitudinalActuatorDelayUpperBound = 1.0
 
-    # longitudinal
-    ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.6, 1.4, 0.85, 0.73, 0.65]
-
-    #ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [.29, .21, .20, .17, .1]
-    #ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
-
-    #ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kiV = [0.15, 0.12]
-
-    #ret.longitudinalTuning.kiBP = [0., 40. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-    # 브레이킹의 시점 : 0.01, 0.001 씩 조절
-    # 앞차가 가까워지는데 브레이킹 잘 안하면 ki 를 조금씩 올립니다
-    #ret.longitudinalTuning.kiV = [0.15, 0.18, 0.19, 0.12]
-
-    # [KF]
-    ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
-    ret.longitudinalActuatorDelayUpperBound = 0.1
-
-
-    # 저는 요새 어퍼랑 로우로 예전에 [kf로 튜닝]하던 예민함고 무딤을 보통 튜닝합니다
-    # Kp는 가속을 하고 정차를 하는 속도가 적당한 그래프를 만드는 정도로 튜닝해서 맞춰놨고
+    #ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
+    #ret.longitudinalActuatorDelayUpperBound = 0.13
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 

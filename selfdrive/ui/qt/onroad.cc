@@ -523,32 +523,35 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   auto car_control = sm["carControl"].getCarControl();
   //auto controls_state = sm["controlsState"].getControlsState();
 
-  // brake
+  // 1. 핸들 토크 각도
   int x = 140;
   const int y1 = rect().bottom() - footer_h / 2 - 10;
 
-  bool brake_valid = car_state.getBrakePressed();
-  float img_alpha = brake_valid ? 1.0f : 0.15f;
-  float bg_alpha = brake_valid ? 0.3f : 0.1f;
-  drawIcon(p, x, y1, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
-  p.setOpacity(1.0);
-
-  // auto hold
-  int autohold = car_state.getAutoHold();
-  if(autohold >= 0) {
-    x = radius / 2 + (bdr_s * 2) + (radius + 50);
-    img_alpha = autohold > 0 ? 1.0f : 0.15f;
-    bg_alpha = autohold > 0 ? 0.3f : 0.1f;
-    drawIcon(p, x, y1, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
-            QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
-    p.setOpacity(1.0);
-  }
-
-  // VISION DIST
   QString str;
+  QString str2;
   QColor textColor = QColor(255, 255, 255, 200);
 
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 2);
+  float steer_angle = car_state.getSteeringAngleDeg();
+  float desire_angle = car_control.getActuators().getSteeringAngleDeg();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(80));
+  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
+
+  float textSize = 60.f;
+  textColor = QColor(255, 255, 255, 200);
+
+  str.sprintf("%.0f°", steer_angle);
+  configFont(p, "Open Sans", 45, "Bold");
+  drawTextWithColor(p, x, y1+50, str, QColor(255, 255, 255, 200));
+
+  str2.sprintf("%.0f°", desire_angle);
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y1+50, str2, QColor(155, 255, 155, 200));
+  p.setOpacity(1.0);
+
+  // 2. VISION DIST
+  x = radius / 2 + (bdr_s * 2) + (radius + 50);
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(80));
@@ -581,13 +584,114 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   drawTextWithColor(p, x, y1+50, str, textColor);
   p.setOpacity(1.0);
 
+  // 3. LKAS
+  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 2);
+  bool lkas_bool = car_state.getLkasEnable();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(80));
+  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+
+  textSize = 60.f;
+  textColor = QColor(255, 255, 255, 200);
+
+  if(lkas_bool == true) {
+    str = "ON";
+    textColor = QColor(120, 255, 120, 200);
+  }
+  else {
+    str = "OFF";
+    textColor = QColor(254, 32, 32, 200);
+  }
+
+  configFont(p, "Open Sans", 45, "Bold");
+  drawText(p, x, y1+50, "LKAS", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y2+50, str, textColor);
+  p.setOpacity(1.0);
+
+  // 4.auto hold
+  int autohold = car_state.getAutoHold();
+  if(autohold >= 0) {
+    x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 3);
+    img_alpha = autohold > 0 ? 1.0f : 0.15f;
+    bg_alpha = autohold > 0 ? 0.3f : 0.1f;
+    drawIcon(p, x, y1+50, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
+            QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+    p.setOpacity(1.0);
+  }
+
   // ================================================================================================================ //
 
-
-  // ACC
+  // 1. SPEED
   x = 140;
   const int y2 = rect().bottom() - (footer_h / 2) - (radius + 50) - 10;
 
+  float cur_speed = std::max(0.0, car_state.getVEgo() * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH));
+  float accel = car_state.getAEgo();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(80));
+  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+
+  textSize = 60.f;
+  textColor = QColor(255, 255, 255, 200);
+
+  if(accel > 0) {
+    int a = (int)(255.f - (180.f * (accel/2.f)));
+    a = std::min(a, 255);
+    a = std::max(a, 80);
+    color = QColor(a, a, 255, 230);
+  }
+  else {
+    int a = (int)(255.f - (255.f * (-accel/3.f)));
+    a = std::min(a, 255);
+    a = std::max(a, 60);
+    color = QColor(255, a, a, 230);
+  }
+
+  configFont(p, "Open Sans", 45, "Bold");
+  drawText(p, x, y2-20, "SPEED", 200);
+
+  str.sprintf("%.0f km/h", cur_speed);
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y2+50, str, textColor);
+  p.setOpacity(1.0);
+
+  // 2. PEDAL
+  x = radius / 2 + (bdr_s * 2) + (radius + 50);
+  float accel = car_control.getActuators().getAccel();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(80));
+  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+
+  textSize = 60.f;
+  textColor = QColor(255, 255, 255, 200);
+
+  if(accel > 0) {
+    str = "ACCEL";
+    textColor = QColor(120, 255, 120, 200);
+  }
+  else if(accel == 0.0) {
+    str = "--";
+    textColor = QColor(255, 185, 15, 200);
+  }
+  else {
+    str = "DECEL";
+    textColor = QColor(254, 32, 32, 200);
+  }
+
+  configFont(p, "Open Sans", 45, "Bold");
+  drawText(p, x, y2-20, "PEDAL", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y2+50, str, textColor);
+  p.setOpacity(1.0);
+
+  // 3. ACC
+  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 2);
   bool acc_bool = car_state.getAdaptiveCruise();
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(80));
@@ -612,62 +716,12 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   drawTextWithColor(p, x, y2+50, str, textColor);
   p.setOpacity(1.0);
 
-  // LKAS
-  x = radius / 2 + (bdr_s * 2) + (radius + 50);
-  bool lkas_bool = car_state.getLkasEnable();
-
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(80));
-  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
-
-  textSize = 60.f;
-  textColor = QColor(255, 255, 255, 200);
-
-  if(lkas_bool == true) {
-    str = "ON";
-    textColor = QColor(120, 255, 120, 200);
-  }
-  else {
-    str = "OFF";
-    textColor = QColor(254, 32, 32, 200);
-  }
-
-  configFont(p, "Open Sans", 45, "Bold");
-  drawText(p, x, y2-20, "LKAS", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y2+50, str, textColor);
-  p.setOpacity(1.0);
-
-  // ACCEL
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 2);
-  float accel = car_control.getActuators().getAccel();
-
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(80));
-  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
-
-  textSize = 60.f;
-  textColor = QColor(255, 255, 255, 200);
-
-  if(accel > 0) {
-    str = "ACCEL";
-    textColor = QColor(120, 255, 120, 200);
-  }
-  else if(accel == 0.0) {
-    str = "--";
-    textColor = QColor(255, 185, 15, 200);
-  }
-  else {
-    str = "DECEL";
-    textColor = QColor(254, 32, 32, 200);
-  }
-
-  configFont(p, "Open Sans", 45, "Bold");
-  drawText(p, x, y2-20, "SPEED", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y2+50, str, textColor);
+  // 4. brake
+  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 3);
+  bool brake_valid = car_state.getBrakePressed();
+  float img_alpha = brake_valid ? 1.0f : 0.15f;
+  float bg_alpha = brake_valid ? 0.3f : 0.1f;
+  drawIcon(p, x, y2+50, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   p.setOpacity(1.0);
 
 }

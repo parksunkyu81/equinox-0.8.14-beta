@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+
+<meta charset="UTF-8" />
+<title>Openpilot Control</title>
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+<meta name="format-detection" content="telephone=no" />
+
+<style>
+
+.slider {
+  -webkit-appearance: none;
+  width: 85%;
+  height: 45px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 30px;
+  height: 30px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+body {
+  background-color: black;
+  text-align: center;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+input[type=button], input[type=submit], input[type=reset] {
+  background-color: #4CAF50;
+  width: 45%;
+  border: none;
+  color: white;
+  padding: 15px 30px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+input[type=text] {
+  width: 25%;
+  height: 45px;
+  font-size: 20px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+</style>
+
+<script type="text/javascript">
+
+	function load()
+	{
+		document.frm1.kp1.value = {{kp1Param}};
+		document.frm1.kp2.value = {{kp2Param}};
+		document.frm1.kp3.value = {{kp3Param}};
+		document.frm1.kp4.value = {{kp4Param}};
+		document.frm1.kp5.value = {{kp5Param}};
+		document.frm1.kp6.value = {{kp6Param}};
+
+		document.frm1.ki1.value = {{ki1Param}};
+		document.frm1.ki2.value = {{ki2Param}};
+		document.frm1.ki3.value = {{ki3Param}};
+		document.frm1.ki4.value = {{ki4Param}};
+		document.frm1.ki5.value = {{ki5Param}};
+		document.frm1.ki6.value = {{ki6Param}};
+
+		document.frm1.tr1.value = {{tr1Param}};
+		document.frm1.tr2.value = {{tr2Param}};
+		document.frm1.tr3.value = {{tr3Param}};
+		document.frm1.tr4.value = {{tr4Param}};
+		document.frm1.tr5.value = {{tr5Param}};
+		document.frm1.tr6.value = {{tr6Param}};
+		document.frm1.tr7.value = {{tr7Param}};
+		document.frm1.tr8.value = {{tr8Param}};
+		document.frm1.tr9.value = {{tr9Param}};
+		document.frm1.tr10.value = {{tr10Param}};
+	}
+
+    function apply_ok() {
+		document.frm1.action = "/apply";
+        document.frm1.method = "post";
+        document.frm1.submit();
+    }
+
+
+    function delHangle(evt){ //한글을 지우는 부분, keyup부분에 넣어준다.
+		var objTarget = evt.srcElement || evt.target;
+		var _value = event.srcElement.value;
+		if(/[ㄱ-ㅎㅏ-ㅡ가-핳]/g.test(_value)) {
+			// objTarget.value = objTarget.value.replace(/[ㄱ-ㅎㅏ-ㅡ가-핳]/g,'');
+			objTarget.value = null;
+			//return false;
+		}
+	}
+
+	function isNumberKey(evt) { // 숫자를 제외한 값을 입력하지 못하게 한다.
+		var charCode = (evt.which) ? evt.which : event.keyCode;
+		// Textbox value
+		var _value = event.srcElement.value;
+		if (event.keyCode < 48 || event.keyCode > 57) {
+			if (event.keyCode != 46) { //숫자와 . 만 입력가능하도록함
+				return false;
+			}
+		}
+
+		// 소수점(.)이 두번 이상 나오지 못하게
+		var _pattern0 = /^\d*[.]\d*$/; // 현재 value값에 소수점(.) 이 있으면 . 입력불가
+		if (_pattern0.test(_value)) {
+			if (charCode == 46) {
+				return false;
+			}
+		}
+
+		// 두자리 이하의 숫자만 입력가능
+		var _pattern1 = /^\d{2}$/; // 현재 value값이 2자리 숫자이면 . 만 입력가능
+		// {숫자}의 값을 변경하면 자리수를 조정할 수 있다.
+		if (_pattern1.test(_value)) {
+			if (charCode != 46) {
+				alert("두자리 이하의 숫자만 입력가능합니다");
+				return false;
+			}
+		}
+
+		// 소수점 둘째자리까지만 입력가능
+		var _pattern2 = /^\d*[.]\d{2}$/; // 현재 value값이 소수점 둘째짜리 숫자이면 더이
+		// {숫자}의 값을 변경하면 자리수를 조정할 수 있다.
+		if (_pattern2.test(_value)) {
+			alert("소수점 둘째자리까지만 입력가능합니다.");
+			return false;
+		}
+		return true;
+	}
+
+
+</script>
+
+
+
+</head>
+<body onload="load()">
+
+	<form name="frm1" id="frm1" action="" method="post">
+		<h2>Openpilot Control</h2>
+
+		<div align="center">
+			<input type="button" value="APPLY" onclick="apply_ok()">
+			<input type="button" value="RESET" onclick="load()">
+		</div>
+
+		<h3>
+		<p>
+            <!-- 1.5, 1.4, 1.0, 0.9, 0.75, 0.65 -->
+			<font color="GREEN">KP(힘, Power) DEF(0.5 ~ 2.0)</font>
+	  	    <br>0.km (1.5)<input type="text" name="kp1" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>15.km (1.4)<input type="text" name="kp2" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>30.km (1.0)<input type="text" name="kp3" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>60.km (0.9)<input type="text" name="kp4" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>80.km (0.75)<input type="text" name="kp5" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>110.km (0.65)<input type="text" name="kp6" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<!-- 0.25, 0.24, 0.23, 0.2, 0.17, 0.15 -->
+			<font color="GREEN">KI(오차 줄임, 적분) DEF(0.1 ~ 0.5)</font>
+	  	    <br>0.km (0.25)<input type="text" name="ki1" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>15.km (0.24)<input type="text" name="ki2" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>30.km (0.23)<input type="text" name="ki3" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>60.km (0.2)<input type="text" name="ki4" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>80.km (0.17)<input type="text" name="ki5" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>110.km (0.15)<input type="text" name="ki6" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+
+		<h3>
+		<p>
+			<!-- BP 0., 1., 5., 10., 20., 30., 40., 50., 70, 100. -->
+			<!-- TR 0.1, 0.4, 0.7, 0.8, 0.85, 0.9, 2.5, 2.8, 3.3, 3.5 -->
+			<font color="GREEN">TR(차량 간격 시간) DEF(0.0 ~ 4.0)</font>
+	  	    <br>0.km (0.1)<input type="text" name="tr1" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>1.km (0.4)<input type="text" name="tr2" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>5.km (0.7)<input type="text" name="tr3" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>10.km (0.8)<input type="text" name="tr4" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>20.km (0.85)<input type="text" name="tr5" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>30.km (0.9)<input type="text" name="tr6" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>40.km (2.5)<input type="text" name="tr7" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>50.km (2.8)<input type="text" name="tr8" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>70.km (3.3)<input type="text" name="tr9" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+			<br>100.km (3.5)<input type="text" name="tr10" onkeypress="return isNumberKey(event)" onkeyup="return delHangle(event)">
+		</p>
+		</h3>
+
+	</form>
+</body>
+</html>

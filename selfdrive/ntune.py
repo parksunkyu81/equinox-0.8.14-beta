@@ -244,6 +244,77 @@ class nTune():
     if self.checkValue("sccCurvatureFactor", 0.5, 1.5, 0.98):
       updated = True
 
+    # ========================================================== #
+    # [1.5, 1.4, 1.0, 0.9, 0.75, 0.65]
+    if self.checkValue("kp1", 0.5, 2.0, 1.5):
+      updated = True
+
+    if self.checkValue("kp2", 0.5, 2.0, 1.4):
+      updated = True
+
+    if self.checkValue("kp3", 0.5, 2.0, 1.0):
+      updated = True
+
+    if self.checkValue("kp4", 0.5, 2.0, 0.9):
+      updated = True
+
+    if self.checkValue("kp5", 0.5, 2.0, 0.75):
+      updated = True
+
+    if self.checkValue("kp6", 0.5, 2.0, 0.65):
+      updated = True
+
+    # [0.25, 0.24, 0.23, 0.2, 0.17, 0.15]
+    if self.checkValue("ki1", 0.1, 0.5, 0.25):
+      updated = True
+
+    if self.checkValue("ki2", 0.1, 0.5, 0.24):
+      updated = True
+
+    if self.checkValue("ki3", 0.1, 0.5, 0.23):
+      updated = True
+
+    if self.checkValue("ki4", 0.1, 0.5, 0.2):
+      updated = True
+
+    if self.checkValue("ki5", 0.1, 0.5, 0.17):
+      updated = True
+
+    if self.checkValue("ki6", 0.1, 0.5, 0.15):
+      updated = True
+
+    # [0.1, 0.4, 0.7, 0.8, 0.85, 0.9, 2.5, 2.8, 3.3, 3.5]
+    if self.checkValue("tr1", 0.0, 4.0, 0.1):
+      updated = True
+
+    if self.checkValue("tr2", 0.0, 4.0, 0.4):
+      updated = True
+
+    if self.checkValue("tr3", 0.0, 4.0, 0.7):
+      updated = True
+
+    if self.checkValue("tr4", 0.0, 4.0, 0.8):
+      updated = True
+
+    if self.checkValue("tr5", 0.0, 4.0, 0.85):
+      updated = True
+
+    if self.checkValue("tr6", 0.0, 4.0, 0.9):
+      updated = True
+
+    if self.checkValue("tr7", 0.0, 4.0, 2.5):
+      updated = True
+
+    if self.checkValue("tr8", 0.0, 4.0, 2.8):
+      updated = True
+
+    if self.checkValue("tr9", 0.0, 4.0, 3.3):
+      updated = True
+
+    if self.checkValue("tr10", 0.0, 4.0, 3.5):
+      updated = True
+
+    # ========================================================== #
     return updated
 
   def updateLQR(self):

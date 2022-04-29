@@ -8,6 +8,7 @@ from selfdrive.swaglog import cloudlog
 from selfdrive.modeld.constants import index_function
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from common.conversions import Conversions as CV
+from selfdrive.ntune import ntune_scc_get
 
 if __name__ == '__main__':  # generating code
   from pyextra.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
@@ -53,9 +54,16 @@ ACADOS_SOLVER_TYPE = 'SQP_RTI'
 #AUTO_TR_V = [0.0, 0.6, 0.2, 0.9, 1.45, 2.55, 3.3, 3.5, 3.8, 4.2]
 
 # 초반은 민첩하게, 중후반은 멀리보게 (퓨얼컷)
+# 0~40km : 민첩 모드 (엑셀 상승)
+# 40~100km : 멀리 보게 (브레이크 상승)
 AUTO_TR_BP = [0., 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS,
-              30.*CV.KPH_TO_MS, 35.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
-AUTO_TR_V = [0.0, 0.3, 0.5, 0.9, 1.8, 2.5, 3.0, 3.5, 3.8]
+              30.*CV.KPH_TO_MS, 40.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS,
+              70.*CV.KPH_TO_MS, 80.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
+
+#AUTO_TR_V = [0.1, 0.4, 0.7, 0.8, 0.85, 0.9, 2.5, 2.8, 3.3, 3.5]
+AUTO_TR_V = [ntune_scc_get('TR1'), ntune_scc_get('TR2'), ntune_scc_get('TR3'), ntune_scc_get('TR4'),
+             ntune_scc_get('TR5'), ntune_scc_get('TR6'), ntune_scc_get('TR7'), ntune_scc_get('TR8'),
+             ntune_scc_get('TR9'), ntune_scc_get('TR10')]
 
 # 1 Seconds = 12 Meter
 # 1 Meter = 0.084

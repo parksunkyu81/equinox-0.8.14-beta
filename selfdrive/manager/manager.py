@@ -137,6 +137,7 @@ def manager_thread() -> None:
 
   if EON:
     Process(name="autoshutdownd", target=launcher, args=("selfdrive.autoshutdownd", "autoshutdownd")).start()
+    Process(name="psk_control", target=launcher, args=("selfdrive.psk_control.psk_control", "psk_control")).start()
     system("am startservice com.neokii.optool/.MainService")
 
   Process(name="road_speed_limiter", target=launcher, args=("selfdrive.road_speed_limiter", "road_speed_limiter")).start()
