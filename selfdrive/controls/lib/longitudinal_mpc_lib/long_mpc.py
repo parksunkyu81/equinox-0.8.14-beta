@@ -61,7 +61,7 @@ AUTO_TR_BP = [0., 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS,
               70.*CV.KPH_TO_MS, 80.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
 
 #AUTO_TR_V = [0.1, 0.4, 0.7, 0.8, 0.85, 0.9, 2.5, 2.8, 3.3, 3.5]
-AUTO_TR_V = [ntune_scc_get('tr1'), ntune_scc_get('tr'), ntune_scc_get('tr3'), ntune_scc_get('tr4'),
+AUTO_TR_V = [ntune_scc_get('tr1'), ntune_scc_get('tr2'), ntune_scc_get('tr3'), ntune_scc_get('tr4'),
              ntune_scc_get('tr5'), ntune_scc_get('tr6'), ntune_scc_get('tr7'), ntune_scc_get('tr8'),
              ntune_scc_get('tr9'), ntune_scc_get('tr10')]
 
