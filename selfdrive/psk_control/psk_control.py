@@ -150,7 +150,7 @@ def apply():
                    '\n "tr10": TR10' \
                   '\n }\n'
 
-        #print("before message : ", message)
+        print("before message : ", message)
 
 
         message = message.replace('SCC_GAS_FACTOR', str(ntune_scc_get('sccGasFactor')))
