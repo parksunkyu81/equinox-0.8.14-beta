@@ -67,7 +67,7 @@ class CarController():
           #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.3, 0.0])
 
           PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 10. * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS, 105. * CV.KPH_TO_MS],
-                                            [0.3, 0.2, 0.3, 0.0])
+                                            [0.32, 0.2, 0.3, 0.0])
 
           #pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.4, 0.0, 0.2])
           pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.2, 0.0, 0.2])
