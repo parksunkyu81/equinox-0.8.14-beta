@@ -530,7 +530,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   QString str;
   QString str2;
   float img_alpha;
-  float bg_alpha
+  float bg_alpha;
   QColor textColor = QColor(255, 255, 255, 200);
 
   float steer_angle = car_state.getSteeringAngleDeg();
@@ -545,11 +545,13 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   str.sprintf("%.0f°", steer_angle);
   configFont(p, "Open Sans", 45, "Bold");
-  drawTextWithColor(p, x, y1+50, str, QColor(255, 255, 255, 200));
+  textColor = QColor(255, 255, 255, 200);
+  drawTextWithColor(p, x, y1+50, str, textColor);
 
   str2.sprintf("%.0f°", desire_angle);
   configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1+50, str2, QColor(155, 255, 155, 200));
+  textColor = QColor(155, 255, 155, 200);
+  drawTextWithColor(p, x, y1+50, str2, textColor);
   p.setOpacity(1.0);
 
   // 2. VISION DIST
@@ -559,7 +561,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(80));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
-  float textSize = 60.f;
+  textSize = 60.f;
   textColor = QColor(255, 255, 255, 200);
 
   auto lead_vision = sm["modelV2"].getModelV2().getLeadsV3()[0];
@@ -663,7 +665,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   // 2. PEDAL
   x = radius / 2 + (bdr_s * 2) + (radius + 50);
-  float accel = car_control.getActuators().getAccel();
+  accel = car_control.getActuators().getAccel();
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(80));
