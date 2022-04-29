@@ -530,6 +530,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   QString str;
   QString str2;
   float img_alpha;
+  float bg_alpha
   QColor textColor = QColor(255, 255, 255, 200);
 
   float steer_angle = car_state.getSteeringAngleDeg();
@@ -591,7 +592,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(80));
-  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
   textSize = 60.f;
   textColor = QColor(255, 255, 255, 200);
@@ -609,7 +610,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   drawText(p, x, y1+50, "LKAS", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y2+50, str, textColor);
+  drawTextWithColor(p, x, y1+50, str, textColor);
   p.setOpacity(1.0);
 
   // 4.auto hold
@@ -721,7 +722,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 3);
   bool brake_valid = car_state.getBrakePressed();
   img_alpha = brake_valid ? 1.0f : 0.15f;
-  float bg_alpha = brake_valid ? 0.3f : 0.1f;
+  bg_alpha = brake_valid ? 0.3f : 0.1f;
   drawIcon(p, x, y2+50, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   p.setOpacity(1.0);
 
