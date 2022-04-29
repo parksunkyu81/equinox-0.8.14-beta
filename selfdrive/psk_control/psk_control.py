@@ -38,7 +38,7 @@ TR6 = ntune_scc_get('tr6')
 TR7 = ntune_scc_get('tr7')
 TR8 = ntune_scc_get('tr8')
 TR9 = ntune_scc_get('tr9')
-TR10 = ntune_scc_get('tr10')
+TR_10 = ntune_scc_get('tr10')
 
 
 CONF_SCC_FILE = '/data/ntune/scc.json'
@@ -67,7 +67,7 @@ def index():
                            tr7Param=TR7,
                            tr8Param=TR8,
                            tr9Param=TR9,
-                           tr10Param=TR10
+                           tr10Param=TR_10
                            )
 
 
@@ -119,9 +119,8 @@ def apply():
         TR8 = request.form['tr8']
         global TR9
         TR9 = request.form['tr9']
-        global TR10
-        TR10 = request.form['tr10']
-        print("TR10 : ", TR10)
+        global TR_10
+        TR_10 = request.form['tr10']
 
 
         message = '{\n "sccGasFactor": SCC_GAS_FACTOR,' \
@@ -148,10 +147,10 @@ def apply():
                    '\n "tr7": TR7,' \
                    '\n "tr8": TR8,' \
                    '\n "tr9": TR9,' \
-                   '\n "tr10": TR10' \
+                   '\n "tr10": TR_10' \
                   '\n }\n'
 
-        print("before message : ", message)
+        #print("before message : ", message)
 
 
         message = message.replace('SCC_GAS_FACTOR', str(ntune_scc_get('sccGasFactor')))
@@ -181,9 +180,9 @@ def apply():
         message = message.replace('TR7', str(TR7))
         message = message.replace('TR8', str(TR8))
         message = message.replace('TR9', str(TR9))
-        message = message.replace('TR10', str(TR10))
+        message = message.replace('TR10', str(TR_10))
 
-        print("after message : ", message)
+        #print("after message : ", message)
 
         # 파일 저장
         f = open(CONF_SCC_FILE, 'w')
@@ -212,7 +211,7 @@ def apply():
                                tr7Param=TR7,
                                tr8Param=TR8,
                                tr9Param=TR9,
-                               tr10Param=TR10
+                               tr10Param=TR_10
                                )
 
 
