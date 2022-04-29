@@ -180,7 +180,7 @@ def apply():
         message = message.replace('TR7', str(TR7))
         message = message.replace('TR8', str(TR8))
         message = message.replace('TR9', str(TR9))
-        message = message.replace('TR10', str(TR_10))
+        message = message.replace('TR_10', str(TR_10))
 
         #print("after message : ", message)
 
