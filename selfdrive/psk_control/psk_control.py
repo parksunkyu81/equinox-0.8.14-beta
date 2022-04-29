@@ -121,6 +121,7 @@ def apply():
         TR9 = request.form['tr9']
         global TR10
         TR10 = request.form['tr10']
+        print("TR10 : ", TR10)
 
 
         message = '{\n "sccGasFactor": SCC_GAS_FACTOR,' \
