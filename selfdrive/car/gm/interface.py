@@ -102,8 +102,8 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
       ret.lateralTuning.torque.friction = 0.01
       ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
-      #ret.lateralTuning.torque.deadzoneBP = [0.]
-      #ret.lateralTuning.torque.deadzoneV = [0.01]
+      ret.lateralTuning.torque.deadzoneBP = [0.]
+      ret.lateralTuning.torque.deadzoneV = [0.01]
 
     ret.steerRatio = 17.5
     # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
