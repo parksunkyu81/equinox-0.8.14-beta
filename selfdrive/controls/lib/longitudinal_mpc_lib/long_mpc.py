@@ -56,11 +56,12 @@ ACADOS_SOLVER_TYPE = 'SQP_RTI'
 # 초반은 민첩하게, 중후반은 멀리보게 (퓨얼컷)
 # 0~40km : 민첩 모드 (엑셀 상승)
 # 40~100km : 멀리 보게 (브레이크 상승)
-AUTO_TR_BP = [0., 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS,
-              30.*CV.KPH_TO_MS, 40.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS,
-              70.*CV.KPH_TO_MS, 80.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
 
-#AUTO_TR_V = [0.1, 0.4, 0.7, 0.8, 0.85, 0.9, 2.5, 2.8, 3.3, 3.5]
+AUTO_TR_BP = [0., 1.*CV.KPH_TO_MS, 5.*CV.KPH_TO_MS, 10.*CV.KPH_TO_MS,
+              15.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 55.*CV.KPH_TO_MS,
+              70.*CV.KPH_TO_MS, 85.*CV.KPH_TO_MS, 110*CV.KPH_TO_MS]
+
+#AUTO_TR_V = 0.336, 0.33, 0.32, 0.35, 0.65, 2.45, 2.7, 2.8, 3.1, 3.3[]
 AUTO_TR_V = [ntune_scc_get('tr1'), ntune_scc_get('tr2'), ntune_scc_get('tr3'), ntune_scc_get('tr4'),
              ntune_scc_get('tr5'), ntune_scc_get('tr6'), ntune_scc_get('tr7'), ntune_scc_get('tr8'),
              ntune_scc_get('tr9'), ntune_scc_get('tr10')]

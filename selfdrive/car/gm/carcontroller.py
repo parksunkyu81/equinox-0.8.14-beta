@@ -62,11 +62,10 @@ class CarController():
       if CS.CP.enableGasInterceptor:
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
-          #MAX_INTERCEPTOR_GAS = 0.55
           MAX_INTERCEPTOR_GAS = ntune_scc_get("sccGasFactor")  # default : 0.5
           #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.3, 0.0])
 
-          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.18, 0.3, 0.0])
+          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.21, 0.3, 0.0])
 
           pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.4, 0.0, 0.2])
           #pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.2, 0.0, 0.2])

@@ -17,8 +17,14 @@ class CarInterface(CarInterfaceBase):
 
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
-    params = CarControllerParams(CP)
-    return params.ACCEL_MIN, params.ACCEL_MAX
+    #params = CarControllerParams(CP)
+    #return params.ACCEL_MIN, params.ACCEL_MAX
+    v_current_kph = current_speed * CV.MS_TO_KPH
+
+    gas_max_bp = [10., 20., 50., 70., 130., 150.]
+    gas_max_v = [1.5, 1.25, 0.67, 0.47, 0.16, 0.1]
+
+    return CarControllerParams.ACCEL_MIN, interp(v_current_kph, gas_max_bp, gas_max_v)
 
 
 
@@ -98,11 +104,13 @@ class CarInterface(CarInterfaceBase):
     else:
       ret.lateralTuning.init('torque')
       ret.lateralTuning.torque.useSteeringAngle = True
-      max_lat_accel = 2.5
+      max_lat_accel = 3.25
       ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
       ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-      ret.lateralTuning.torque.friction = 0.01
+      ret.lateralTuning.torque.friction = 0.6
       ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
+      ret.lateralTuning.torque.deadzoneBP = [0.]
+      ret.lateralTuning.torque.deadzoneV = [0.01]
 
     ret.steerRatio = 17.5
     # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
@@ -120,25 +128,23 @@ class CarInterface(CarInterfaceBase):
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
     # longitudinal
-    ret.longitudinalTuning.kpBP = [0., 15. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
+    ret.longitudinalTuning.kpBP = [0., 15. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS,
                                    80. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kpV = [1.5, 1.4, 1.0, 0.9, 0.75, 0.65]
+    #ret.longitudinalTuning.kpV = [1.5, 1.4, 1.2, 0.85, 0.75, 0.65]
     ret.longitudinalTuning.kpV = [ntune_scc_get('kp1'), ntune_scc_get('kp2'), ntune_scc_get('kp3'),
                                   ntune_scc_get('kp4'), ntune_scc_get('kp5'), ntune_scc_get('kp6')]
 
-    ret.longitudinalTuning.kiBP = [0., 15. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
+    #ret.longitudinalTuning.kiV = [0.35, 0.30, 0.2, 0.2, 0.17, 0.15]
+    ret.longitudinalTuning.kiBP = [0., 15. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS,
                                    80. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kiV = [0.25, 0.24, 0.23, 0.2, 0.17, 0.15]
+
     ret.longitudinalTuning.kiV = [ntune_scc_get('ki1'), ntune_scc_get('ki2'), ntune_scc_get('ki3'),
                                   ntune_scc_get('ki4'), ntune_scc_get('ki5'), ntune_scc_get('ki6')]
 
 
     # [KD] : 앞차 인식을 반응하는 속도
-    ret.longitudinalActuatorDelayLowerBound = 1.0
-    ret.longitudinalActuatorDelayUpperBound = 1.0
-
-    #ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
-    #ret.longitudinalActuatorDelayUpperBound = 0.13
+    ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
+    ret.longitudinalActuatorDelayUpperBound = 0.13
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
