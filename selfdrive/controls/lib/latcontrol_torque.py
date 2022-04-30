@@ -21,6 +21,14 @@ from selfdrive.controls.lib.latcontrol_pid import ERROR_RATE_FRAME
 LOW_SPEED_FACTOR = 200
 JERK_THRESHOLD = 0.2
 
+def apply_deadzone(error, deadzone):
+  if error > deadzone:
+    error -= deadzone
+  elif error < - deadzone:
+    error += deadzone
+  else:
+    error = 0.
+  return error
 
 class LatControlTorque(LatControl):
   def __init__(self, CP, CI):
@@ -60,16 +68,21 @@ class LatControlTorque(LatControl):
       setpoint = desired_lateral_accel + LOW_SPEED_FACTOR * desired_curvature
       measurement = actual_lateral_accel + LOW_SPEED_FACTOR * actual_curvature
       error = setpoint - measurement
-      pid_log.error = error
+
+      deadzone = interp(CS.vEgo, CP.lateralTuning.torque.deadzoneBP, CP.lateralTuning.torque.deadzoneV)
+      error_deadzone = apply_deadzone(error, deadzone)
+
+      pid_log.error = error_deadzone
 
       ff = desired_lateral_accel - params.roll * ACCELERATION_DUE_TO_GRAVITY
-      output_torque = self.pid.update(error,
+      # convert friction into lateral accel units for feedforward
+      friction_compensation = interp(desired_lateral_jerk, [-JERK_THRESHOLD, JERK_THRESHOLD],
+                                     [-self.friction, self.friction])
+      ff += friction_compensation / CP.lateralTuning.torque.kf
+      output_torque = self.pid.update(error_deadzone,
                                       override=CS.steeringPressed, feedforward=ff,
                                       speed=CS.vEgo,
                                       freeze_integrator=CS.steeringRateLimited)
-
-      friction_compensation = interp(desired_lateral_jerk, [-JERK_THRESHOLD, JERK_THRESHOLD], [-self.friction, self.friction])
-      output_torque += friction_compensation
 
       pid_log.active = True
       pid_log.p = self.pid.p
@@ -81,5 +94,5 @@ class LatControlTorque(LatControl):
 
       angle_steers_des = math.degrees(VM.get_steer_from_curvature(-desired_curvature, CS.vEgo, params.roll)) + params.angleOffsetDeg
 
-    #TODO left is positive in this convention
+    # TODO left is positive in this convention
     return -output_torque, angle_steers_des, pid_log

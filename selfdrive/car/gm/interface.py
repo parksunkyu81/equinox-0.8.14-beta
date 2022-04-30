@@ -104,10 +104,10 @@ class CarInterface(CarInterfaceBase):
     else:
       ret.lateralTuning.init('torque')
       ret.lateralTuning.torque.useSteeringAngle = True
-      max_lat_accel = 3.25
+      max_lat_accel = 2.5
       ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
       ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-      ret.lateralTuning.torque.friction = 0.6
+      ret.lateralTuning.torque.friction = 0.01
       ret.lateralTuning.torque.ki = 0.5 / max_lat_accel
       ret.lateralTuning.torque.deadzoneBP = [0.]
       ret.lateralTuning.torque.deadzoneV = [0.01]
@@ -141,6 +141,8 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kiV = [ntune_scc_get('ki1'), ntune_scc_get('ki2'), ntune_scc_get('ki3'),
                                   ntune_scc_get('ki4'), ntune_scc_get('ki5'), ntune_scc_get('ki6')]
 
+    ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.deadzoneV = [.0, .14]
 
     # [KD] : 앞차 인식을 반응하는 속도
     ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
