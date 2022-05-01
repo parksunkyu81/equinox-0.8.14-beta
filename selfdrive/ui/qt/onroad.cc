@@ -546,7 +546,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   str.sprintf("%.0f°", steer_angle);
   configFont(p, "Open Sans", 45, "Bold");
   textColor = QColor(255, 255, 255, 200);
-  drawTextWithColor(p, x, y1+50, str, textColor);
+  drawTextWithColor(p, x, y1-20, str, textColor);
 
   str2.sprintf("%.0f°", desire_angle);
   configFont(p, "Open Sans", textSize, "Bold");
@@ -561,7 +561,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(80));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
-  textSize = 60.f;
+  textSize = 50.f;
   textColor = QColor(255, 255, 255, 200);
 
   auto lead_vision = sm["modelV2"].getModelV2().getLeadsV3()[0];
@@ -576,7 +576,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     } else {
       textColor = QColor(120, 255, 120, 200);
     }
-    str.sprintf("%.1f ｍ", vision_dist);
+    str.sprintf("%.1f m, %.1f s", vision_dist, vision_dist * 0.084);
   } else {
     str = "──";
   }
@@ -609,10 +609,10 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   }
 
   configFont(p, "Open Sans", 45, "Bold");
-  drawText(p, x, y1+50, "LKAS", 200);
+  drawText(p, x, y1-20, "LKAS", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1+50, str, textColor);
+  drawTextWithColor(p, x, y1-20, str, textColor);
   p.setOpacity(1.0);
 
   // 4.auto hold
@@ -621,7 +621,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 3);
     img_alpha = autohold > 0 ? 1.0f : 0.15f;
     bg_alpha = autohold > 0 ? 0.3f : 0.1f;
-    drawIcon(p, x, y1+50, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
+    drawIcon(p, x, y1-20, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
     p.setOpacity(1.0);
   }
@@ -636,10 +636,10 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   float accel = car_state.getAEgo();
 
   p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(80));
+  p.setBrush(blackColor(90));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  textSize = 60.f;
+  textSize = 65.f;
   textColor = QColor(255, 255, 255, 200);
 
   if(accel > 0) {
@@ -658,7 +658,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   configFont(p, "Open Sans", 45, "Bold");
   drawText(p, x, y2-20, "SPEED", 200);
 
-  str.sprintf("%.0f km/h", cur_speed);
+  str.sprintf("%.0f", cur_speed);
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y2+50, str, textColor);
   p.setOpacity(1.0);
@@ -668,7 +668,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   accel = car_control.getActuators().getAccel();
 
   p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(80));
+  p.setBrush(blackColor(90));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
   textSize = 60.f;
@@ -698,7 +698,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 2);
   bool acc_bool = car_state.getAdaptiveCruise();
   p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(80));
+  p.setBrush(blackColor(90));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
   textSize = 60.f;
@@ -725,7 +725,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   bool brake_valid = car_state.getBrakePressed();
   img_alpha = brake_valid ? 1.0f : 0.15f;
   bg_alpha = brake_valid ? 0.3f : 0.1f;
-  drawIcon(p, x, y2+50, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  drawIcon(p, x, y2, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   p.setOpacity(1.0);
 
 }
