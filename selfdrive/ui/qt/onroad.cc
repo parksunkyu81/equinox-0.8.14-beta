@@ -461,7 +461,6 @@ void NvgWindow::drawHud(QPainter &p) {
   drawMaxSpeed(p);
   drawSpeed(p);
   drawSpeedLimit(p);
-  drawSteer(p);
   drawRestArea(p);
   drawTurnSignals(p);
   //drawGpsStatus(p);
@@ -561,7 +560,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(80));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
-  textSize = 50.f;
+  textSize = 40.f;
   textColor = QColor(255, 255, 255, 200);
 
   auto lead_vision = sm["modelV2"].getModelV2().getLeadsV3()[0];
@@ -612,7 +611,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   drawText(p, x, y1-20, "LKAS", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1-20, str, textColor);
+  drawTextWithColor(p, x, y1+50, str, textColor);
   p.setOpacity(1.0);
 
   // 4.auto hold
@@ -621,7 +620,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 3);
     img_alpha = autohold > 0 ? 1.0f : 0.15f;
     bg_alpha = autohold > 0 ? 0.3f : 0.1f;
-    drawIcon(p, x, y1-20, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
+    drawIcon(p, x, y1, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
     p.setOpacity(1.0);
   }
@@ -945,38 +944,6 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
       p.drawText(rect, Qt::AlignCenter, "CAM");
     }
   }
-}
-
-void NvgWindow::drawSteer(QPainter &p) {
-
-  //int x = 30;
-  int x = 150;
-  int y = 540;
-
-  const SubMaster &sm = *(uiState()->sm);
-  auto car_state = sm["carState"].getCarState();
-  auto car_control = sm["carControl"].getCarControl();
-
-  float steer_angle = car_state.getSteeringAngleDeg();
-  float desire_angle = car_control.getActuators().getSteeringAngleDeg();
-
-  configFont(p, "Open Sans", 50, "Bold");
-
-  QString str;
-  int width = 192;
-
-  str.sprintf("%.0f°", steer_angle);
-  QRect rect = QRect(x, y, width, width);
-
-  p.setPen(QColor(255, 255, 255, 200));
-  p.drawText(rect, Qt::AlignCenter, str);
-
-  str.sprintf("%.0f°", desire_angle);
-  rect.setRect(x, y + 80, width, width);
-
-  p.setPen(QColor(155, 255, 155, 200));
-  p.drawText(rect, Qt::AlignCenter, str);
-
 }
 
 QPixmap NvgWindow::get_icon_iol_com(const char* key) {
