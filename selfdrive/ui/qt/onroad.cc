@@ -575,7 +575,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     } else {
       textColor = QColor(120, 255, 120, 200);
     }
-    str.sprintf("%.1f m, %.1f s", vision_dist, vision_dist * 0.084);
+    str.sprintf("%.1fm, %.1fs", vision_dist, vision_dist * 0.084);
   } else {
     str = "──";
   }
