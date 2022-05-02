@@ -265,22 +265,22 @@ class nTune():
       updated = True
 
     # [0.35, 0.30, 0.2, 0.2, 0.17, 0.15]
-    if self.checkValue("ki1", 0.1, 1.0, 0.35):
+    if self.checkValue("ki1", 0.1, 5.0, 0.35):
       updated = True
 
-    if self.checkValue("ki2", 0.1, 1.0, 0.30):
+    if self.checkValue("ki2", 0.1, 5.0, 0.30):
       updated = True
 
-    if self.checkValue("ki3", 0.1, 1.0, 0.2):
+    if self.checkValue("ki3", 0.1, 5.0, 0.2):
       updated = True
 
-    if self.checkValue("ki4", 0.1, 1.0, 0.2):
+    if self.checkValue("ki4", 0.1, 5.0, 0.2):
       updated = True
 
-    if self.checkValue("ki5", 0.1, 1.0, 0.17):
+    if self.checkValue("ki5", 0.1, 5.0, 0.17):
       updated = True
 
-    if self.checkValue("ki6", 0.1, 1.0, 0.15):
+    if self.checkValue("ki6", 0.1, 5.0, 0.15):
       updated = True
 
     # [0.336, 0.33, 0.32, 0.35, 0.65, 2.45, 2.7, 2.8, 3.1, 3.3]

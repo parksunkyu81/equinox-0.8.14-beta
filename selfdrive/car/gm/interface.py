@@ -121,13 +121,12 @@ class CarInterface(CarInterfaceBase):
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
     # longitudinal
-    ret.longitudinalTuning.kpBP = [0., 15. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS,
+    """ret.longitudinalTuning.kpBP = [0., 15. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS,
                                    80. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kpV = [1.5, 1.4, 1.2, 0.85, 0.75, 0.65]
+    
     ret.longitudinalTuning.kpV = [ntune_scc_get('kp1'), ntune_scc_get('kp2'), ntune_scc_get('kp3'),
                                   ntune_scc_get('kp4'), ntune_scc_get('kp5'), ntune_scc_get('kp6')]
 
-    #ret.longitudinalTuning.kiV = [0.35, 0.30, 0.2, 0.2, 0.17, 0.15]
     ret.longitudinalTuning.kiBP = [0., 15. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS,
                                    80. * CV.KPH_TO_MS, 110. * CV.KPH_TO_MS]
 
@@ -135,7 +134,14 @@ class CarInterface(CarInterfaceBase):
                                   ntune_scc_get('ki4'), ntune_scc_get('ki5'), ntune_scc_get('ki6')]
 
     ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.deadzoneV = [.0, .14]"""
+
+    ret.longitudinalTuning.deadzoneBP = [0., 8.05]
     ret.longitudinalTuning.deadzoneV = [.0, .14]
+    ret.longitudinalTuning.kpBP = [0., 5., 20.]
+    ret.longitudinalTuning.kpV = [1.3, 1.0, 0.7]
+    ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
+    ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
 
     # [KD] : 앞차 인식을 반응하는 속도
     ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
