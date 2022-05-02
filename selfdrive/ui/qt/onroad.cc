@@ -560,7 +560,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(80));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
-  textSize = 50.f;
+  textSize = 55.f;
   textColor = QColor(255, 255, 255, 200);
 
   auto lead_vision = sm["modelV2"].getModelV2().getLeadsV3()[0];
@@ -575,7 +575,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     } else {
       textColor = QColor(120, 255, 120, 200);
     }
-    str.sprintf("%.1fm, %.1fs", vision_dist, vision_dist * 0.084);
+    str.sprintf("%.1f, %.1f", vision_dist, vision_dist * 0.084);
   } else {
     str = "──";
   }
