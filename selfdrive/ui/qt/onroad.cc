@@ -560,7 +560,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(80));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
-  textSize = 40.f;
+  textSize = 50.f;
   textColor = QColor(255, 255, 255, 200);
 
   auto lead_vision = sm["modelV2"].getModelV2().getLeadsV3()[0];
