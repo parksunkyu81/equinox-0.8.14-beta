@@ -18,7 +18,12 @@ class CarInterface(CarInterfaceBase):
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
     params = CarControllerParams(CP)
-    return params.ACCEL_MIN, params.ACCEL_MAX
+    v_current_kph = current_speed * CV.MS_TO_KPH
+    #return params.ACCEL_MIN, params.ACCEL_MAX
+    accel_max_bp = [10., 20., 50.]
+    accel_max_v = [1.45, 1.425, 1.35]
+
+    return params.ACCEL_MIN, interp(v_current_kph, accel_max_bp, accel_max_v)
 
 
   # Determined by iteratively plotting and minimizing error for f(angle, speed) = steer.
@@ -52,11 +57,12 @@ class CarInterface(CarInterfaceBase):
     ret.openpilotLongitudinalControl = True # ASCM vehicles use OP for long
     ret.radarOffCan = False # ASCM vehicles (typically) have radar
 
-     # Default to normal torque limits
+    # Default to normal torque limits
     ret.safetyConfigs[0].safetyParam = 0
 
     # Start with a baseline lateral tuning for all GM vehicles. Override tuning as needed in each model section below.
     ret.enableGasInterceptor = 0x201 in fingerprint[0]
+    #ret.restartForceAccel = Params().get_bool('RestartForceAccel')
 
     if ret.enableGasInterceptor:
       ret.openpilotLongitudinalControl = True
@@ -109,7 +115,7 @@ class CarInterface(CarInterfaceBase):
     # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
     ret.steerActuatorDelay = 0.1
     ret.steerRateCost = 0.35
-    ret.steerLimitTimer = 0.5   # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
+    ret.steerLimitTimer = 0.4   # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
@@ -136,16 +142,27 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
     ret.longitudinalTuning.deadzoneV = [.0, .14]"""
 
-    ret.longitudinalTuning.deadzoneBP = [0., 8.05]
-    ret.longitudinalTuning.deadzoneV = [.0, .14]
-    ret.longitudinalTuning.kpBP = [0., 5., 20.]
-    ret.longitudinalTuning.kpV = [1.3, 1.0, 0.7]
-    ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
-    ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
+    ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.35, 1.20, 0.85, 0.73, 0.65]
+
+    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kiV = [0.18, 0.12]
+    ret.longitudinalTuning.kiV = [0.2, 0.12]
+
+    ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.deadzoneV = [0., 0.10]
 
     # [KD] : 앞차 인식을 반응하는 속도
     ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
     ret.longitudinalActuatorDelayUpperBound = 0.13
+
+    ret.startAccel = -0.8
+    ret.stopAccel = -2.0
+    ret.startingAccelRate = 5.0
+    ret.stoppingDecelRate = 4.0
+    ret.vEgoStopping = 0.5
+    ret.vEgoStarting = 0.5
+    ret.stoppingControl = True
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
