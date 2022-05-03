@@ -146,15 +146,17 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpV = [1.35, 1.20, 0.85, 0.73, 0.65]
 
     ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kiV = [0.18, 0.12]
-    ret.longitudinalTuning.kiV = [0.2, 0.12]
+    ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
     ret.longitudinalTuning.deadzoneV = [0., 0.10]
 
+    ret.longitudinalActuatorDelayLowerBound = 0.13
+    ret.longitudinalActuatorDelayUpperBound = 0.15
+
     # [KD] : 앞차 인식을 반응하는 속도
-    ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
-    ret.longitudinalActuatorDelayUpperBound = 0.13
+    #ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
+    #ret.longitudinalActuatorDelayUpperBound = 0.13
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
