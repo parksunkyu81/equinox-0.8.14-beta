@@ -223,11 +223,13 @@ class nTune():
 
     if self.checkValue("useSteeringAngle", 0., 1., 1.):
       updated = True
-    if self.checkValue("maxLatAccel", 1.0, 4.0, 2.5):
+    if self.checkValue("maxLatAccel", 0.5, 4.0, 1.8):
       updated = True
     if self.checkValue("friction", 0.0, 0.2, 0.01):
       updated = True
-    if self.checkValue("ki_factor", 0.0, 1.0, 0.5):
+    if self.checkValue("kd", 0.0, 1.0, 0.0):
+      updated = True
+    if self.checkValue("deadzone", 0.0, 0.05, 0.0):
       updated = True
 
     return updated
@@ -244,77 +246,6 @@ class nTune():
     if self.checkValue("sccCurvatureFactor", 0.5, 1.5, 0.98):
       updated = True
 
-    # ========================================================== #
-    # [1.5, 1.4, 1.2, 0.85, 0.75, 0.65]
-    if self.checkValue("kp1", 0.5, 2.0, 1.5):
-      updated = True
-
-    if self.checkValue("kp2", 0.5, 2.0, 1.4):
-      updated = True
-
-    if self.checkValue("kp3", 0.5, 2.0, 1.2):
-      updated = True
-
-    if self.checkValue("kp4", 0.5, 2.0, 0.85):
-      updated = True
-
-    if self.checkValue("kp5", 0.5, 2.0, 0.75):
-      updated = True
-
-    if self.checkValue("kp6", 0.5, 2.0, 0.65):
-      updated = True
-
-    # [0.35, 0.30, 0.2, 0.2, 0.17, 0.15]
-    if self.checkValue("ki1", 0.1, 5.0, 0.35):
-      updated = True
-
-    if self.checkValue("ki2", 0.1, 5.0, 0.30):
-      updated = True
-
-    if self.checkValue("ki3", 0.1, 5.0, 0.2):
-      updated = True
-
-    if self.checkValue("ki4", 0.1, 5.0, 0.2):
-      updated = True
-
-    if self.checkValue("ki5", 0.1, 5.0, 0.17):
-      updated = True
-
-    if self.checkValue("ki6", 0.1, 5.0, 0.15):
-      updated = True
-
-    # [0.336, 0.33, 0.32, 0.35, 0.65, 2.45, 2.7, 2.8, 3.1, 3.3]
-    if self.checkValue("tr1", 0.0, 4.0, 0.336):
-      updated = True
-
-    if self.checkValue("tr2", 0.0, 4.0, 0.33):
-      updated = True
-
-    if self.checkValue("tr3", 0.0, 4.0, 0.32):
-      updated = True
-
-    if self.checkValue("tr4", 0.0, 4.0, 0.35):
-      updated = True
-
-    if self.checkValue("tr5", 0.0, 4.0, 0.65):
-      updated = True
-
-    if self.checkValue("tr6", 0.0, 4.0, 2.45):
-      updated = True
-
-    if self.checkValue("tr7", 0.0, 4.0, 2.7):
-      updated = True
-
-    if self.checkValue("tr8", 0.0, 4.0, 2.8):
-      updated = True
-
-    if self.checkValue("tr9", 0.0, 4.0, 3.1):
-      updated = True
-
-    if self.checkValue("tr10", 0.0, 4.0, 3.3):
-      updated = True
-
-    # ========================================================== #
     return updated
 
   def updateLQR(self):
@@ -342,10 +273,12 @@ class nTune():
     if torque is not None:
       torque.use_steering_angle = float(self.config["useSteeringAngle"]) > 0.5
       max_lat_accel = float(self.config["maxLatAccel"])
-      torque.pid._k_p = [[0], [2.0 / max_lat_accel]]
+      torque.pid._k_p = [[0], [1.0 / max_lat_accel]]
       torque.pid.k_f = 1.0 / max_lat_accel
-      torque.pid._k_i = [[0], [self.config["ki_factor"] / max_lat_accel]]
+      torque.pid._k_i = [[0], [0.25 / max_lat_accel]]
+      torque.pid._k_d = [[0], [float(self.config["kd"])]]
       torque.friction = float(self.config["friction"])
+      torque.deadzone = float(self.config["deadzone"])
       torque.reset()
 
   def read_cp(self):
@@ -361,9 +294,10 @@ class nTune():
           pass
         elif self.type == LatType.TORQUE:
           self.config["useSteeringAngle"] = 1. if self.CP.lateralTuning.torque.useSteeringAngle else 0.
-          self.config["maxLatAccel"] = round(2. / self.CP.lateralTuning.torque.kp, 2)
+          self.config["maxLatAccel"] = round(1. / self.CP.lateralTuning.torque.kp, 2)
           self.config["friction"] = round(self.CP.lateralTuning.torque.friction, 3)
-          self.config["ki_factor"] = round(self.CP.lateralTuning.torque.ki * self.config["maxLatAccel"], 2)
+          self.config["kd"] = round(self.CP.lateralTuning.torque.kd, 2)
+          self.config["deadzone"] = round(self.CP.lateralTuning.torque.deadzone, 3)
         else:
           self.config["useLiveSteerRatio"] = 1.
           self.config["steerRatio"] = round(self.CP.steerRatio, 2)
