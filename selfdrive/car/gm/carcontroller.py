@@ -90,8 +90,10 @@ class CarController():
           pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
           self.comma_pedal = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)"""
 
-          acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
+          acc_mult = interp(CS.out.vEgo,
+                            [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
                             [0.17, 0.24, 0.265, 0.24])
+
           self.comma_pedal_original = clip(actuators.accel * acc_mult, 0., 1.)
           self.comma_pedal_new = clip(interp(actuators.accel, [-1.0, 0.0, 0.2], [0.0, 0.22, 0.222])
                                       + (actuators.accel / 10), 0., 1.)
@@ -123,9 +125,9 @@ class CarController():
                 self.stoppingStateTimeWindowsActiveCounter += 1
                 actuators.stoppingStateTimeWindowsActiveCounter = self.stoppingStateTimeWindowsActiveCounter
                 if self.stoppingStateTimeWindowsActiveCounter > 0:
-                  actuators.pedalStartingAdder = interp(CS.out.vEgo, [0.0, 5.0 * CV.KPH_TO_MS, 12.5 * CV.KPH_TO_MS,
-                                                                      25.0 * CV.KPH_TO_MS],
-                                                                     [0.1850, 0.2275, 0.1750, 0.025])
+                  actuators.pedalStartingAdder = interp(CS.out.vEgo,
+                                                     [0.0, 5.0 * CV.KPH_TO_MS, 12.5 * CV.KPH_TO_MS, 25.0 * CV.KPH_TO_MS],
+                                                     [0.1850, 0.2275, 0.1750, 0.025])
                   if d > 0:
                     actuators.pedalDistanceAdder = interp(d, [1, 10, 15, 30], [-0.0250, -0.0075, 0.0175, 0.1000])
                   actuators.pedalAdderFinal = (actuators.pedalStartingAdder + actuators.pedalDistanceAdder)
