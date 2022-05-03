@@ -11,6 +11,7 @@ from selfdrive.ntune import ntune_scc_get
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
+LongCtrlState = car.CarControl.Actuators.LongControlState
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
@@ -28,7 +29,28 @@ class CarController():
     #self.packer_obj = CANPacker(DBC[CP.carFingerprint]['radar'])
     #self.packer_ch = CANPacker(DBC[CP.carFingerprint]['chassis'])
 
-  def update(self, c, enabled, CS, frame, actuators,
+    self.longcontrol = CP.openpilotLongitudinalControl
+    self.packer = CANPacker(dbc_name)
+    self.comma_pedal = 0.
+    self.comma_pedal_original = 0.
+    self.currentStoppingState = False
+    self.beforeStoppingState = False
+    self.stoppingStateTimeWindowsActive = False
+    self.stoppingStateTimeWindowsActiveCounter = 0
+    self.stoppingStateTimeWindowsClosingAdder = 0
+    self.stoppingStateTimeWindowsClosing = False
+    self.stoppingStateTimeWindowsClosingCounter = 0
+    self.pedalAdderClosing = 0
+
+
+  def get_lead(self, sm):
+    radar = sm['radarState']
+    if radar.leadOne.status:
+      return radar.leadOne
+
+    return None
+
+  def update(self, c, enabled, CS, frame, actuators, controls,
              hud_v_cruise, hud_show_lanes, hud_show_car, hud_alert):
 
     P = self.params
@@ -60,21 +82,109 @@ class CarController():
       self.accel = clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
 
       if CS.CP.enableGasInterceptor:
-        # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
-          MAX_INTERCEPTOR_GAS = ntune_scc_get("sccGasFactor")  # default : 0.5
-          #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.3, 0.0])
 
-          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.27, 0.0])
-
+          """MAX_INTERCEPTOR_GAS = ntune_scc_get("sccGasFactor")  # default : 0.5
+          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.3, 0.0])
           pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.4, 0.0, 0.2])
-          #pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.2, 0.0, 0.2])
           pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
+          self.comma_pedal = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)"""
 
-          self.comma_pedal = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)
+          acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
+                            [0.17, 0.24, 0.265, 0.24])
+          self.comma_pedal_original = clip(actuators.accel * acc_mult, 0., 1.)
+          self.comma_pedal_new = clip(interp(actuators.accel, [-1.0, 0.0, 0.2], [0.0, 0.22, 0.222])
+                                      + (actuators.accel / 10), 0., 1.)
 
-        elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
-          self.comma_pedal = 0.
+          gapInterP = interp(CS.out.vEgo, [22 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS], [1, 0])
+          self.comma_pedal = (gapInterP * self.comma_pedal_original) + ((1.0 - gapInterP) * self.comma_pedal_new)
+
+          actuators.commaPedarlOigin = self.comma_pedal
+
+          # ========================================================================================================= #
+          if CS.CP.restartForceAccel:
+            d = 0
+            lead = self.get_lead(controls.sm)
+            if lead is not None:
+              d = lead.dRel
+
+            stoppingStateWindowsActiveCounterLimits = 1500  # per 0.01s,
+            if not self.stoppingStateTimeWindowsActive:
+              actuators.pedalStartingAdder = 0
+              actuators.pedalDistanceAdder = 0
+              self.beforeStoppingState = self.currentStoppingState
+              self.currentStoppingState = (controls.LoC.long_control_state == LongCtrlState.stopping)
+
+            if self.beforeStoppingState and not self.currentStoppingState and not self.stoppingStateTimeWindowsActive:
+              self.stoppingStateTimeWindowsActive = True
+
+            if self.stoppingStateTimeWindowsActive:
+              if not self.stoppingStateTimeWindowsClosing:
+                self.stoppingStateTimeWindowsActiveCounter += 1
+                actuators.stoppingStateTimeWindowsActiveCounter = self.stoppingStateTimeWindowsActiveCounter
+                if self.stoppingStateTimeWindowsActiveCounter > 0:
+                  actuators.pedalStartingAdder = interp(CS.out.vEgo, [0.0, 5.0 * CV.KPH_TO_MS, 12.5 * CV.KPH_TO_MS,
+                                                                      25.0 * CV.KPH_TO_MS],
+                                                                     [0.1850, 0.2275, 0.1750, 0.025])
+                  if d > 0:
+                    actuators.pedalDistanceAdder = interp(d, [1, 10, 15, 30], [-0.0250, -0.0075, 0.0175, 0.1000])
+                  actuators.pedalAdderFinal = (actuators.pedalStartingAdder + actuators.pedalDistanceAdder)
+
+                if self.stoppingStateTimeWindowsActiveCounter > (stoppingStateWindowsActiveCounterLimits) \
+                        or (controls.LoC.long_control_state == LongCtrlState.stopping) \
+                        or CS.out.vEgo > 35 * CV.KPH_TO_MS \
+                        or controls.LoC.pid.f < -0.65:
+
+                  if controls.LoC.pid.f < -0.625:
+                    self.stoppingStateTimeWindowsClosingAdder = 0
+                  else:
+                    self.stoppingStateTimeWindowsClosingAdder = actuators.pedalAdderFinal
+
+                  self.stoppingStateTimeWindowsActiveCounter = 0
+                  self.beforeStoppingState = False
+                  self.currentStoppingState = False
+                  actuators.pedalStartingAdder = 0
+                  actuators.pedalDistanceAdder = 0
+                  actuators.pedalAdderFinal = 0
+                  self.stoppingStateTimeWindowsClosing = True
+
+
+              else:  # if self.stoppingStateTimeWindowsClosing :
+                self.stoppingStateTimeWindowsClosingCounter += 1
+                actuators.pedalAdderFinal = interp(self.stoppingStateTimeWindowsClosingCounter,
+                                                   [0, (stoppingStateWindowsActiveCounterLimits / 3)],
+                                                   [self.stoppingStateTimeWindowsClosingAdder, 0])
+
+                if self.stoppingStateTimeWindowsClosingAdder == 0 or (
+                        self.stoppingStateTimeWindowsClosingCounter > (stoppingStateWindowsActiveCounterLimits / 3)):
+                  self.stoppingStateTimeWindowsClosing = False
+                  self.stoppingStateTimeWindowsClosingCounter = 0
+                  self.stoppingStateTimeWindowsClosingAdder = 0
+                  self.stoppingStateTimeWindowsActive = False
+
+              self.comma_pedal += actuators.pedalAdderFinal
+              self.comma_pedal = min(self.comma_pedal, 0.2975)
+
+          # braking logic
+          if actuators.accel < -0.125:
+            #can_sends.append(gmcan.create_regen_paddle_command(self.packer_pt, CanBus.POWERTRAIN))
+            #actuators.regenPaddle = True  # for icon
+            self.comma_pedal *= 0.95
+          elif controls.LoC.pid.f < - 0.625:
+            #can_sends.append(gmcan.create_regen_paddle_command(self.packer_pt, CanBus.POWERTRAIN))
+            #actuators.regenPaddle = True  # for icon
+            minMultipiler = interp(CS.out.vEgo,
+                                    [20 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 120 * CV.KPH_TO_MS],
+                                   [0.825, 0.725, 0.600, 0.100])
+            self.comma_pedal *= interp(controls.LoC.pid.f, [-2.25, -2.0, -1.5, -0.625],
+                                       [0, 0.020, minMultipiler, 0.875])
+          actuators.commaPedal = self.comma_pedal
+
+        else:
+          self.comma_pedal = 0.0  # Must be set by zero, otherwise cannot re-acceling when stopped. - jc01rho.
+          actuators.commaPedal = self.comma_pedal
+
+        # ========================================================================================================= #
 
         if (frame % 4) == 0:
           idx = (frame // 4) % 4

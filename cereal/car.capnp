@@ -362,6 +362,11 @@ struct CarControl {
     accel @4: Float32; # m/s^2
     longControlState @5: LongControlState;
     commaPedal @7: Float32;
+    commaPedalOrigin @8: Float32;
+    pedalStartingAdder @9: Float32;
+    pedalDistanceAdder @10: Float32;
+    pedalAdderFinal @11: Float32;
+    stoppingStateTimeWindowsActiveCounter @12: Int32;
 
     enum LongControlState @0xe40f3a917d908282{
       off @0;
@@ -437,6 +442,8 @@ struct CarParams {
   fuzzyFingerprint @55 :Bool;
 
   notCar @66 :Bool;  # flag for non-car robotics platforms
+
+  restartForceAccel  @76 :Bool;
 
   enableGasInterceptor @2 :Bool;
   pcmCruise @3 :Bool;        # is openpilot's state tied to the PCM's cruise state?

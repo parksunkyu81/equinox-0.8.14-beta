@@ -290,7 +290,7 @@ class CarInterface(CarInterfaceBase):
 
     return self.CS.out
 
-  def apply(self, c):
+  def apply(self, c, controls):
     hud_control = c.hudControl
     hud_v_cruise = hud_control.setSpeed
     if hud_v_cruise > 70:
@@ -306,10 +306,11 @@ class CarInterface(CarInterfaceBase):
     else:
       enabled = c.enabled
 
-    ret = self.CC.update(c, enabled, self.CS, self.frame,
+    new_actuators, can_sends = self.CC.update(c, enabled, self.CS, self.frame,
+                         controls,
                          c.actuators,
                          hud_v_cruise, hud_control.lanesVisible,
                          hud_control.leadVisible, hud_control.visualAlert)
 
     self.frame += 1
-    return ret
+    return new_actuators, can_sends

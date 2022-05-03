@@ -710,7 +710,10 @@ class Controls:
             actuators.accel = self.LoC.update(self.active, CS, self.CP, long_plan, pid_accel_limits, t_since_plan)
 
             # Steering PID loop and lateral MPC
-            lat_active = self.active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and CS.vEgo > self.CP.minSteerSpeed
+            lat_active = self.active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and \
+                         CS.vEgo > self.CP.minSteerSpeed and not CS.standstill \
+                         and abs(CS.steeringAngleDeg) < self.CP.maxSteeringAngleDeg
+
             desired_curvature, desired_curvature_rate = get_lag_adjusted_curvature(self.CP, CS.vEgo,
                                                                                    lat_plan.psis,
                                                                                    lat_plan.curvatures,
@@ -838,7 +841,7 @@ class Controls:
 
         if not self.read_only and self.initialized:
             # send car controls over can
-            self.last_actuators, can_sends = self.CI.apply(CC)
+            self.last_actuators, can_sends = self.CI.apply(CC, self)
             self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
             CC.actuatorsOutput = self.last_actuators
 
