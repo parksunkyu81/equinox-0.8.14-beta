@@ -71,7 +71,7 @@ class CarController():
 
           # offset for creep and windbrake
           #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 29], [-0.4, 0.0, 0.2])
-          pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 29], [-0.1, 0.0, 0.2])
+          pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 29], [-0.6, 0.0, 0.2])
 
           #Toyotas don't respond to small accel requests when stationary
           pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
