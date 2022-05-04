@@ -138,14 +138,21 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
     ret.longitudinalTuning.deadzoneV = [.0, .14]"""
 
-    ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kpV = [1.35, 1.20, 0.85, 0.73, 0.65]
+    #ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kpV = [1.35, 1.20, 0.85, 0.73, 0.65]
 
-    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    ret.longitudinalTuning.kiV = [0.18, 0.12]
+    #ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
+    #ret.longitudinalTuning.kiV = [0.18, 0.12]
 
-    ret.longitudinalActuatorDelayLowerBound = 0.13
-    ret.longitudinalActuatorDelayUpperBound = 0.15
+    #ret.longitudinalActuatorDelayLowerBound = 0.13
+    #ret.longitudinalActuatorDelayUpperBound = 0.15
+
+    ret.longitudinalTuning.deadzoneBP = [0., 8.05]
+    ret.longitudinalTuning.deadzoneV = [.0, .14]
+    ret.longitudinalTuning.kpBP = [0., 5., 20.]
+    ret.longitudinalTuning.kpV = [1.3, 1.0, 0.7]
+    ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
+    ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
 
     # [KD] : 앞차 인식을 반응하는 속도
     #ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
