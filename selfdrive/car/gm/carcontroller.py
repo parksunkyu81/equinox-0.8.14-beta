@@ -4,7 +4,7 @@ from common.numpy_fast import interp, clip
 from common.conversions import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits, create_gas_interceptor_command
 from selfdrive.car.gm import gmcan
-from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams, CREEP_SPEED
+from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams
 from opendbc.can.packer import CANPacker
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_ENABLE_MIN
 from selfdrive.ntune import ntune_scc_get
