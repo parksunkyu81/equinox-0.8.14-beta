@@ -12,8 +12,8 @@ from selfdrive.ntune import ntune_scc_get
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
 
-#CREEP_SPEED = 2.3   # 8km
-CREEP_SPEED = 0.28   # 1km
+CREEP_SPEED = 2.3   # 8km
+#CREEP_SPEED = 0.28   # 1km
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
@@ -71,7 +71,7 @@ class CarController():
 
           # offset for creep and windbrake
           #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 29], [-0.4, 0.0, 0.2])
-          pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 29], [-0.6, 0.0, 0.2])
+          pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 29], [-0.4, 0.1, 0.25])
 
           #Toyotas don't respond to small accel requests when stationary
           pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
