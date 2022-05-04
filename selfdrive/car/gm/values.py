@@ -8,13 +8,13 @@ MIN_CURVE_SPEED = 41. * CV.KPH_TO_MS    # 커브 속도 설정
 
 class CarControllerParams():
   ACCEL_MAX = 2.0
-  ACCEL_MIN = -4.0
+  ACCEL_MIN = -3.5
   ACCEL_SCALE = 4.0  # max(ACCEL_MAX, -ACCEL_MIN)
   def __init__(self, CP):  
     self.STEER_MAX = 300  # Safety limit, not LKA max. Trucks use 600.
-    self.STEER_STEP = 2  # control frames per command
-    self.STEER_DELTA_UP = 7
-    self.STEER_DELTA_DOWN = 17
+    self.STEER_STEP = 4  # control frames per command
+    self.STEER_DELTA_UP = 8
+    self.STEER_DELTA_DOWN = 12
     self.MIN_STEER_SPEED = 3.  # m/s
     self.STEER_DRIVER_ALLOWANCE = 50
     self.STEER_DRIVER_MULTIPLIER = 4
@@ -38,7 +38,7 @@ class CarControllerParams():
 
     # TODO if this bump works, it belongs in interface per car
     self.ACCEL_MAX = 2.0   # m/s^2
-    self.ACCEL_MIN = -4.0
+    self.ACCEL_MIN = -3.5
     self.ACCEL_SCALE = 4.0  # max(ACCEL_MAX, -ACCEL_MIN)
     #self.ACCEL_MIN = -2.5  #  -3.5 m/s^2
 
