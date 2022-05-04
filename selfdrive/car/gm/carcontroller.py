@@ -13,7 +13,7 @@ VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
 
 #CREEP_SPEED = 2.3   # 8km
-CREEP_SPEED = 0.83   # 3km
+CREEP_SPEED = 0.28   # 1km
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
