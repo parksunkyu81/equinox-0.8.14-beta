@@ -71,17 +71,10 @@ class CarController():
           pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
           self.comma_pedal = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)"""
 
-          acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
-                            [0.17, 0.24, 0.265, 0.24])
-          comma_pedal_original = clip(actuators.accel * acc_mult, 0., 1.)
-          comma_pedal_new = clip(interp(actuators.accel, [-1.0, 0.0, 0.2], [0.0, 0.22, 0.222])
-                                      + (actuators.accel / 10), 0., 1.)
 
-          gapInterP = interp(CS.out.vEgo, [22 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS], [1, 0])
-          self.comma_pedal = (gapInterP * comma_pedal_original) + ((1.0 - gapInterP) * comma_pedal_new)
 
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
-          self.comma_pedal = 0.
+          self.comma_pedal = 0.0
 
         if (frame % 4) == 0:
           idx = (frame // 4) % 4
