@@ -685,8 +685,19 @@ class Controls:
         lat_plan = self.sm['lateralPlan']
         long_plan = self.sm['longitudinalPlan']
 
-        actuators = car.CarControl.Actuators.new_message()
+        CC = car.CarControl.new_message()
+        CC.enabled = self.enabled
+        # Check which actuators can be enabled
+        CC.latActive = self.active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and \
+                       CS.vEgo > self.CP.minSteerSpeed and not CS.standstill \
+                       and abs(CS.steeringAngleDeg) < self.CP.maxSteeringAngleDeg
+        CC.longActive = self.active and not self.events.any(ET.OVERRIDE) and self.CP.openpilotLongitudinalControl
+
+        actuators = CC.actuators
         actuators.longControlState = self.LoC.long_control_state
+
+        #actuators = car.CarControl.Actuators.new_message()
+        #actuators.longControlState = self.LoC.long_control_state
 
         if CS.leftBlinker or CS.rightBlinker:
             self.last_blinker_frame = self.sm.frame
@@ -718,9 +729,8 @@ class Controls:
                                                                                    lat_plan.psis,
                                                                                    lat_plan.curvatures,
                                                                                    lat_plan.curvatureRates)
-            actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(lat_active, CS, self.CP, self.VM,
-                                                                                   params, self.last_actuators,
-                                                                                   desired_curvature,
+            actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(CC.latActive, CS, self.VM, params,
+                                                                                   self.last_actuators, desired_curvature,
                                                                                    desired_curvature_rate,
                                                                                    self.sm['liveLocationKalman'])
         else:
