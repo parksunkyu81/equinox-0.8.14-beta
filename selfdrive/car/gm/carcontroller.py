@@ -66,7 +66,7 @@ class CarController():
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           MAX_INTERCEPTOR_GAS = ntune_scc_get("sccGasFactor")  # default : 0.5
           #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19, 29], [0.15, 0.3, 0.0])
-          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 8.3, 29], [0.15, 0.3, 0.0])
+          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 8.3, 29], [0.13, 0.3, 0.0])
 
           # offset for creep and windbrake
           pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 29], [-0.4, 0.0, 0.2])
