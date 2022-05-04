@@ -18,7 +18,12 @@ class CarInterface(CarInterfaceBase):
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
     params = CarControllerParams(CP)
-    return params.ACCEL_MIN, params.ACCEL_MAX
+    v_current_kph = current_speed * CV.MS_TO_KPH
+    # return params.ACCEL_MIN, params.ACCEL_MAX
+    accel_max_bp = [10., 20., 50.]
+    accel_max_v = [1.45, 1.425, 1.35]
+
+    return params.ACCEL_MIN, interp(v_current_kph, accel_max_bp, accel_max_v)
 
 
   # Determined by iteratively plotting and minimizing error for f(angle, speed) = steer.
@@ -147,16 +152,20 @@ class CarInterface(CarInterfaceBase):
     #ret.longitudinalActuatorDelayLowerBound = 0.13
     #ret.longitudinalActuatorDelayUpperBound = 0.15
 
-    ret.longitudinalTuning.deadzoneBP = [0., 8.05]
-    ret.longitudinalTuning.deadzoneV = [.0, .14]
-    ret.longitudinalTuning.kpBP = [0., 5., 20.]
-    ret.longitudinalTuning.kpV = [1.3, 1.0, 0.7]
-    ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
-    ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
-
     # [KD] : 앞차 인식을 반응하는 속도
     #ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
     #ret.longitudinalActuatorDelayUpperBound = 0.13
+
+    ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.35, 1.20, 0.65]  # when 40 => 1.09, y = 1.38333 - 0.00733333 x,  till 1.20~0.65,
+
+    ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kiV = [0.18, 0.12]
+
+    ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.deadzoneV = [0., 0.10]
+    ret.longitudinalActuatorDelayLowerBound = 0.12
+    ret.longitudinalActuatorDelayUpperBound = 0.25
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
