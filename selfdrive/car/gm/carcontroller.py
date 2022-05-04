@@ -12,6 +12,8 @@ from selfdrive.ntune import ntune_scc_get
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
 
+CREEP_SPEED = 2.3   # 8km
+
 class CarController():
   def __init__(self, dbc_name, CP, VM):
     self.apply_steer_last = 0
@@ -63,11 +65,13 @@ class CarController():
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           MAX_INTERCEPTOR_GAS = ntune_scc_get("sccGasFactor")  # default : 0.5
-          #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.3, 0.0])
-          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19., 29.], [0.15, 0.27, 0.0])
+          #PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 19, 29], [0.15, 0.3, 0.0])
+          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 8.3, 29], [0.15, 0.3, 0.0])
 
-          pedal_offset = interp(CS.out.vEgo, [0.0, 8 * CV.KPH_TO_MS, 68. * CV.KPH_TO_MS], [-.4, 0.0, 0.2])
+          # offset for creep and windbrake
+          pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 29], [-0.4, 0.0, 0.2])
 
+          #Toyotas don't respond to small accel requests when stationary
           pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
           self.comma_pedal = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)
 
