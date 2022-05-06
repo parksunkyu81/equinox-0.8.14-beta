@@ -526,6 +526,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   int x = 140;
   const int y1 = rect().bottom() - footer_h / 2 - 10;
 
+  float cur_speed = std::max(0.0, car_state.getVEgo() * MS_TO_KPH);
   QString str;
   QString str2;
   float img_alpha;
@@ -635,7 +636,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   x = 140;
   const int y2 = rect().bottom() - (footer_h / 2) - (radius + 50) - 10;
 
-  float cur_speed = std::max(0.0, car_state.getVEgo() * MS_TO_KPH);
   float accel = car_state.getAEgo();
 
   p.setPen(Qt::NoPen);
