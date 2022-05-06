@@ -15,6 +15,9 @@ class CarControllerParams():
     ACCEL_MAX = 2.0
     ACCEL_MIN = -2.0   # 브레이크에 의미가 없다. def : -3.5 (엑셀만 때는 경우 속도)
 
+    ACCEL_LOOKUP_BP = [-1., 0., .4]    # 2.16: 4미터
+    ACCEL_LOOKUP_V = [-2.0, 0., 2.0]   # 속도를 줄일 때마타 초당 4미터 줄고, 속도를 올리면 초당 4미터 이동
+
     def __init__(self, CP):
         self.STEER_MAX = 300  # Safety limit, not LKA max. Trucks use 600.
         self.STEER_STEP = 2  # control frames per command
@@ -40,12 +43,6 @@ class CarControllerParams():
         # to apply some more braking if we're on a downhill slope.
         # Our controller should still keep the 2 second average above
         # -3.5 m/s^2 as per planner limits
-
-        # TODO if this bump works, it belongs in interface per car
-        self.ACCEL_MAX = 2.0  # m/s^2
-        self.ACCEL_MIN = -2.0  # def :3.5
-
-        # self.ACCEL_MIN = -2.5  #  -3.5 m/s^2
 
         if CP.carFingerprint in NO_ASCM:
             pass

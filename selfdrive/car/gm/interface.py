@@ -78,6 +78,7 @@ class CarInterface(CarInterfaceBase):
 
     tire_stiffness_factor = 1.
     ret.maxSteeringAngleDeg = 1000.
+    ret.disableLateralLiveTuning = True
 
     lateral_control = Params().get("LateralControl", encoding='utf-8')
     if lateral_control == 'INDI':
@@ -143,23 +144,22 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
     ret.longitudinalTuning.deadzoneV = [.0, .14]"""
 
-    #ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 40. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kpV = [1.35, 1.20, 0.85, 0.73, 0.65]
+    # longitudinal
+    ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kpV = [1.35, 1.20, 1.125, 0.65]
 
-    #ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-    #ret.longitudinalTuning.kiV = [0.18, 0.12]
+    ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.kiV = [0.18, 0.13, 0.10]
 
-    #ret.longitudinalActuatorDelayLowerBound = 0.13
-    #ret.longitudinalActuatorDelayUpperBound = 0.15
+    ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+    ret.longitudinalTuning.deadzoneV = [0., 0.10]
+
+    ret.longitudinalActuatorDelayLowerBound = 0.12
+    ret.longitudinalActuatorDelayUpperBound = 0.25
 
     # [KD] : 앞차 인식을 반응하는 속도
     #ret.longitudinalActuatorDelayLowerBound = 0.1   # 앞차 인식을 반응하는 속도
     #ret.longitudinalActuatorDelayUpperBound = 0.13
-
-    ret.longitudinalTuning.kpBP = [0., 5., 35.]
-    ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
-    ret.longitudinalTuning.kiBP = [0., 35.]
-    ret.longitudinalTuning.kiV = [0.18, 0.12]
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 

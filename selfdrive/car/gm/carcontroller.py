@@ -13,7 +13,6 @@ VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
 
 CREEP_SPEED = 2.3   # 8km
-#CREEP_SPEED = 0.28   # 1km
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
@@ -71,7 +70,14 @@ class CarController():
           pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
           self.comma_pedal = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)"""
 
+          acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
+                            [0.17, 0.24, 0.265, 0.24])
 
+          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 1.5 * CREEP_SPEED], [0.08, 0.08, 0.0])
+          is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])
+          boost = start_boost * is_accelerating
+
+          self.comma_pedal = clip(acc_mult * (actuators.accel + boost), 0., 1.)
 
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.0
