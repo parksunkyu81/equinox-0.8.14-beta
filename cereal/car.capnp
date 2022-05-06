@@ -534,6 +534,8 @@ struct CarParams {
   steerFaultMaxAngle @74 :Int16;
   steerFaultMaxFrames @75 :Int16;
 
+  disableLateralLiveTuning @76 :Bool;
+
   struct LateralParams {
     torqueBP @0 :List(Int32);
     torqueV @1 :List(Int32);

@@ -46,7 +46,7 @@ class nTune():
     self.group = group
     self.config = {}
     self.key = str(self)
-    #self.disable_lateral_live_tuning = CP.disableLateralLiveTuning if CP is not None else False
+    self.disable_lateral_live_tuning = CP.disableLateralLiveTuning if CP is not None else False
 
     if "LatControlLQR" in str(type(ctrl)):
       self.type = LatType.LQR
@@ -157,8 +157,8 @@ class nTune():
 
   def update(self):
 
-    #if self.disable_lateral_live_tuning:
-    #  return
+    if self.disable_lateral_live_tuning:
+      return
 
     if self.type == LatType.LQR:
       self.updateLQR()
@@ -173,7 +173,7 @@ class nTune():
     if self.checkValue("useLiveSteerRatio", 0., 1., 1.):
       updated = True
 
-    if self.checkValue("steerRatio", 10.0, 20.0, 16.5):
+    if self.checkValue("steerRatio", 10.0, 20.0, 17.5):
       updated = True
 
     if self.checkValue("steerActuatorDelay", 0., 0.8, 0.2):
