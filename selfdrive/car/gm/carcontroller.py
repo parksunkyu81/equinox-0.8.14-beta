@@ -64,16 +64,17 @@ class CarController():
       if CS.CP.enableGasInterceptor:
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
-          """MAX_INTERCEPTOR_GAS = ntune_scc_get("sccGasFactor")  # default : 0.5
-          PEDAL_SCALE = interp(CS.out.vEgo, [0.0, 1.4, 8.3, 29], [0.20, 0.25, 0.3, 0.0])
+          MAX_INTERCEPTOR_GAS = ntune_scc_get("sccGasFactor")  # default : 0.5
+          PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
+                                            [0.20, 0.25, 0.27, 0.24])
           pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 29], [-0.4, 0.15, 0.3])
           pedal_command = PEDAL_SCALE * (actuators.accel + pedal_offset)
-          self.comma_pedal = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)"""
+          self.comma_pedal = clip(pedal_command, 0., MAX_INTERCEPTOR_GAS)
 
-          acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
+          """acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
                             [0.17, 0.24, 0.265, 0.24])
           start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 1.5*CREEP_SPEED], [-0.4, 0.20, 0.15])
-          self.comma_pedal = clip(acc_mult * (actuators.accel + start_boost), 0., 1.)
+          self.comma_pedal = clip(acc_mult * (actuators.accel + start_boost), 0., 1.)"""
 
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.0
