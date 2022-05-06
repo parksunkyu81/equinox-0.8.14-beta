@@ -602,6 +602,10 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     str = "ON";
     textColor = QColor(120, 255, 120, 200);
   }
+  else if(cur_speed <= 10) {
+    str = "OFF";
+    textColor = QColor(254, 32, 32, 200);
+  }
   else {
     str = "OFF";
     textColor = QColor(254, 32, 32, 200);
