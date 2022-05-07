@@ -17,7 +17,7 @@ CREEP_SPEED = 1.12   # 4km
 class CarController():
   def __init__(self, dbc_name, CP, VM):
     self.apply_steer_last = 0
-    self.comma_pedal = 0.
+    self.comma_pedal = 0.0
     self.accel = 0
 
     self.lka_steering_cmd_counter_last = -1
