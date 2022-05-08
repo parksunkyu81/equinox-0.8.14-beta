@@ -68,7 +68,7 @@ class CarController():
                                             [0.22, 0.25, 0.27, 0.24])
           #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, CREEP_SPEED*2], [-.5, 0.15, 0.2])
 
-          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.2, 0.2, 0.0])
+          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.18, 0.18, 0.0])
           is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])
           boost = start_boost * is_accelerating
 
