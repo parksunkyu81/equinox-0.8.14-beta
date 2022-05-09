@@ -15,7 +15,7 @@ SCC_GAS_FACTOR = ntune_scc_get('sccGasFactor')
 SCC_BRAKE_FACTOR = ntune_scc_get('sccBrakeFactor')
 SCC_CURVATURE_FACTOR = ntune_scc_get('sccCurvatureFactor')
 
-KP1 = ntune_scc_get('kp1')
+"""KP1 = ntune_scc_get('kp1')
 KP2 = ntune_scc_get('kp2')
 KP3 = ntune_scc_get('kp3')
 KP4 = ntune_scc_get('kp4')
@@ -38,7 +38,7 @@ TR6 = ntune_scc_get('tr6')
 TR7 = ntune_scc_get('tr7')
 TR8 = ntune_scc_get('tr8')
 TR9 = ntune_scc_get('tr9')
-TR_10 = ntune_scc_get('tr10')
+TR_10 = ntune_scc_get('tr10')"""
 
 
 CONF_SCC_FILE = '/data/ntune/scc.json'
