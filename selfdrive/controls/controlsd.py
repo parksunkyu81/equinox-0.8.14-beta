@@ -224,6 +224,10 @@ class Controls:
         self.wide_camera = TICI and params.get_bool('EnableWideCamera')
         self.disable_op_fcw = params.get_bool('DisableOpFcw')
 
+        # regen paddle
+        self.regenPressed = False
+        self.limited_lead = False
+
         # TODO: no longer necessary, aside from process replay
         self.sm['liveParameters'].valid = True
 
@@ -261,6 +265,31 @@ class Controls:
         self.slowing_down_alert = False
         self.slowing_down_sound_alert = False
 
+    def get_lead(self, sm):
+        radar = sm['radarState']
+        if radar.leadOne.status:
+            return radar.leadOne
+        return None
+
+    def get_long_lead_safe_speed(self, sm, CS, vEgo):
+        if CS.adaptiveCruise:
+            lead = self.get_lead(sm)
+            if lead is not None:
+                # d : 비전 레이더 거리
+                d = lead.dRel - 5.
+                if 0. < d < -lead.vRel * (9. + 4.) * 2. and lead.vRel < -1.15:
+                    t = d / lead.vRel
+                    accel = -(lead.vRel / t) * self.speed_conv_to_clu
+                    accel *= 1.15
+
+                    if accel < 0.:
+                        # target_speed = vEgo + accel  # accel 값은 1키로씩 상승한다.
+                        target_speed = vEgo + accel
+                        target_speed = max(target_speed, self.min_set_speed_clu)
+                        return target_speed
+
+        return 0
+
     def cal_curve_speed(self, sm, v_ego, frame):
 
         lateralPlan = sm['lateralPlan']
@@ -282,7 +311,7 @@ class Controls:
 
 
     # [크루즈 MAX 속도 설정] #
-    def cal_max_speed(self, frame: int, vEgo, sm, CS):
+    def cal_max_speed(self, frame: int, vEgo, sm, CS, regenPaddle):
 
         apply_limit_speed, road_limit_speed, left_dist, first_started, max_speed_log = \
             road_speed_limiter_get_max_speed(vEgo, self.is_metric)
@@ -324,6 +353,20 @@ class Controls:
         else:
             self.slowing_down_alert = False
             self.slowing_down = False
+
+        lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
+        if lead_speed >= self.min_set_speed_clu:
+            if lead_speed < max_speed_clu:
+                max_speed_clu = min(max_speed_clu, lead_speed)
+                if not self.limited_lead:
+                    self.max_speed_clu = vEgo + 3.
+                    self.limited_lead = True
+        else:
+            self.limited_lead = False
+
+        # regen paddle active
+        if regenPaddle:
+            max_speed_clu = self.min_set_speed_clu
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS,
                               curv_limit != 0 and curv_limit == int(max_speed_clu))
@@ -695,6 +738,7 @@ class Controls:
 
         actuators = CC.actuators
         actuators.longControlState = self.LoC.long_control_state
+        actuators.regenPaddle = self.regenPressed
 
         #actuators = car.CarControl.Actuators.new_message()
         #actuators.longControlState = self.LoC.long_control_state
@@ -865,7 +909,7 @@ class Controls:
         curvature = -self.VM.calc_curvature(steer_angle_without_offset, CS.vEgo, params.roll)
 
         # NDA Add.. (PSK)
-        road_limit_speed, left_dist, max_speed_log = self.cal_max_speed(self.sm.frame, CS.vEgo, self.sm, CS)
+        road_limit_speed, left_dist, max_speed_log = self.cal_max_speed(self.sm.frame, CS.vEgo, self.sm, CS, actuators.regenPaddle)
 
         # controlsState
         dat = messaging.new_message('controlsState')

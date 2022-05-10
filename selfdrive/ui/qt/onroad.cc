@@ -263,6 +263,8 @@ void NvgWindow::initializeGL() {
   ic_turn_signal_l = QPixmap("../assets/images/turn_signal_l.png");
   ic_turn_signal_r = QPixmap("../assets/images/turn_signal_r.png");
   ic_satellite = QPixmap("../assets/images/satellite.png");
+
+  ic_regenPaddle =  QPixmap("../assets/images/img_regen.png").scaled(img_size, img_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 void NvgWindow::updateFrameMat(int w, int h) {
@@ -729,6 +731,14 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   img_alpha = brake_valid ? 1.0f : 0.15f;
   bg_alpha = brake_valid ? 0.3f : 0.1f;
   drawIcon(p, x, y2, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  p.setOpacity(1.0);
+
+  // 5. regen
+  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
+  bool regen_valid = car_control.getActuators().getRegenPaddle();
+  img_alpha = brake_valid ? 1.0f : 0.15f;
+  bg_alpha = brake_valid ? 0.3f : 0.1f;
+  drawIcon(p, x, y2, ic_regenPaddle, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   p.setOpacity(1.0);
 
 }
