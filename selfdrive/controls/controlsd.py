@@ -275,9 +275,9 @@ class Controls:
         if CS.adaptiveCruise:
             lead = self.get_lead(sm)
             if lead is not None:
-                # d : 비전 레이더 거리
+                # d : 비전 거리
                 d = lead.dRel - 5.
-                if 0. < d < -lead.vRel * (9. + 4.) * 2. and lead.vRel < -1.15:
+                if 0. < d < -lead.vRel * (9. + 4.) * 3.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.15
