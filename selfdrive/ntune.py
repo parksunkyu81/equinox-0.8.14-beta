@@ -9,7 +9,7 @@ import numpy as np
 CONF_PATH = '/data/ntune/'
 CONF_LAT_LQR_FILE = '/data/ntune/lat_lqr.json'
 CONF_LAT_INDI_FILE = '/data/ntune/lat_indi.json'
-CONF_LAT_TORQUE_FILE = '/data/ntune/lat_torque_v3.json'
+CONF_LAT_TORQUE_FILE = '/data/ntune/lat_torque_v4.json'
 
 ntunes = {}
 
@@ -170,16 +170,16 @@ class nTune():
   def checkValidCommon(self):
     updated = False
 
-    if self.checkValue("useLiveSteerRatio", 0., 1., 1.):
+    if self.checkValue("useLiveSteerRatio", 0., 1., 0.):
       updated = True
 
     if self.checkValue("steerRatio", 10.0, 20.0, 17.5):
       updated = True
 
-    if self.checkValue("steerActuatorDelay", 0., 0.8, 0.2):
+    if self.checkValue("steerActuatorDelay", 0., 0.8, 0.1):
       updated = True
 
-    if self.checkValue("steerRateCost", 0.1, 1.5, 0.35):
+    if self.checkValue("steerRateCost", 0.1, 1.5, 0.4):
       updated = True
 
     if self.checkValue("pathOffset", -1.0, 1.0, 0.0):
@@ -190,16 +190,16 @@ class nTune():
   def checkValidLQR(self):
     updated = False
 
-    if self.checkValue("scale", 500.0, 5000.0, 1700.0):
+    if self.checkValue("scale", 500.0, 5000.0, 1600.0):
       updated = True
 
-    if self.checkValue("ki", 0.0, 0.2, 0.03):
+    if self.checkValue("ki", 0.0, 0.2, 0.01):
       updated = True
 
-    if self.checkValue("dcGain", 0.002, 0.004, 0.003):
+    if self.checkValue("dcGain", 0.002, 0.004, 0.0025):
       updated = True
 
-    if self.checkValue("steerLimitTimer", 0.5, 3.0, 0.5):
+    if self.checkValue("steerLimitTimer", 0.5, 3.0, 2.5):
       updated = True
 
     return updated
@@ -223,11 +223,13 @@ class nTune():
 
     if self.checkValue("useSteeringAngle", 0., 1., 1.):
       updated = True
-    if self.checkValue("maxLatAccel", 0.5, 4.0, 1.8):
+    if self.checkValue("maxLatAccel", 0.5, 4.0, 2.0):
       updated = True
     if self.checkValue("friction", 0.0, 0.2, 0.01):
       updated = True
-    if self.checkValue("kd", 0.0, 1.0, 0.0):
+    if self.checkValue("ki_factor", 0.0, 1.0, 0.1):
+      updated = True
+    if self.checkValue("kd", 0.0, 2.0, 0.0):
       updated = True
     if self.checkValue("deadzone", 0.0, 0.05, 0.0):
       updated = True
@@ -237,7 +239,7 @@ class nTune():
   def checkValidISCC(self):
     updated = False
 
-    if self.checkValue("sccGasFactor", 0.5, 1.0, 0.5):
+    if self.checkValue("sccGasFactor", 0.5, 1.5, 1.0):
       updated = True
 
     if self.checkValue("sccBrakeFactor", 0.5, 1.5, 1.0):
@@ -275,7 +277,7 @@ class nTune():
       max_lat_accel = float(self.config["maxLatAccel"])
       torque.pid._k_p = [[0], [1.0 / max_lat_accel]]
       torque.pid.k_f = 1.0 / max_lat_accel
-      torque.pid._k_i = [[0], [0.25 / max_lat_accel]]
+      torque.pid._k_i = [[0], [self.config["ki_factor"] / max_lat_accel]]
       torque.pid._k_d = [[0], [float(self.config["kd"])]]
       torque.friction = float(self.config["friction"])
       torque.deadzone = float(self.config["deadzone"])
