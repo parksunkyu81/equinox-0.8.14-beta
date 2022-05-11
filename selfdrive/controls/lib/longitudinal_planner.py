@@ -13,6 +13,9 @@ from selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import LongitudinalMpc
 from selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import T_IDXS as T_IDXS_MPC
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, CONTROL_N
 from selfdrive.swaglog import cloudlog
+#from selfdrive.controls.lib.vision_turn_controller import VisionTurnController
+#from selfdrive.controls.lib.turn_speed_controller import TurnSpeedController
+#from selfdrive.controls.lib.events import Events
 
 LON_MPC_STEP = 0.2  # first step is 0.2s
 AWARENESS_DECEL = -0.2  # car smoothly decel at .2m/s^2 when user is distracted
@@ -23,6 +26,23 @@ A_CRUISE_MAX_BP = [0., 15., 25., 40.]
 # Lookup table for turns
 _A_TOTAL_MAX_V = [1.7, 3.2]
 _A_TOTAL_MAX_BP = [20., 40.]
+
+_DP_CRUISE_MIN_V = [-3.0, -3.0, -2.5, -2.0, -1.5]
+_DP_CRUISE_MIN_V_FOLLOWING = [-4.0, -4.0, -3.5, -2.5, -2.0]
+_DP_CRUISE_MIN_BP = [0.0, 5.0, 10.0, 20.0, 30.0]
+
+_DP_CRUISE_MAX_V = [1.5, 1.2, 0.8, 0.65, 0.5]
+_DP_CRUISE_MAX_V_FOLLOWING = [1.1, 1.1, 0.8, 0.65, 0.5]
+_DP_CRUISE_MAX_BP = [0., 5., 10., 20., 30.]
+
+def dp_calc_cruise_accel_limits(v_ego, following):
+  if following:
+    a_cruise_min = interp(v_ego, _DP_CRUISE_MIN_BP, _DP_CRUISE_MIN_V_FOLLOWING)
+    a_cruise_max = interp(v_ego, _DP_CRUISE_MAX_BP, _DP_CRUISE_MAX_V_FOLLOWING)
+  else:
+    a_cruise_min = interp(v_ego, _DP_CRUISE_MIN_BP, _DP_CRUISE_MIN_V)
+    a_cruise_max = interp(v_ego, _DP_CRUISE_MAX_BP, _DP_CRUISE_MAX_V)
+  return a_cruise_min, a_cruise_max
 
 
 def get_max_accel(v_ego):
@@ -59,6 +79,10 @@ class Planner:
     self.j_desired_trajectory = np.zeros(CONTROL_N)
     self.solverExecutionTime = 0.0
 
+    """self.cruise_source = 'cruise'
+    self.vision_turn_controller = VisionTurnController(CP)
+    self.turn_speed_controller = TurnSpeedController()"""
+
   def update(self, sm):
     v_ego = sm['carState'].vEgo
 
@@ -79,10 +103,19 @@ class Planner:
       self.v_desired_filter.x = v_ego
       self.a_desired = 0.0
 
+    # following dist
+    lead_1 = sm['radarState'].leadOne
+    following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+
     # Prevent divergence, smooth in current v_ego
     self.v_desired_filter.x = max(0.0, self.v_desired_filter.update(v_ego))
 
-    accel_limits = [A_CRUISE_MIN, get_max_accel(v_ego)]
+    # Get acceleration and active solutions for custom long mpc.
+    self.cruise_source, a_min_sol, v_cruise_sol = self.cruise_solutions(not disabled, self.v_desired_filter.x,
+                                                                        self.a_desired, v_cruise, sm)
+
+    #accel_limits = [A_CRUISE_MIN, get_max_accel(v_ego)]  # DEF
+    accel_limits = dp_calc_cruise_accel_limits(v_ego, following)
     accel_limits_turns = limit_accel_in_turns(v_ego, sm['carState'].steeringAngleDeg, accel_limits, self.CP)
     if force_slow_decel:
       # if required so, force a smooth deceleration
@@ -126,8 +159,39 @@ class Planner:
 
     longitudinalPlan.hasLead = sm['radarState'].leadOne.status
     longitudinalPlan.longitudinalPlanSource = self.mpc.source
+    #longitudinalPlan.longitudinalPlanSource = self.mpc.source if self.mpc.source != 'cruise' else self.cruise_source
     longitudinalPlan.fcw = self.fcw
 
     longitudinalPlan.solverExecutionTime = self.mpc.solve_time
 
+    #longitudinalPlan.visionTurnControllerState = self.vision_turn_controller.state
+    #longitudinalPlan.visionTurnSpeed = float(self.vision_turn_controller.v_turn)
+
     pm.send('longitudinalPlan', plan_send)
+
+  """def cruise_solutions(self, enabled, v_ego, a_ego, v_cruise, sm):
+    # Update controllers
+    self.vision_turn_controller.update(enabled, v_ego, a_ego, v_cruise, sm)
+    self.events = Events()
+    self.speed_limit_controller.update(enabled, v_ego, a_ego, sm, v_cruise, self.events)
+    self.turn_speed_controller.update(enabled, v_ego, a_ego, sm)
+
+    # Pick solution with lowest velocity target.
+    a_solutions = {'cruise': float("inf")}
+    v_solutions = {'cruise': v_cruise}
+
+    if self.vision_turn_controller.is_active:
+      a_solutions['turn'] = self.vision_turn_controller.a_target
+      v_solutions['turn'] = self.vision_turn_controller.v_turn
+
+    #if self.speed_limit_controller.is_active:
+    #  a_solutions['limit'] = self.speed_limit_controller.a_target
+    #  v_solutions['limit'] = self.speed_limit_controller.speed_limit_offseted
+
+    if self.turn_speed_controller.is_active:
+      a_solutions['turnlimit'] = self.turn_speed_controller.a_target
+      v_solutions['turnlimit'] = self.turn_speed_controller.speed_limit
+
+    source = min(v_solutions, key=v_solutions.get)
+
+    return source, a_solutions[source], v_solutions[source]"""
