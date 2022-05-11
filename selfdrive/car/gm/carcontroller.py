@@ -91,7 +91,7 @@ class CarController():
           actuators.regenPaddle = True  # for icon
           minMultipiler = interp(CS.out.vEgo,
                                  [20 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 120 * CV.KPH_TO_MS],
-                                 [0.870, 0.780, 0.645, 0.170])  #[0.850, 0.750, 0.625, 0.150])
+                                 [0.90, 0.80, 0.7, 0.3])  #[0.850, 0.750, 0.625, 0.150])
           self.comma_pedal *= interp(controls.LoC.pid.f, [-3.25, -3.0, -2.5, -1.600], [0, 0.020, minMultipiler, 0.875])
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.0
