@@ -61,7 +61,6 @@ def manager_init() -> None:
     ("ShowDebugUI", "0"),
     ("NewRadarInterface", "0"),
 
-    ("RestartForceAccel", "0"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

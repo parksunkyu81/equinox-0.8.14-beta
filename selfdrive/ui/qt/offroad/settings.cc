@@ -616,12 +616,6 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_openpilot.png",
                                             this));*/
 
-  toggles.append(new ParamControl("RestartForceAccel",
-                                            "Use Restart Force Accel",
-                                            "warnings: it is beta, be careful!! Force Accelereation when Re-starts with leading car",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-
   toggles.append(new ParamControl("LaneChangeEnabled",
                                             "Enable Lane Change Assist",
                                             "Perform assisted lane changes with openpilot by checking your surroundings for safety, activating the turn signal and gently nudging the steering wheel towards your desired lane. openpilot is not capable of checking if a lane change is safe. You must continuously observe your surroundings to use this feature.",

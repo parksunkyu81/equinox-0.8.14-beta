@@ -62,7 +62,6 @@ class CarInterface(CarInterfaceBase):
 
     # Start with a baseline lateral tuning for all GM vehicles. Override tuning as needed in each model section below.
     ret.enableGasInterceptor = 0x201 in fingerprint[0]
-    #ret.restartForceAccel = Params().get_bool('RestartForceAccel')
 
     if ret.enableGasInterceptor:
       ret.openpilotLongitudinalControl = True
