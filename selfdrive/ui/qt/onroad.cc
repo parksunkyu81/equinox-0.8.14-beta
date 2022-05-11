@@ -499,10 +499,9 @@ void NvgWindow::drawHud(QPainter &p) {
   }
 
   QString infoText;
-  infoText.sprintf("%s SR(%.2f) PEDAL(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d)",
+  infoText.sprintf("%s SR(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d)",
                       s->lat_control.c_str(),
                       controls_state.getSteerRatio(),
-                      controls_state.getSccGasFactor(),
                       device_State.getBatteryPercent(),
                       cpuTemp,
                       cpuUsage,
@@ -601,11 +600,11 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   textSize = 60.f;
   textColor = QColor(255, 255, 255, 200);
 
-  if(lkas_bool == true) {
+  if(lkas_bool == true and cur_speed > 10) {
     str = "ON";
     textColor = QColor(120, 255, 120, 200);
   }
-  else if(cur_speed <= 10) {
+  else if(lkas_bool == true and cur_speed <= 10) {
     str = "OFF";
     textColor = QColor(254, 32, 32, 200);
   }
