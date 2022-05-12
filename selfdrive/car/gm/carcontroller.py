@@ -61,8 +61,6 @@ class CarController():
 
       self.accel = clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
 
-      actuators.regenPaddle = False  # for icon
-
       if CS.CP.enableGasInterceptor:
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
@@ -88,6 +86,7 @@ class CarController():
 
         if (frame % 4) == 0:
           idx = (frame // 4) % 4
+          actuators.commaPedal = self.comma_pedal
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.comma_pedal, idx))
 
     # Show green icon when LKA torque is applied, and
