@@ -311,7 +311,7 @@ class Controls:
 
 
     # [크루즈 MAX 속도 설정] #
-    def cal_max_speed(self, frame: int, vEgo, sm, CS, regenPaddle):
+    def cal_max_speed(self, frame: int, vEgo, sm, CS):
 
         apply_limit_speed, road_limit_speed, left_dist, first_started, max_speed_log = \
             road_speed_limiter_get_max_speed(vEgo, self.is_metric)
@@ -908,7 +908,7 @@ class Controls:
         curvature = -self.VM.calc_curvature(steer_angle_without_offset, CS.vEgo, params.roll)
 
         # NDA Add.. (PSK)
-        road_limit_speed, left_dist, max_speed_log = self.cal_max_speed(self.sm.frame, CS.vEgo, self.sm, CS, actuators.regenPaddle)
+        road_limit_speed, left_dist, max_speed_log = self.cal_max_speed(self.sm.frame, CS.vEgo, self.sm, CS)
 
         # controlsState
         dat = messaging.new_message('controlsState')
