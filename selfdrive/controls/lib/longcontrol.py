@@ -118,9 +118,9 @@ class LongControl():
       if prevent_overshoot:
         output_accel = min(output_accel, 0.0)
 
-    # Intention is to stop, switch to a different brake control until we stop
+    # 의도는 멈추는 것입니다. 멈출 때까지 다른 브레이크 컨트롤로 전환하십시오.
     elif self.long_control_state == LongCtrlState.stopping:
-      # Keep applying brakes until the car is stopped
+      # 차가 멈출 때까지 브레이크를 계속 밟으십시오
       if not CS.standstill or output_accel > CP.stopAccel:
         output_accel -= CP.stoppingDecelRate * DT_CTRL * \
                         interp(output_accel, [CP.stopAccel, CP.stopAccel/2., CP.stopAccel/4., 0.], [0.3, 0.65, 1., 2.])

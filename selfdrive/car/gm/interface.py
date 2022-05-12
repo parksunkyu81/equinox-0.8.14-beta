@@ -77,7 +77,7 @@ class CarInterface(CarInterfaceBase):
 
     tire_stiffness_factor = 1.
     ret.maxSteeringAngleDeg = 1000.
-    ret.disableLateralLiveTuning = True
+    ret.disableLateralLiveTuning = False
 
     lateral_control = Params().get("LateralControl", encoding='utf-8')
     if lateral_control == 'INDI':
@@ -103,7 +103,7 @@ class CarInterface(CarInterfaceBase):
     else:
       ret.lateralTuning.init('torque')
       ret.lateralTuning.torque.useSteeringAngle = True
-      max_lat_accel = 2.0
+      max_lat_accel = 2.0  # 코너가 부족하면 max_lat_accel을 Down
       ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
       ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
       ret.lateralTuning.torque.ki = 0.1 / max_lat_accel
@@ -114,9 +114,11 @@ class CarInterface(CarInterfaceBase):
 
     ret.steerRatio = 17.5
     # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
-    ret.steerActuatorDelay = 0.1
-    ret.steerRateCost = 0.4
-    ret.steerLimitTimer = 0.4   # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
+    # steerratecost를 높이면 핸들링이 부드러워(둔감)해 집니다. 다시 말해 도로의 작은 변화에 기민하게 반응하지 않게 됩니다.
+    # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
+    ret.steerActuatorDelay = 0.2    # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
+    ret.steerRateCost = 0.35        # DEF : 0.4  조향 속도에 대한 측면 MPC 비용
+    ret.steerLimitTimer = 0.4       # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
 
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
@@ -155,6 +157,9 @@ class CarInterface(CarInterfaceBase):
 
     ret.longitudinalActuatorDelayLowerBound = 0.10
     ret.longitudinalActuatorDelayUpperBound = 0.15
+
+    ret.vEgoStopping = 2.8    # DEF : 0.5  차가 정지 상태가 되는 속도
+    ret.vEgoStarting = 0.5    # 자동차가 시작 상태로 들어가는 속도
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
