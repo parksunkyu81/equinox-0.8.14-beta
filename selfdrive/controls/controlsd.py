@@ -738,7 +738,6 @@ class Controls:
 
         actuators = CC.actuators
         actuators.longControlState = self.LoC.long_control_state
-        actuators.regenPaddle = self.regenPressed
 
         #actuators = car.CarControl.Actuators.new_message()
         #actuators.longControlState = self.LoC.long_control_state
