@@ -158,7 +158,7 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalActuatorDelayLowerBound = 0.10
     ret.longitudinalActuatorDelayUpperBound = 0.15
 
-    ret.vEgoStopping = 4.17    # DEF : 0.5  차가 정지 상태가 되는 속도
+    ret.vEgoStopping = 2.8    # DEF : 0.5  차가 정지 상태가 되는 속도
     ret.vEgoStarting = 0.5    # 자동차가 시작 상태로 들어가는 속도
 
     ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
