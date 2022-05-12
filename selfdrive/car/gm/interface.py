@@ -155,8 +155,8 @@ class CarInterface(CarInterfaceBase):
     #ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
     #ret.longitudinalTuning.deadzoneV = [0., 0.10]
 
-    ret.longitudinalActuatorDelayLowerBound = 0.10
-    ret.longitudinalActuatorDelayUpperBound = 0.15
+    ret.longitudinalActuatorDelayLowerBound = 0.1
+    ret.longitudinalActuatorDelayUpperBound = 0.1
 
     ret.vEgoStopping = 2.8    # DEF : 0.5  차가 정지 상태가 되는 속도
     ret.vEgoStarting = 0.5    # 자동차가 시작 상태로 들어가는 속도
