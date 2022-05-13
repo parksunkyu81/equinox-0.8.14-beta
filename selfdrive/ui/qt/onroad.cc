@@ -751,24 +751,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   drawIcon(p, x, y2, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   p.setOpacity(1.0);
 
-  // 5. PEDAL
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
-  float commaPedal = car_control.getActuators().getCommaPedal();
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(200));
-  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
-
-  textSize = 60.f;
-  textColor = QColor(120, 255, 120, 200);
-  str.sprintf("%.3f", commaPedal);
-
-  configFont(p, "Open Sans", 45, "Bold");
-  drawText(p, x, y2-20, "PEDAL", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y2+50, str, textColor);
-  p.setOpacity(1.0);
-
 }
 
 /*

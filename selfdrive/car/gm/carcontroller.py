@@ -86,7 +86,6 @@ class CarController():
 
         if (frame % 4) == 0:
           idx = (frame // 4) % 4
-          actuators.commaPedal = self.comma_pedal
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.comma_pedal, idx))
 
     # Show green icon when LKA torque is applied, and
