@@ -77,7 +77,7 @@ class CarInterface(CarInterfaceBase):
 
     tire_stiffness_factor = 1.
     ret.maxSteeringAngleDeg = 1000.
-    ret.disableLateralLiveTuning = False
+    ret.disableLateralLiveTuning = True
 
     lateral_control = Params().get("LateralControl", encoding='utf-8')
     if lateral_control == 'INDI':
