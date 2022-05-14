@@ -664,8 +664,6 @@ class Controls:
 
         # SccSmoother.update_cruise_buttons(self, CS, self.CP.openpilotLongitudinalControl)
 
-        CS.adaptiveCruise = self.enableAcc
-
         # decrement the soft disable timer at every step, as it's reset on
         # entrance in SOFT_DISABLING state
         self.soft_disable_timer = max(0, self.soft_disable_timer - 1)
@@ -768,6 +766,7 @@ class Controls:
         if CS.leftBlinker or CS.rightBlinker:
             self.last_blinker_frame = self.sm.frame
 
+        CS.adaptiveCruise = self.enableAcc
         # State specific actions
 
         if not self.active:
