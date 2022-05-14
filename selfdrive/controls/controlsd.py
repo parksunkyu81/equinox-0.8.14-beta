@@ -373,11 +373,11 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        safe_guard = self.get_long_lead_safe_speed(sm, CS, vEgo)
+        """safe_guard = self.get_long_lead_safe_speed(sm, CS, vEgo)
         if safe_guard:
           self.enableAcc = False
         else:
-          self.enableAcc = True
+          self.enableAcc = True"""
 
         """if lead_speed >= self.min_set_speed_clu:
           if lead_speed < max_speed_clu:
@@ -777,8 +777,6 @@ class Controls:
 
         if not self.joystick_mode:
 
-            # safe_mode ACC
-            actuators.adaptiveCruise = self.enableAcc
             # accel PID loop
             pid_accel_limits = self.CI.get_pid_accel_limits(self.CP, CS.vEgo, self.v_cruise_kph * CV.KPH_TO_MS)
             t_since_plan = (self.sm.frame - self.sm.rcv_frame['longitudinalPlan']) * DT_CTRL
