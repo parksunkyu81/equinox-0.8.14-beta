@@ -766,7 +766,6 @@ class Controls:
         if CS.leftBlinker or CS.rightBlinker:
             self.last_blinker_frame = self.sm.frame
 
-        CS.adaptiveCruise = self.enableAcc
         # State specific actions
 
         if not self.active:
@@ -777,6 +776,9 @@ class Controls:
             self.LoC.reset(v_pid=CS.vEgo)
 
         if not self.joystick_mode:
+
+            # safe_mode ACC
+            actuators.adaptiveCruise = self.enableAcc
             # accel PID loop
             pid_accel_limits = self.CI.get_pid_accel_limits(self.CP, CS.vEgo, self.v_cruise_kph * CV.KPH_TO_MS)
             t_since_plan = (self.sm.frame - self.sm.rcv_frame['longitudinalPlan']) * DT_CTRL
