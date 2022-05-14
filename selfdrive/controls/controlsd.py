@@ -193,6 +193,7 @@ class Controls:
         # scc smoother
         self.is_cruise_enabled = False
         self.applyMaxSpeed = 0
+        self.enableAcc = False
 
         self.mismatch_counter = 0
         self.cruise_mismatch_counter = 0
@@ -374,9 +375,9 @@ class Controls:
 
         safe_guard = self.get_long_lead_safe_speed(sm, CS, vEgo)
         if safe_guard:
-          CS.adaptiveCruise = False
+          self.enableAcc = False
         else:
-          CS.adaptiveCruise = True
+          self.enableAcc = True
 
         """if lead_speed >= self.min_set_speed_clu:
           if lead_speed < max_speed_clu:
@@ -662,6 +663,8 @@ class Controls:
             self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
 
         # SccSmoother.update_cruise_buttons(self, CS, self.CP.openpilotLongitudinalControl)
+
+        CS.adaptiveCruise = self.enableAcc
 
         # decrement the soft disable timer at every step, as it's reset on
         # entrance in SOFT_DISABLING state
