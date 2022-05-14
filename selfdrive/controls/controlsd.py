@@ -272,26 +272,40 @@ class Controls:
         return None
 
     def get_long_lead_safe_speed(self, sm, CS, vEgo):
-        if CS.adaptiveCruise:
-            lead = self.get_lead(sm)
-            if lead is not None:
-                # d : 비전 거리
-                d = lead.dRel
-                safe_guard = False
-                # 일반도로에서는 주행속도에서 시속 15km를 뺀 거리가 안전거리
-                # 저속에서는 제동거리가 약 20%정도 줄어들기 때문
-                #safe_distance = (vEgo * 3.6) - 15
-                if vEgo >= 30. * CV.KPH_TO_MS and vEgo <= 80. * CV.KPH_TO_MS:
-                  safe_distance = (vEgo * 3.6) - 15
-                  safe_guard = True
-                elif vEgo > 80. * CV.KPH_TO_MS:
-                  safe_distance = (vEgo * 3.6)
-                  safe_guard = True
+        lead = self.get_lead(sm)
+        if lead is not None:
+            # d : 비전 거리
+            d = lead.dRel
+            safe_guard = False
+            # 일반도로에서는 주행속도에서 시속 15km를 뺀 거리가 안전거리
+            # 저속에서는 제동거리가 약 20% 정도 줄어들기 때문
+            #safe_distance = (vEgo * 3.6) - 15
+            if vEgo >= 30. * CV.KPH_TO_MS and vEgo <= 40. * CV.KPH_TO_MS:
+              safe_distance = (vEgo * 3.6) - 10  # 1초당 12m
+              safe_guard = True
+            elif vEgo > 40. * CV.KPH_TO_MS and vEgo <= 50. * CV.KPH_TO_MS:
+              safe_distance = (vEgo * 3.6) - 15  # 1초당 12m
+              safe_guard = True
+            elif vEgo > 50. * CV.KPH_TO_MS and vEgo <= 60. * CV.KPH_TO_MS:
+              safe_distance = (vEgo * 3.6) - 20  # 1초당 12m
+              safe_guard = True
+            elif vEgo > 60. * CV.KPH_TO_MS and vEgo <= 70. * CV.KPH_TO_MS:
+              safe_distance = (vEgo * 3.6) - 25  # 1초당 12m
+              safe_guard = True
+            elif vEgo > 70. * CV.KPH_TO_MS and vEgo <= 80. * CV.KPH_TO_MS:
+              safe_distance = (vEgo * 3.6) - 30  # 1초당 12m
+              safe_guard = True
+            elif vEgo > 80. * CV.KPH_TO_MS:
+              safe_distance = (vEgo * 3.6)
+              safe_guard = True
 
-                if safe_guard == True:
-                  if 0. < d < -lead.vRel * safe_distance:
-                    return True
-
+            if safe_guard == True:
+              if 0. < d < -lead.vRel * safe_distance:
+                return True
+              else:
+                return False
+            else:
+                return False
         return False
 
     def cal_curve_speed(self, sm, v_ego, frame):
@@ -360,9 +374,9 @@ class Controls:
 
         safe_guard = self.get_long_lead_safe_speed(sm, CS, vEgo)
         if safe_guard:
-          CS.adaptive_Cruise = False
+          CS.adaptiveCruise = False
         else:
-          CS.adaptive_Cruise = True
+          CS.adaptiveCruise = True
 
         """if lead_speed >= self.min_set_speed_clu:
           if lead_speed < max_speed_clu:
