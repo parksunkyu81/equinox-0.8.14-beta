@@ -276,19 +276,23 @@ class Controls:
             lead = self.get_lead(sm)
             if lead is not None:
                 # d : 비전 거리
-                d = lead.dRel - 5.
-                if 0. < d < -lead.vRel * (9. + 4.) * 3.:
-                    t = d / lead.vRel
-                    accel = -(lead.vRel / t) * self.speed_conv_to_clu
-                    accel *= 1.15
+                d = lead.dRel
+                safe_guard = False
+                # 일반도로에서는 주행속도에서 시속 15km를 뺀 거리가 안전거리
+                # 저속에서는 제동거리가 약 20%정도 줄어들기 때문
+                #safe_distance = (vEgo * 3.6) - 15
+                if vEgo >= 30. * CV.KPH_TO_MS and vEgo <= 80. * CV.KPH_TO_MS:
+                  safe_distance = (vEgo * 3.6) - 15
+                  safe_guard = True
+                elif vEgo > 80. * CV.KPH_TO_MS:
+                  safe_distance = (vEgo * 3.6)
+                  safe_guard = True
 
-                    if accel < 0.:
-                        # target_speed = vEgo + accel  # accel 값은 1키로씩 상승한다.
-                        target_speed = vEgo + accel
-                        target_speed = max(target_speed, self.min_set_speed_clu)
-                        return target_speed
+                if safe_guard == True:
+                  if 0. < d < -lead.vRel * safe_distance:
+                    return True
 
-        return 0
+        return False
 
     def cal_curve_speed(self, sm, v_ego, frame):
 
@@ -354,15 +358,20 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        """lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
-        if lead_speed >= self.min_set_speed_clu:
-            if lead_speed < max_speed_clu:
-              max_speed_clu = min(max_speed_clu, lead_speed)
-              if not self.limited_lead:
-                self.max_speed_clu = vEgo + 3.
-                self.limited_lead = True
+        safe_guard = self.get_long_lead_safe_speed(sm, CS, vEgo)
+        if safe_guard:
+          CS.adaptive_Cruise = False
         else:
-           self.limited_lead = False"""
+          CS.adaptive_Cruise = True
+
+        """if lead_speed >= self.min_set_speed_clu:
+          if lead_speed < max_speed_clu:
+            max_speed_clu = min(max_speed_clu, lead_speed)
+            if not self.limited_lead:
+              self.max_speed_clu = vEgo + 3.
+              self.limited_lead = True
+        else:
+         self.limited_lead = False"""
 
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS,
