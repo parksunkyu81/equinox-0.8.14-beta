@@ -384,11 +384,9 @@ class Controls:
         # 현재시간 체크 활성화
         if self.duration_limited_lead:
             self.now_limited_lead = int(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
-            self.min_set_speed_clu = self.kph_to_clu((vEgo * 3.6) - 10)
-            self.min_set_speed_clu = max(self.kph_to_clu(MIN_SET_SPEED_KPH), self.kph_to_clu((apply_limit_speed * 3.6) - 10))
             if self.limited_lead and self.now_limited_lead <= self.end_limited_lead:
                 self.duration_time = self.end_limited_lead - self.now_limited_lead
-                max_speed_clu = min(max_speed_clu, self.min_set_speed_clu)
+                max_speed_clu = min(self.kph_to_clu((vEgo * 3.6) - 10), self.kph_to_clu((apply_limit_speed * 3.6) - 10))
                 # print('===================== DIFF SECONDS : ', self.duration_time)
 
             elif self.limited_lead and self.now_limited_lead > self.end_limited_lead:
