@@ -382,7 +382,7 @@ class Controls:
             self.slowing_down = False
 
         # 현재시간 체크 활성화
-        if self.duration_limited_lead:
+        """if self.duration_limited_lead:
             self.now_limited_lead = int(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
             if self.limited_lead and self.now_limited_lead <= self.end_limited_lead:
                 self.duration_time = self.end_limited_lead - self.now_limited_lead
@@ -411,7 +411,7 @@ class Controls:
                         self.end_limited_lead = self.start_limited_lead + 3
                         self.duration_limited_lead = True
                         # print('===================== SET START TIME : ', self.start_limited_lead)
-                        # print('===================== SET END TIME : ', self.end_limited_lead)
+                        # print('===================== SET END TIME : ', self.end_limited_lead)"""
 
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS,
