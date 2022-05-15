@@ -26,11 +26,11 @@ _A_TOTAL_MAX_V = [1.7, 3.2]
 _A_TOTAL_MAX_BP = [20., 40.]
 
 _DP_CRUISE_MIN_V = [-3.0, -3.0, -2.8, -2.5, -1.5]
-_DP_CRUISE_MIN_V_FOLLOWING = [-4.0, -4.0, -3.5, -2.5, -2.0]
+_DP_CRUISE_MIN_V_FOLLOWING = [-6.0, -6.0, -5.5, -4.5, -4.0]
 _DP_CRUISE_MIN_BP = [0.0, 5.0, 10.0, 20.0, 30.0]
 
-_DP_CRUISE_MAX_V = [1.5, 1.2, 0.8, 0.65, 0.5]
-_DP_CRUISE_MAX_V_FOLLOWING = [1.1, 1.1, 0.8, 0.65, 0.5]
+_DP_CRUISE_MAX_V = [1.3, 1.2, 0.8, 0.65, 0.5]
+_DP_CRUISE_MAX_V_FOLLOWING = [1.0, 1.0, 0.7, 0.55, 0.4]
 _DP_CRUISE_MAX_BP = [0., 5., 10., 20., 30.]
 
 def dp_calc_cruise_accel_limits(v_ego, following):
@@ -99,7 +99,7 @@ class Planner:
 
     # following dist
     lead_1 = sm['radarState'].leadOne
-    following = lead_1.status and lead_1.dRel < 42.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+    following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
 
     # Prevent divergence, smooth in current v_ego
     self.v_desired_filter.x = max(0.0, self.v_desired_filter.update(v_ego))
