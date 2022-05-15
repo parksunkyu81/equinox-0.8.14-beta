@@ -386,7 +386,7 @@ class Controls:
             self.now_limited_lead = int(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
             if self.limited_lead and self.now_limited_lead <= self.end_limited_lead:
                 self.duration_time = self.end_limited_lead - self.now_limited_lead
-                max_speed_clu = min(self.kph_to_clu((vEgo * 3.6) - 10), self.kph_to_clu((self.v_cruise_kph * 3.6) - 10))
+                max_speed_clu = max(self.kph_to_clu((vEgo * 3.6) - 10), self.kph_to_clu((self.v_cruise_kph * 3.6) - 10))
                 # print('===================== DIFF SECONDS : ', self.duration_time)
 
             elif self.limited_lead and self.now_limited_lead > self.end_limited_lead:
