@@ -284,7 +284,7 @@ class Controls:
 
                     if accel < 0.:
                         target_speed = vEgo + accel
-                        target_speed = max(target_speed, self.min_set_speed_clu)
+                        target_speed = max(target_speed, self.kph_to_clu(30))
                         return target_speed
 
         return 0
