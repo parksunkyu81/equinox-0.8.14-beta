@@ -179,8 +179,7 @@ class Controls:
 
         self.slow_on_curves = Params().get_bool('SccSmootherSlowOnCurves')
 
-        #self.min_set_speed_clu = self.kph_to_clu(MIN_SET_SPEED_KPH)
-        self.min_set_speed_clu = 0.
+        self.min_set_speed_clu = self.kph_to_clu(MIN_SET_SPEED_KPH)
         self.max_set_speed_clu = self.kph_to_clu(MAX_SET_SPEED_KPH)
 
         self.speed_conv_to_ms = CV.KPH_TO_MS if self.is_metric else CV.MPH_TO_MS
@@ -225,12 +224,9 @@ class Controls:
         self.wide_camera = TICI and params.get_bool('EnableWideCamera')
         self.disable_op_fcw = params.get_bool('DisableOpFcw')
 
+        # regen paddle
+        self.regenPressed = False
         self.limited_lead = False
-        self.duration_limited_lead = False
-        self.start_limited_lead = 0
-        self.end_limited_lead = 0
-        self.now_limited_lead = 0
-        self.duration_time = 0
 
         # TODO: no longer necessary, aside from process replay
         self.sm['liveParameters'].valid = True
@@ -263,7 +259,6 @@ class Controls:
         self.prof = Profiler(False)  # off by default
 
     def reset(self):
-        self.min_set_speed_clu = 0.
         self.max_speed_clu = 0.
         self.curve_speed_ms = 0.
         self.slowing_down = False
@@ -282,39 +277,12 @@ class Controls:
             if lead is not None:
                 # d : 비전 거리
                 d = lead.dRel
-                safe_guard = False
-                # 일반도로에서는 주행속도에서 시속 15km를 뺀 거리가 안전거리
-                # 저속에서는 제동거리가 약 20% 정도 줄어들기 때문
-                #safe_distance = (vEgo * 3.6) - 15
-                if vEgo >= 30. * CV.KPH_TO_MS and vEgo <= 40. * CV.KPH_TO_MS:
-                  safe_distance = (vEgo * 3.6) - 10  # 1초당 12m
-                  safe_guard = True
-                elif vEgo > 40. * CV.KPH_TO_MS and vEgo <= 50. * CV.KPH_TO_MS:
-                  safe_distance = (vEgo * 3.6) - 15  # 1초당 12m
-                  safe_guard = True
-                elif vEgo > 50. * CV.KPH_TO_MS and vEgo <= 60. * CV.KPH_TO_MS:
-                  safe_distance = (vEgo * 3.6) - 20  # 1초당 12m
-                  safe_guard = True
-                elif vEgo > 60. * CV.KPH_TO_MS and vEgo <= 70. * CV.KPH_TO_MS:
-                  safe_distance = (vEgo * 3.6) - 25  # 1초당 12m
-                  safe_guard = True
-                elif vEgo > 70. * CV.KPH_TO_MS and vEgo <= 80. * CV.KPH_TO_MS:
-                  safe_distance = (vEgo * 3.6) - 30  # 1초당 12m
-                  safe_guard = True
-                elif vEgo > 80. * CV.KPH_TO_MS:
-                  safe_distance = (vEgo * 3.6)
-                  safe_guard = True
+                if 0. < d < -lead.vRel * 45:
+                    target_speed = self.kph_to_clu((self.v_cruise_kph * 3.6) - 10)
+                    target_speed = max(target_speed, self.min_set_speed_clu)
+                    # target_speed = max(target_speed, self.min_set_speed_clu)
+                    return target_speed
 
-                if safe_guard == True:
-                  if 0. < d < -lead.vRel * safe_distance:
-                      t = d / lead.vRel
-                      accel = -(lead.vRel / t) * self.speed_conv_to_clu
-                      accel *= 1.2
-
-                      if accel < 0.:
-                          target_speed = vEgo + accel
-                          target_speed = max(target_speed, self.min_set_speed_clu)
-                          return target_speed
         return 0
 
     def cal_curve_speed(self, sm, v_ego, frame):
@@ -381,37 +349,15 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        # 현재시간 체크 활성화
-        """if self.duration_limited_lead:
-            self.now_limited_lead = int(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
-            if self.limited_lead and self.now_limited_lead <= self.end_limited_lead:
-                self.duration_time = self.end_limited_lead - self.now_limited_lead
-                max_speed_clu = max(self.kph_to_clu((vEgo * 3.6) - 10), self.kph_to_clu((self.v_cruise_kph * 3.6) - 10))
-                # print('===================== DIFF SECONDS : ', self.duration_time)
-
-            elif self.limited_lead and self.now_limited_lead > self.end_limited_lead:
-                self.duration_limited_lead = False
-                self.limited_lead = False  # 안전거리 활성화 초기화
-                self.start_limited_lead = 0
-                self.end_limited_lead = 0
-                self.now_limited_lead = 0
-                self.duration_time = 0
-                self.min_set_speed_clu = 0.
-
-        if not self.duration_limited_lead:
-            lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
-            if lead_speed >= self.min_set_speed_clu:
-                if lead_speed < max_speed_clu:
-                    max_speed_clu = min(max_speed_clu, lead_speed)
-                    if not self.limited_lead:
-                        self.max_speed_clu = vEgo + 3.
-                        self.limited_lead = True
-                        # 안전거리 활성화 시간을 현재시간으로 설정
-                        self.start_limited_lead = int(datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
-                        self.end_limited_lead = self.start_limited_lead + 3
-                        self.duration_limited_lead = True
-                        # print('===================== SET START TIME : ', self.start_limited_lead)
-                        # print('===================== SET END TIME : ', self.end_limited_lead)"""
+        lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
+        if lead_speed >= self.min_set_speed_clu:
+            if lead_speed < max_speed_clu:
+              max_speed_clu = min(max_speed_clu, lead_speed)
+              if not self.limited_lead:
+                self.max_speed_clu = vEgo + 3.
+                self.limited_lead = True
+        else:
+           self.limited_lead = False
 
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS,
@@ -801,7 +747,6 @@ class Controls:
             self.LoC.reset(v_pid=CS.vEgo)
 
         if not self.joystick_mode:
-
             # accel PID loop
             pid_accel_limits = self.CI.get_pid_accel_limits(self.CP, CS.vEgo, self.v_cruise_kph * CV.KPH_TO_MS)
             t_since_plan = (self.sm.frame - self.sm.rcv_frame['longitudinalPlan']) * DT_CTRL
