@@ -12,8 +12,8 @@ from common.numpy_fast import clip
 from common.realtime import sec_since_boot
 from common.conversions import Conversions as CV
 
-CAMERA_SPEED_FACTOR = 0.85  # def : 1.05
-
+CAMERA_SPEED_FACTOR = 1.05
+SAFE_STARTING_DIST = 60.
 
 class Port:
   BROADCAST_PORT = 2899
@@ -321,7 +321,7 @@ class RoadSpeedLimiter:
         diff_speed = cluster_speed - (cam_limit_speed * camSpeedFactor)
         #cam_limit_speed_ms = cam_limit_speed * (CV.KPH_TO_MS if is_metric else CV.MPH_TO_MS)
 
-        starting_dist = v_ego * 50.  # def : 30
+        starting_dist = v_ego * SAFE_STARTING_DIST  # def : 30
 
         if cam_type == 22:
           safe_dist = v_ego * 3.
