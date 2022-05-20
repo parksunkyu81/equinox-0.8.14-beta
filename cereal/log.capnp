@@ -612,6 +612,8 @@ struct ControlsState @0x97ff69c53601abf1 {
   roadLimitSpeed @76 :UInt32;
   roadLimitSpeedLeftDist @77 :UInt32;
 
+  fuelCut @78 :Bool;
+
   enum OpenpilotState @0xdbe58b96d2d1ac61 {
     disabled @0;
     preEnabled @1;

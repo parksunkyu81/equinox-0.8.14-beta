@@ -224,8 +224,6 @@ class Controls:
         self.wide_camera = TICI and params.get_bool('EnableWideCamera')
         self.disable_op_fcw = params.get_bool('DisableOpFcw')
 
-        # regen paddle
-        self.regenPressed = False
         self.limited_lead = False
 
         # TODO: no longer necessary, aside from process replay
@@ -277,7 +275,7 @@ class Controls:
             if lead is not None:
                 # d : 비전 거리
                 d = lead.dRel
-                if 0. < d < -lead.vRel * 35.:
+                if 0. < d < -lead.vRel * 30.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -285,6 +283,26 @@ class Controls:
                     if accel < 0.:
                         target_speed = vEgo + accel
                         target_speed = max(target_speed, self.kph_to_clu(30))
+                        return target_speed
+
+                elif 0. < d < -lead.vRel * 40.:
+                    t = d / lead.vRel
+                    accel = -(lead.vRel / t) * self.speed_conv_to_clu
+                    accel *= 1.2
+
+                    if accel < 0.:
+                        target_speed = vEgo + accel
+                        target_speed = max(target_speed, self.kph_to_clu(40))
+                        return target_speed
+
+                elif 0. < d < -lead.vRel * 50.:
+                    t = d / lead.vRel
+                    accel = -(lead.vRel / t) * self.speed_conv_to_clu
+                    accel *= 1.2
+
+                    if accel < 0.:
+                        target_speed = vEgo + accel
+                        target_speed = max(target_speed, self.kph_to_clu(50))
                         return target_speed
 
         return 0
@@ -969,6 +987,8 @@ class Controls:
         controlsState.sccGasFactor = ntune_scc_get('sccGasFactor')
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
+
+        controlsState.fuelCut = self.limited_lead
 
         lat_tuning = self.CP.lateralTuning.which()
         if self.joystick_mode:
