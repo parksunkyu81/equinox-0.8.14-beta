@@ -275,34 +275,34 @@ class Controls:
             if lead is not None:
                 # d : 비전 거리
                 d = lead.dRel
-                if 0. < d < -lead.vRel * 30.:
+                if 0. < d < -lead.vRel * 35.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
 
                     if accel < 0.:
                         target_speed = vEgo + accel
-                        target_speed = max(target_speed, self.kph_to_clu(30))
+                        target_speed = max(target_speed, self.kph_to_clu(35))
                         return target_speed
 
-                elif 0. < d < -lead.vRel * 40.:
+                elif 0. < d < -lead.vRel * 45.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
 
                     if accel < 0.:
                         target_speed = vEgo + accel
-                        target_speed = max(target_speed, self.kph_to_clu(40))
+                        target_speed = max(target_speed, self.kph_to_clu(45))
                         return target_speed
 
-                elif 0. < d < -lead.vRel * 50.:
+                elif 0. < d < -lead.vRel * 55.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
 
                     if accel < 0.:
                         target_speed = vEgo + accel
-                        target_speed = max(target_speed, self.kph_to_clu(50))
+                        target_speed = max(target_speed, self.kph_to_clu(55))
                         return target_speed
 
         return 0
