@@ -15,6 +15,13 @@ GearShifter = car.CarState.GearShifter
 CREEP_SPEED = 1.12   # 4km
 
 class CarController():
+
+  def get_lead(self, sm):
+    radar = sm['radarState']
+    if radar.leadOne.status:
+      return radar.leadOne
+    return None
+
   def __init__(self, dbc_name, CP, VM):
     self.apply_steer_last = 0
     self.comma_pedal = 0.0
@@ -69,11 +76,22 @@ class CarController():
                                             [0.22, 0.25, 0.27, 0.24])
           #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, CREEP_SPEED*2], [-.5, 0.15, 0.2])
 
+          ## =============================================== ##
+          forward_distance = 0
+          lead = self.get_lead(controls.sm)
+          if lead is not None:
+            forward_distance = lead.dRel
+
           start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.19, 0.19, 0.0])
-          is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 0.9])  # DEF : 1.0
+          is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
           boost = start_boost * is_accelerating
 
-          pedal_command = PEDAL_SCALE * (actuators.accel + boost)
+          if forward_distance > 0:
+            pedal_command = PEDAL_SCALE * (actuators.accel + boost)
+          else:
+            pedal_command = PEDAL_SCALE * actuators.accel
+          ## ================================================ ##
+
           self.comma_pedal = clip(pedal_command, 0., 1.)
 
           """acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
