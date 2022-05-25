@@ -78,6 +78,7 @@ class CarController():
           #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, CREEP_SPEED*2], [-.5, 0.15, 0.2])
 
           ## =============================================== ##
+          # float vision_dist = lead_one.getProb() > .5 ? (lead_one.getX()[0] - 1.5) : 0;
           lead = self.get_lead(controls.sm)
           if lead is not None:
             forward_distance = lead.dRel
