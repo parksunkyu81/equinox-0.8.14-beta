@@ -100,7 +100,7 @@ class CarInterface(CarInterfaceBase):
     else:
       ret.lateralTuning.init('torque')
       ret.lateralTuning.torque.useSteeringAngle = True
-      max_lat_accel = 1.6  # 코너가 부족하면 max_lat_accel을 Down (DEF: 2.15)
+      max_lat_accel = 2.1  # 코너가 부족하면 max_lat_accel을 Down (DEF: 2.15)
       ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
       ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
       ret.lateralTuning.torque.ki = 0.19 / max_lat_accel
