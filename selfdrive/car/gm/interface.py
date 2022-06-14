@@ -74,7 +74,7 @@ class CarInterface(CarInterfaceBase):
 
     tire_stiffness_factor = 0.5   # 1. 을 기준으로 줄면 민감(오버), 커지면 둔감(언더) DEF : 0.5
     ret.maxSteeringAngleDeg = 1000.
-    #ret.disableLateralLiveTuning = True
+    ret.disableLateralLiveTuning = True
 
     lateral_control = Params().get("LateralControl", encoding='utf-8')
     if lateral_control == 'INDI':
