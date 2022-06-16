@@ -41,10 +41,17 @@ class MPC_COST_LAT:
   HEADING = 1.0
   STEER_RATE = 1.0
 
+def apply_deadzone(error, deadzone):
+  if error > deadzone:
+    error -= deadzone
+  elif error < - deadzone:
+    error += deadzone
+  else:
+    error = 0.
+  return error
 
 def rate_limit(new_value, last_value, dw_step, up_step):
   return clip(new_value, last_value + dw_step, last_value + up_step)
-
 
 def update_v_cruise(v_cruise_kph, buttonEvents, button_timers, enabled, metric):
   # handle button presses. TODO: this should be in state_control, but a decelCruise press
