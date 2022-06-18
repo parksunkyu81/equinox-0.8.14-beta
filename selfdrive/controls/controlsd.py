@@ -779,7 +779,7 @@ class Controls:
             #actuators.accel = self.LoC.update(self.active and CS.cruiseState.enabled, CS, self.CP, long_plan,
             #                                  pid_accel_limits, t_since_plan, self.sm['radarState'])
 
-            actuators.accel = self.LoC.update(self.active, CS, self.CP, long_plan, pid_accel_limits, t_since_plan)
+            actuators.accel = self.LoC.update(self.active, CS, long_plan, pid_accel_limits, t_since_plan)
 
             # Steering PID loop and lateral MPC
             lat_active = self.active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and \
