@@ -75,7 +75,7 @@ class CarInterface(CarInterfaceBase):
 
         tire_stiffness_factor = 0.444  # 1. 을 기준으로 줄면 민감(오버), 커지면 둔감(언더) DEF : 0.5
         ret.maxSteeringAngleDeg = 1000.
-        # ret.disableLateralLiveTuning = True
+        ret.disableLateralLiveTuning = True
 
         lateral_control = Params().get("LateralControl", encoding='utf-8')
         if lateral_control == 'INDI':
@@ -104,14 +104,14 @@ class CarInterface(CarInterfaceBase):
         else:
             ret.lateralTuning.init('torque')
             ret.lateralTuning.torque.useSteeringAngle = True
-            max_lat_accel = 2.275
-            ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
+            max_lat_accel = 2.5
+            ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
             ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-            ret.lateralTuning.torque.ki = 0.19 / max_lat_accel
-            ret.lateralTuning.torque.friction = 0.02
+            ret.lateralTuning.torque.ki = 0.2 / max_lat_accel
+            ret.lateralTuning.torque.friction = 0.0
 
             ret.lateralTuning.torque.kd = 1.0
-            ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 0.5
+            ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 0.0
 
         ret.steerRatio = 17.5
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
