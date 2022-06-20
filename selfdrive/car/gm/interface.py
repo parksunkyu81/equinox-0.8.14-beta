@@ -118,7 +118,6 @@ class CarInterface(CarInterfaceBase):
         # steerratecost를 높이면 핸들링이 부드러워(둔감)해 집니다. 다시 말해 도로의 작은 변화에 기민하게 반응하지 않게 됩니다.
         # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
         ret.steerActuatorDelay = 0.2  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
-        ret.steerRateCost = 0.4  # DEF : 0.4  조향 속도에 대한 측면 MPC 비용
         ret.steerLimitTimer = 0.4  # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
 
         # TODO: get actual value, for now starting with reasonable value for
