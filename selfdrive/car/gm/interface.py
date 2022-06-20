@@ -75,7 +75,7 @@ class CarInterface(CarInterfaceBase):
 
         tire_stiffness_factor = 0.444  # 1. 을 기준으로 줄면 민감(오버), 커지면 둔감(언더) DEF : 0.5
         ret.maxSteeringAngleDeg = 1000.
-        ret.disableLateralLiveTuning = True
+        #ret.disableLateralLiveTuning = True
 
         lateral_control = Params().get("LateralControl", encoding='utf-8')
         if lateral_control == 'INDI':
@@ -104,16 +104,16 @@ class CarInterface(CarInterfaceBase):
         else:
             ret.lateralTuning.init('torque')
             ret.lateralTuning.torque.useSteeringAngle = True
-            max_lat_accel = 2.5
+            max_lat_accel = 1.9
             ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
             ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-            ret.lateralTuning.torque.ki = 0.2 / max_lat_accel
-            ret.lateralTuning.torque.friction = 0.0
+            ret.lateralTuning.torque.ki = 0.1 / max_lat_accel
+            ret.lateralTuning.torque.friction = 0.17
 
-            ret.lateralTuning.torque.kd = 1.0
-            ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 0.0
+            ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 0.25
 
-        ret.steerRatio = 17.5
+
+        ret.steerRatio = 17.0
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
         # steerratecost를 높이면 핸들링이 부드러워(둔감)해 집니다. 다시 말해 도로의 작은 변화에 기민하게 반응하지 않게 됩니다.
         # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
@@ -133,8 +133,8 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kpV = [1.35, 1.20, 1.125, 0.65]
 
-        #ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        #ret.longitudinalTuning.kiV = [0.18, 0.13, 0.10]
+        ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.kiV = [0.28, 0.23, 0.20]
 
         #ret.longitudinalActuatorDelayLowerBound = 0.12
         #ret.longitudinalActuatorDelayUpperBound = 0.25
