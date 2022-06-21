@@ -992,8 +992,6 @@ class Controls:
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
 
-        controlsState.fuelCut = self.limited_lead
-
         lat_tuning = self.CP.lateralTuning.which()
         if self.joystick_mode:
           controlsState.lateralControlState.debugState = lac_log
