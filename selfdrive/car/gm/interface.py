@@ -133,8 +133,8 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kpV = [1.35, 1.20, 1.125, 0.65]
 
-        #ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        #ret.longitudinalTuning.kiV = [0.18, 0.23, 0.20]
+        ret.longitudinalTuning.kiBP = [0., 35.]
+        ret.longitudinalTuning.kiV = [0.18, 0.12]
 
         #ret.longitudinalActuatorDelayLowerBound = 0.12
         #ret.longitudinalActuatorDelayUpperBound = 0.25
@@ -239,27 +239,6 @@ class CarInterface(CarInterfaceBase):
             if self.CS.main_on:  # wihtout pedal case
                 self.CS.adaptive_Cruise = False
                 self.CS.enable_lkas = True
-
-        # Added by jc01rho inspired by JangPoo
-        # if self.CS.main_on and self.CS.enable_lkas and not self.CS.adaptive_Cruise and ret.cruiseState.enabled and ret.gearShifter == GearShifter.drive and ret.vEgo > 2 and not ret.brakePressed:
-        """if not self.CS.main_on and ret.cruiseState.enabled and ret.gearShifter == GearShifter.drive and ret.vEgo > 2:
-      if ret.cruiseState.available and not ret.seatbeltUnlatched and not ret.espDisabled and self.flag_pcmEnable_able:
-
-        if self.flag_pcmEnable_initialSet == False:
-          self.initial_pcmEnable_counter = self.initial_pcmEnable_counter + 1
-          if self.initial_pcmEnable_counter > 750:
-            # events.add(EventName.pcmEnable)
-            # self.flag_pcmEnable_initialSet = True
-            self.flag_pcmEnable_able = False
-            self.initial_pcmEnable_counter = 0
-        else:
-          events.add(EventName.pcmEnable)
-          self.flag_pcmEnable_able = False
-          # self.flag_pcmEnable_initialSet = True
-          # self.initial_pcmEnable_counter = 0
-    else:
-      self.flag_pcmEnable_able = True
-    """
 
         ###
 
