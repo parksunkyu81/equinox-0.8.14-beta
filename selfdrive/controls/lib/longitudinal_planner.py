@@ -26,7 +26,7 @@ _A_TOTAL_MAX_V = [1.7, 3.2]
 _A_TOTAL_MAX_BP = [20., 40.]
 
 _DP_CRUISE_MIN_V = [-3.5, -3.5, -3.0, -2.5, -2.0]
-_DP_CRUISE_MIN_V_FOLLOWING = [-6.5, -6.5, -6.0, -5.0, -3.5]
+_DP_CRUISE_MIN_V_FOLLOWING = [-5.5, -5.5, -4.5, -4.0, -3.5]
 _DP_CRUISE_MIN_BP = [0.0, 5.0, 10.0, 20.0, 30.0]
 
 _DP_CRUISE_MAX_V = [1.3, 1.2, 0.8, 0.65, 0.5]
@@ -98,8 +98,10 @@ class Planner:
       self.a_desired = 0.0
 
     # following dist
-    lead_1 = sm['radarState'].leadOne
-    following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+    #lead_1 = sm['radarState'].leadOne
+    #following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+    following = False
+
 
     # Prevent divergence, smooth in current v_ego
     self.v_desired_filter.x = max(0.0, self.v_desired_filter.update(v_ego))
