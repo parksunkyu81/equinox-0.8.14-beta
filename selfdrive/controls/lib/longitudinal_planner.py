@@ -99,7 +99,7 @@ class Planner:
 
     # following dist
     lead_1 = sm['radarState'].leadOne
-    following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+    following = lead_1.status and lead_1.dRel < 30.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
 
     # Prevent divergence, smooth in current v_ego
     self.v_desired_filter.x = max(0.0, self.v_desired_filter.update(v_ego))
