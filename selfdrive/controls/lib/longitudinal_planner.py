@@ -25,7 +25,7 @@ A_CRUISE_MAX_BP = [0., 15., 25., 40.]
 _A_TOTAL_MAX_V = [1.7, 3.2]
 _A_TOTAL_MAX_BP = [20., 40.]
 
-_DP_CRUISE_MIN_V = [-5.5, -4.3, -4.0, -3.5, -3.0]
+_DP_CRUISE_MIN_V = [-3.5, -3.3, -3.0, -2.8, -2.3]
 _DP_CRUISE_MIN_V_FOLLOWING = [-5.5, -4.3, -4.0, -3.5, -3.0]
 _DP_CRUISE_MIN_BP = [0.0, 5.0, 10.0, 20.0, 30.0]
 
