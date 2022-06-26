@@ -69,6 +69,8 @@ class Planner:
 
     self.fcw = False
 
+    self.following = False
+
     self.a_desired = init_a
     self.v_desired_filter = FirstOrderFilter(init_v, 2.0, DT_MDL)
 
@@ -99,13 +101,13 @@ class Planner:
 
     # following dist
     lead_1 = sm['radarState'].leadOne
-    following = lead_1.status and lead_1.dRel < 40.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+    self.following = lead_1.status and lead_1.dRel < 40.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
 
     # Prevent divergence, smooth in current v_ego
     self.v_desired_filter.x = max(0.0, self.v_desired_filter.update(v_ego))
 
     #accel_limits = [A_CRUISE_MIN, get_max_accel(v_ego)]  # DEF
-    accel_limits = dp_calc_cruise_accel_limits(v_ego, following)
+    accel_limits = dp_calc_cruise_accel_limits(v_ego, self.following)
     accel_limits_turns = limit_accel_in_turns(v_ego, sm['carState'].steeringAngleDeg, accel_limits, self.CP)
     if force_slow_decel:
       # if required so, force a smooth deceleration
@@ -150,6 +152,7 @@ class Planner:
     longitudinalPlan.hasLead = sm['radarState'].leadOne.status
     longitudinalPlan.longitudinalPlanSource = self.mpc.source
     longitudinalPlan.fcw = self.fcw
+    longitudinalPlan.following = self.following
 
     longitudinalPlan.solverExecutionTime = self.mpc.solve_time
 

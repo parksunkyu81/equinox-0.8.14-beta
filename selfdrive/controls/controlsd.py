@@ -979,6 +979,8 @@ class Controls:
         #controlsState.sccStockCamAct = self.sccStockCamAct
         #controlsState.sccStockCamStatus = self.sccStockCamStatus
 
+        # Following
+        controlsState.following = self.sm['longitudinalPlan'].following
         # NDA
         controlsState.roadLimitSpeedActive = road_speed_limiter_get_active()
         controlsState.roadLimitSpeed = road_limit_speed

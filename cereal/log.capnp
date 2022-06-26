@@ -612,6 +612,8 @@ struct ControlsState @0x97ff69c53601abf1 {
   roadLimitSpeed @76 :UInt32;
   roadLimitSpeedLeftDist @77 :UInt32;
 
+  following @79 :Bool;
+
 
   enum OpenpilotState @0xdbe58b96d2d1ac61 {
     disabled @0;
@@ -876,6 +878,7 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
   jerks @34 :List(Float32);
 
   solverExecutionTime @35 :Float32;
+  following @36 :Bool;
 
   enum LongitudinalPlanSource {
     cruise @0;
