@@ -25,15 +25,13 @@ A_CRUISE_MAX_BP = [0., 15., 25., 40.]
 _A_TOTAL_MAX_V = [1.7, 3.2]
 _A_TOTAL_MAX_BP = [20., 40.]
 
-_DP_CRUISE_MIN_V = [-5.5, -4.3, -4.0, -3.5, -3.0]
-_DP_CRUISE_MIN_V_FOLLOWING = [-3.5, -3.0, -2.8, -2.5, -2.0]
+_DP_CRUISE_MIN_V = [-2.5, -2.3, -2.0, -1.8, -1.5]
 _DP_CRUISE_MIN_BP = [0.0, 5.0, 10.0, 20.0, 30.0]
 
 _DP_CRUISE_MAX_V = [1.3, 1.2, 0.8, 0.65, 0.5]
-_DP_CRUISE_MAX_V_FOLLOWING = [2.0, 1.8, 1.5, 1.3, 0.4]
 _DP_CRUISE_MAX_BP = [0., 5., 10., 20., 30.]
 
-def dp_calc_cruise_accel_limits(v_ego, following):
+def dp_calc_cruise_accel_limits(v_ego):
   if following:
     a_cruise_min = interp(v_ego, _DP_CRUISE_MIN_BP, _DP_CRUISE_MIN_V_FOLLOWING)
     a_cruise_max = interp(v_ego, _DP_CRUISE_MAX_BP, _DP_CRUISE_MAX_V_FOLLOWING)
@@ -69,8 +67,6 @@ class Planner:
 
     self.fcw = False
 
-    self.following = False
-
     self.a_desired = init_a
     self.v_desired_filter = FirstOrderFilter(init_v, 2.0, DT_MDL)
 
@@ -95,19 +91,10 @@ class Planner:
     # No change cost when user is controlling the speed, or when standstill
     prev_accel_constraint = not (reset_state or sm['carState'].standstill)
 
-    if reset_state:
-      self.v_desired_filter.x = v_ego
-      self.a_desired = 0.0
-
-    # following dist
-    lead_1 = sm['radarState'].leadOne
-    self.following = lead_1.status and lead_1.dRel < 40.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
-
     # Prevent divergence, smooth in current v_ego
     self.v_desired_filter.x = max(0.0, self.v_desired_filter.update(v_ego))
 
-    #accel_limits = [A_CRUISE_MIN, get_max_accel(v_ego)]  # DEF
-    accel_limits = dp_calc_cruise_accel_limits(v_ego, self.following)
+    accel_limits = dp_calc_cruise_accel_limits(v_ego)
     accel_limits_turns = limit_accel_in_turns(v_ego, sm['carState'].steeringAngleDeg, accel_limits, self.CP)
     if force_slow_decel:
       # if required so, force a smooth deceleration
@@ -152,7 +139,6 @@ class Planner:
     longitudinalPlan.hasLead = sm['radarState'].leadOne.status
     longitudinalPlan.longitudinalPlanSource = self.mpc.source
     longitudinalPlan.fcw = self.fcw
-    longitudinalPlan.following = self.following
 
     longitudinalPlan.solverExecutionTime = self.mpc.solve_time
 
