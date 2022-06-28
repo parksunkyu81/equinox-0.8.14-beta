@@ -32,8 +32,8 @@ _DP_CRUISE_MAX_V = [1.3, 1.2, 0.8, 0.65, 0.5]
 _DP_CRUISE_MAX_BP = [0., 5., 10., 20., 30.]
 
 def dp_calc_cruise_accel_limits(v_ego):
-    a_cruise_min = interp(v_ego, _DP_CRUISE_MIN_BP, _DP_CRUISE_MIN_V)
-    a_cruise_max = interp(v_ego, _DP_CRUISE_MAX_BP, _DP_CRUISE_MAX_V)
+  a_cruise_min = interp(v_ego, _DP_CRUISE_MIN_BP, _DP_CRUISE_MIN_V)
+  a_cruise_max = interp(v_ego, _DP_CRUISE_MAX_BP, _DP_CRUISE_MAX_V)
   return a_cruise_min, a_cruise_max
 
 
