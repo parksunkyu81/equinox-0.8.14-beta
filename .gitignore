@@ -76,7 +76,6 @@ cppcheck_report.txt
 comma*.sh
 
 selfdrive/modeld/thneed/compile
-models/*.thneed
 
 *.bz2
 
