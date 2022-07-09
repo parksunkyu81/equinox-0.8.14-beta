@@ -765,8 +765,9 @@ class Controls:
 
         # State specific actions
 
-        if not self.active:
+        if not CC.latActive:
             self.LaC.reset()
+        if not CC.longActive:
             self.LoC.reset(v_pid=CS.vEgo)
 
         if not CS.cruiseState.enabled:
@@ -796,20 +797,29 @@ class Controls:
                                                                                    self.sm['liveLocationKalman'])
         else:
             lac_log = log.ControlsState.LateralDebugState.new_message()
-            if self.sm.rcv_frame['testJoystick'] > 0 and self.active:
-                actuators.accel = 4.0 * clip(self.sm['testJoystick'].axes[0], -1, 1)
+            if self.sm.rcv_frame['testJoystick'] > 0:
+                if CC.longActive:
+                    actuators.accel = 4.0 * clip(self.sm['testJoystick'].axes[0], -1, 1)
 
-                steer = clip(self.sm['testJoystick'].axes[1], -1, 1)
-                # max angle is 45 for angle-based cars
-                actuators.steer, actuators.steeringAngleDeg = steer, steer * 45.
+                if CC.latActive:
+                    steer = clip(self.sm['testJoystick'].axes[1], -1, 1)
+                    # max angle is 45 for angle-based cars
+                    actuators.steer, actuators.steeringAngleDeg = steer, steer * 45.
 
-                lac_log.active = True
+                lac_log.active = self.active
                 lac_log.steeringAngleDeg = CS.steeringAngleDeg
-                lac_log.output = steer
-                lac_log.saturated = abs(steer) >= 0.9
+                lac_log.output = actuators.steer
+                lac_log.saturated = abs(actuators.steer) >= 0.9
 
         # Send a "steering required alert" if saturation count has reached the limit
-        if lac_log.active and lac_log.saturated and not CS.steeringPressed:
+        if lac_log.active and not CS.steeringPressed and self.CP.lateralTuning.which() == 'torque':
+            undershooting = abs(lac_log.desiredLateralAccel) / abs(1e-3 + lac_log.actualLateralAccel) > 1.3
+            turning = abs(lac_log.desiredLateralAccel) > 1.0
+            good_speed = CS.vEgo > 5
+            max_torque = abs(self.last_actuators.steer) > 0.99
+            if undershooting and turning and good_speed and max_torque:
+                self.events.add(EventName.steerSaturated)
+        elif lac_log.active and lac_log.saturated and not CS.steeringPressed:
             dpath_points = lat_plan.dPathPoints
             if len(dpath_points):
                 # Check if we deviated from the path
