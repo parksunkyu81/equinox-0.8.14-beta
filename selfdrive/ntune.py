@@ -196,7 +196,7 @@ class nTune():
     if self.checkValue("dcGain", 0.002, 0.004, 0.0025):
       updated = True
 
-    if self.checkValue("steerLimitTimer", 0.5, 3.0, 2.5):
+    if self.checkValue("steerLimitTimer", 0.4, 3.0, 0.4):
       updated = True
 
     return updated
