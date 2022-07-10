@@ -996,7 +996,6 @@ class Controls:
         controlsState.roadLimitSpeedLeftDist = left_dist
 
         controlsState.steerRatio = self.VM.sR
-        controlsState.steerRateCost = ntune_common_get('steerRateCost')
         controlsState.steerActuatorDelay = ntune_common_get('steerActuatorDelay')
 
         controlsState.sccGasFactor = ntune_scc_get('sccGasFactor')
