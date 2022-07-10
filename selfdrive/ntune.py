@@ -173,7 +173,7 @@ class nTune():
     if self.checkValue("useLiveSteerRatio", 0., 1., 1.):
       updated = True
 
-    if self.checkValue("steerRatio", 10.0, 20.0, 17.5):
+    if self.checkValue("steerRatio", 10.0, 20.0, 17.0):
       updated = True
 
     if self.checkValue("steerActuatorDelay", 0., 0.8, 0.1):
