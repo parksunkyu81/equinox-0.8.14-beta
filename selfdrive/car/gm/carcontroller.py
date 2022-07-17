@@ -13,7 +13,8 @@ VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
 LongCtrlState = car.CarControl.Actuators.LongControlState
 
-CREEP_SPEED = 1.12   # 4km
+#CREEP_SPEED = 1.12   # 4km
+CREEP_SPEED = 2.3     # 8
 
 class CarController():
 
@@ -85,7 +86,7 @@ class CarController():
 
           ## ================================================================================== ##
 
-          """accelFomula = (actuators.accel / 8.8 if actuators.accel >= 0 else actuators.accel / 9.25)
+          accelFomula = (actuators.accel / 8.8 if actuators.accel >= 0 else actuators.accel / 9.25)
           accelFomula = round(accelFomula, 3)
           pedalValue = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS], [0.1625, 0.2125]) + accelFomula
           pedalValue = min(pedalValue, interp(CS.out.vEgo, [0., 19.0 * CV.KPH_TO_MS, 30.0 * CV.KPH_TO_MS],
@@ -132,9 +133,9 @@ class CarController():
 
                 if self.stoppingStateTimeWindowsActiveCounter > (stoppingStateWindowsActiveCounterLimits) \
                         or (controls.LoC.long_control_state == LongCtrlState.stopping) \
-                        or CS.out.vEgo > 5 * CV.KPH_TO_MS \
                         or controls.LoC.pid.f < -0.65 \
                         or actuators.accel < - 1.15:
+
                   if controls.LoC.pid.f < -0.625 or actuators.accel < - 1.225:
                     self.stoppingStateTimeWindowsClosingAdder = 0
                   else:
@@ -174,10 +175,10 @@ class CarController():
                                     [0.850, 0.750, 0.625, 0.150])
             self.comma_pedal *= interp(controls.LoC.pid.f, [-2.25, -2.0, -1.5, -0.600],
                                         [0, 0.020, minMultipiler, 0.975])
-          actuators.commaPedal = self.comma_pedal"""
+          actuators.commaPedal = self.comma_pedal
           ## ================================================================================== ##
 
-          PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
+          """PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
                                             [0.22, 0.25, 0.27, 0.24])
 
           lead = self.get_lead(controls.sm)
@@ -186,20 +187,23 @@ class CarController():
           else:
             forward_distance = 0
 
-          if forward_distance == 0 and CS.out.vEgo < CREEP_SPEED:
+          if forward_distance > 0 and CS.out.vEgo < CREEP_SPEED:
             start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.19, 0.19, 0.0])
             is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
             boost = start_boost * is_accelerating
             pedal_command = PEDAL_SCALE * (actuators.accel + boost)
           else:
             pedal_command = PEDAL_SCALE * actuators.accel
-          ## ================================================ ##
+
           pedal_command = PEDAL_SCALE * actuators.accel
-          self.comma_pedal = clip(pedal_command, 0., 1.)
+          self.comma_pedal = clip(pedal_command, 0., 1.) """
+
+        ## ================================================================================== ##
 
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.0
           actuators.commaPedal = self.comma_pedal
+
         if (frame % 4) == 0:
           idx = (frame // 4) % 4
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.comma_pedal, idx))
