@@ -75,6 +75,9 @@ class CarInterface(CarInterfaceBase):
 
         tire_stiffness_factor = 0.444  # 1. 을 기준으로 줄면 민감(오버), 커지면 둔감(언더) DEF : 0.5
         ret.maxSteeringAngleDeg = 1000.
+
+        ret.restartForceAccel = Params().get_bool('RestartForceAccel')
+
         #ret.disableLateralLiveTuning = True
 
         lateral_control = Params().get("LateralControl", encoding='utf-8')

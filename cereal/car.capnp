@@ -362,6 +362,7 @@ struct CarControl {
     accel @4: Float32; # m/s^2
     longControlState @5: LongControlState;
     commaPedal @7: Float32;
+    regenPaddle @8: Bool;
 
     enum LongControlState @0xe40f3a917d908282{
       off @0;
@@ -452,6 +453,8 @@ struct CarParams {
   #unsafeMode @65 :Int16;
   alternativeExperience @65 :Int16;      # panda flag for features like no disengage on gas
   maxLateralAccel @78 :Float32;
+
+  restartForceAccel  @79 :Bool;
 
 
   #steerMaxBP @11 :List(Float32);

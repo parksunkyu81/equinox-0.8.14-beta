@@ -676,6 +676,12 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_shell.png",
                                             this));
 
+  toggles.append(new ParamControl("RestartForceAccel",
+                                            "Use Restart Force Accel",
+                                            "warnings: it is beta, be careful!! Force Accelereation when Re-starts with leading car",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+
   /*toggles.append(new ParamControl("CustomLeadMark",
                                             "Use custom lead mark",
                                             "",
