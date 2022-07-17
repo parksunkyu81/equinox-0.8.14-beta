@@ -132,7 +132,7 @@ class CarController():
 
                 if self.stoppingStateTimeWindowsActiveCounter > (stoppingStateWindowsActiveCounterLimits) \
                         or (controls.LoC.long_control_state == LongCtrlState.stopping) \
-                        or CS.out.vEgo > 35 * CV.KPH_TO_MS \
+                        or CS.out.vEgo > 5 * CV.KPH_TO_MS \
                         or controls.LoC.pid.f < -0.65 \
                         or actuators.accel < - 1.15:
                   if controls.LoC.pid.f < -0.625 or actuators.accel < - 1.225:
