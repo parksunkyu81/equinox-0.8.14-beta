@@ -165,7 +165,7 @@ class CarController():
               self.comma_pedal = clip(self.comma_pedal, 0.0, (self.pedalMaxValue - 0.025))
 
           # braking logic
-          """if actuators.accel < -0.15:
+          if actuators.accel < -0.15:
             actuators.regenPaddle = True  # for icon
           elif controls.LoC.pid.f < - 0.55:
             actuators.regenPaddle = True  # for icon
@@ -173,7 +173,7 @@ class CarController():
                                     [20 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 120 * CV.KPH_TO_MS],
                                     [0.850, 0.750, 0.625, 0.150])
             self.comma_pedal *= interp(controls.LoC.pid.f, [-2.25, -2.0, -1.5, -0.600],
-                                        [0, 0.020, minMultipiler, 0.975])"""
+                                        [0, 0.020, minMultipiler, 0.975])
           actuators.commaPedal = self.comma_pedal
           ## ================================================================================== ##
 
