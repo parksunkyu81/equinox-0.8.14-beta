@@ -84,7 +84,7 @@ class CarController():
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
 
           ## ================================================================================== ##
-          """
+
           accelFomula = (actuators.accel / 8.8 if actuators.accel >= 0 else actuators.accel / 9.25)
           accelFomula = round(accelFomula, 3)
           pedalValue = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS], [0.1625, 0.2125]) + accelFomula
@@ -174,33 +174,29 @@ class CarController():
                                     [0.850, 0.750, 0.625, 0.150])
             self.comma_pedal *= interp(controls.LoC.pid.f, [-2.25, -2.0, -1.5, -0.600],
                                         [0, 0.020, minMultipiler, 0.975])
-          actuators.commaPedal = self.comma_pedal"""
+          actuators.commaPedal = self.comma_pedal
           ## ================================================================================== ##
 
+          """
           PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
                                             [0.22, 0.25, 0.27, 0.24])
 
-          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.18, 0.18, 0.0]) # DEF : [0.19, 0.19, 0.0]
-          is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
-          boost = start_boost * is_accelerating
-          pedal_command = PEDAL_SCALE * (actuators.accel + boost)
+          lead = self.get_lead(controls.sm)
+          if lead is not None:
+            forward_distance = lead.dRel
+          else:
+            forward_distance = 0
+
+          if forward_distance > 0 and CS.out.vEgo < CREEP_SPEED:
+            start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.19, 0.19, 0.0])
+            is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
+            boost = start_boost * is_accelerating
+            pedal_command = PEDAL_SCALE * (actuators.accel + boost)
+          else:
+            pedal_command = PEDAL_SCALE * actuators.accel
 
           pedal_command = PEDAL_SCALE * actuators.accel
-          self.comma_pedal = clip(pedal_command, 0., 1.)
-
-          #lead = self.get_lead(controls.sm)
-          #if lead is not None:
-          #  forward_distance = lead.dRel
-          #else:
-          #  forward_distance = 0
-
-          #if forward_distance > 0 and CS.out.vEgo < CREEP_SPEED:
-          #  start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.19, 0.19, 0.0])
-          #  is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
-          #  boost = start_boost * is_accelerating
-          #  pedal_command = PEDAL_SCALE * (actuators.accel + boost)
-          #else:
-          #  pedal_command = PEDAL_SCALE * actuators.accel
+          self.comma_pedal = clip(pedal_command, 0., 1.) """
 
         ## ================================================================================== ##
 
