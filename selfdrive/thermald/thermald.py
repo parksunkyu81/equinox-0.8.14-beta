@@ -240,12 +240,12 @@ def thermald_thread(end_event, hw_queue):
       if fan_controller is None and peripheralState.pandaType != log.PandaState.PandaType.unknown:
         is_uno = peripheralState.pandaType == log.PandaState.PandaType.uno
 
-        if TICI:
-          fan_controller = TiciFanController()
-        elif is_uno or PC:
-          fan_controller = UnoFanController()
-        else:
-          fan_controller = EonFanController()
+        #if TICI:
+        #  fan_controller = TiciFanController()
+        #elif is_uno or PC:
+        #  fan_controller = UnoFanController()
+        #else:
+        #  fan_controller = EonFanController()
     else:
       if sec_since_boot() - panda_state_ts > 3.:
         if onroad_conditions["ignition"]:
