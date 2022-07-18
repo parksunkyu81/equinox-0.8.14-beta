@@ -68,7 +68,6 @@ class CarController():
 
       self.accel = clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
 
-      forward_distance = 0
       if CS.CP.enableGasInterceptor:
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
@@ -78,20 +77,12 @@ class CarController():
           #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, CREEP_SPEED*2], [-.5, 0.15, 0.2])
 
           ## =============================================== ##
-          # float vision_dist = lead_one.getProb() > .5 ? (lead_one.getX()[0] - 1.5) : 0;
-          lead = self.get_lead(controls.sm)
-          if lead is not None:
-            forward_distance = lead.dRel
-          else:
-            forward_distance = 0
 
-          if forward_distance > 0:
-            start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.19, 0.19, 0.0])
-            is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
-            boost = start_boost * is_accelerating
-            pedal_command = PEDAL_SCALE * (actuators.accel + boost)
-          else:
-            pedal_command = PEDAL_SCALE * actuators.accel
+          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.19, 0.19, 0.0])
+          is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
+          boost = start_boost * is_accelerating
+          pedal_command = PEDAL_SCALE * (actuators.accel + boost)
+
           ## ================================================ ##
 
           self.comma_pedal = clip(pedal_command, 0., 1.)
