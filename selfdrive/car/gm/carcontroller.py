@@ -11,7 +11,6 @@ from selfdrive.ntune import ntune_scc_get
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
-LongCtrlState = car.CarControl.Actuators.LongControlState
 
 CREEP_SPEED = 1.12   # 4km
 
@@ -27,15 +26,6 @@ class CarController():
     self.apply_steer_last = 0
     self.comma_pedal = 0.0
     self.accel = 0
-    self.pedalMaxValue = 0.3310
-
-    self.currentStoppingState = False
-    self.beforeStoppingState = False
-    self.stoppingStateTimeWindowsActive = False
-    self.stoppingStateTimeWindowsActiveCounter = 0
-    self.stoppingStateTimeWindowsClosingAdder = 0
-    self.stoppingStateTimeWindowsClosing = False
-    self.stoppingStateTimeWindowsClosingCounter = 0
 
     self.lka_steering_cmd_counter_last = -1
     self.lka_icon_status_last = (False, False)
@@ -78,108 +68,17 @@ class CarController():
 
       self.accel = clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
 
-      #forward_distance = 0
+      forward_distance = 0
       if CS.CP.enableGasInterceptor:
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
 
-          ## ================================================================================== ##
-
-          accelFomula = (actuators.accel / 8.8 if actuators.accel >= 0 else actuators.accel / 9.25)
-          accelFomula = round(accelFomula, 3)
-          pedalValue = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS], [0.1625, 0.2125]) + accelFomula
-          pedalValue = min(pedalValue, interp(CS.out.vEgo, [0., 19.0 * CV.KPH_TO_MS, 30.0 * CV.KPH_TO_MS],
-                                              [0.2550, 0.2750, 0.3150]))
-
-          self.comma_pedal_original = pedalValue  # (actuators.accel * acc_mult, 0., 1.)
-          self.comma_pedal_new = clip(
-            interp(actuators.accel, [-0.85, -0.325, 0.00, 0.20], [0.0, 0.1600, 0.2190, 0.22150]) + accelFomula, 0., 1.)
-
-          gapInterP = interp(CS.out.vEgo, [19 * CV.KPH_TO_MS, 45 * CV.KPH_TO_MS], [1, 0])
-          self.comma_pedal = (gapInterP * self.comma_pedal_original) + ((1.0 - gapInterP) * self.comma_pedal_new)
-
-          self.comma_pedal = clip(self.comma_pedal, 0.0,
-                                  interp(actuators.accel, [0.85, 1.5], [0.0000, 0.0200]) + self.pedalMaxValue)  # 급가속 방
-
-          if CS.CP.restartForceAccel:
-            d = 0
-            lead = self.get_lead(controls.sm)
-            if lead is not None:
-              d = lead.dRel
-
-            stoppingStateWindowsActiveCounterLimits = 1500  # per 0.01s,
-            if not self.stoppingStateTimeWindowsActive:
-              actuators.pedalStartingAdder = 0
-              actuators.pedalDistanceAdder = 0
-              self.beforeStoppingState = self.currentStoppingState
-              self.currentStoppingState = (controls.LoC.long_control_state == LongCtrlState.stopping)
-
-            if self.beforeStoppingState and not self.currentStoppingState and not self.stoppingStateTimeWindowsActive:
-              self.stoppingStateTimeWindowsActive = True
-
-            if self.stoppingStateTimeWindowsActive:
-              if not self.stoppingStateTimeWindowsClosing:
-                self.stoppingStateTimeWindowsActiveCounter += 1
-                actuators.stoppingStateTimeWindowsActiveCounter = self.stoppingStateTimeWindowsActiveCounter
-                if self.stoppingStateTimeWindowsActiveCounter > 0:
-                  actuators.pedalStartingAdder = interp(CS.out.vEgo, [0.0, 5.0 * CV.KPH_TO_MS, 12.5 * CV.KPH_TO_MS,
-                                                                      25.0 * CV.KPH_TO_MS],
-                                                        [0.1850, 0.2275, 0.1750, 0.025])
-                  if d > 0:
-                    actuators.pedalDistanceAdder = interp(d, [1, 6, 8, 9.5, 15, 30],
-                                                          [-1.0250, -0.5000, -0.0525, -0.0100, 0.0175, 0.1000])
-                  actuators.pedalAdderFinal = (actuators.pedalStartingAdder + actuators.pedalDistanceAdder)
-
-                if self.stoppingStateTimeWindowsActiveCounter > (stoppingStateWindowsActiveCounterLimits) \
-                        or (controls.LoC.long_control_state == LongCtrlState.stopping) \
-                        or CS.out.vEgo > 35 * CV.KPH_TO_MS \
-                        or controls.LoC.pid.f < -0.65 \
-                        or actuators.accel < - 1.15:
-                  if controls.LoC.pid.f < -0.625 or actuators.accel < - 1.225:
-                    self.stoppingStateTimeWindowsClosingAdder = 0
-                  else:
-                    self.stoppingStateTimeWindowsClosingAdder = actuators.pedalAdderFinal
-                  self.stoppingStateTimeWindowsActiveCounter = 0
-                  self.beforeStoppingState = False
-                  self.currentStoppingState = False
-                  actuators.pedalStartingAdder = 0
-                  actuators.pedalDistanceAdder = 0
-                  actuators.pedalAdderFinal = 0
-                  self.stoppingStateTimeWindowsClosing = True
-
-              else:  # if self.stoppingStateTimeWindowsClosing :
-                self.stoppingStateTimeWindowsClosingCounter += 1
-                actuators.stoppingStateTimeWindowsClosingCounter = self.stoppingStateTimeWindowsClosingCounter
-                actuators.pedalAdderFinal = interp(self.stoppingStateTimeWindowsClosingCounter,
-                                                   [0, (stoppingStateWindowsActiveCounterLimits / 3)],
-                                                   [self.stoppingStateTimeWindowsClosingAdder, 0])
-
-                if self.stoppingStateTimeWindowsClosingAdder == 0 or (
-                        self.stoppingStateTimeWindowsClosingCounter > (stoppingStateWindowsActiveCounterLimits / 3)):
-                  self.stoppingStateTimeWindowsClosing = False
-                  self.stoppingStateTimeWindowsClosingCounter = 0
-                  self.stoppingStateTimeWindowsClosingAdder = 0
-                  self.stoppingStateTimeWindowsActive = False
-
-              self.comma_pedal += actuators.pedalAdderFinal
-              self.comma_pedal = clip(self.comma_pedal, 0.0, (self.pedalMaxValue - 0.025))
-
-          # braking logic
-          if actuators.accel < -0.15:
-            actuators.regenPaddle = True  # for icon
-          elif controls.LoC.pid.f < - 0.55:
-            actuators.regenPaddle = True  # for icon
-            minMultipiler = interp(CS.out.vEgo,
-                                    [20 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 120 * CV.KPH_TO_MS],
-                                    [0.850, 0.750, 0.625, 0.150])
-            self.comma_pedal *= interp(controls.LoC.pid.f, [-2.25, -2.0, -1.5, -0.600],
-                                        [0, 0.020, minMultipiler, 0.975])
-          actuators.commaPedal = self.comma_pedal
-          ## ================================================================================== ##
-
-          """PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
+          PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
                                             [0.22, 0.25, 0.27, 0.24])
+          #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, CREEP_SPEED*2], [-.5, 0.15, 0.2])
 
+          ## =============================================== ##
+          # float vision_dist = lead_one.getProb() > .5 ? (lead_one.getX()[0] - 1.5) : 0;
           lead = self.get_lead(controls.sm)
           if lead is not None:
             forward_distance = lead.dRel
@@ -194,12 +93,17 @@ class CarController():
           else:
             pedal_command = PEDAL_SCALE * actuators.accel
           ## ================================================ ##
-          pedal_command = PEDAL_SCALE * actuators.accel
-          self.comma_pedal = clip(pedal_command, 0., 1.)"""
+
+          self.comma_pedal = clip(pedal_command, 0., 1.)
+
+          """acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
+                            [0.17, 0.24, 0.265, 0.24])
+          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 1.5*CREEP_SPEED], [-0.4, 0.20, 0.15])
+          self.comma_pedal = clip(acc_mult * (actuators.accel + start_boost), 0., 1.)"""
 
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.0
-          actuators.commaPedal = self.comma_pedal
+
         if (frame % 4) == 0:
           idx = (frame // 4) % 4
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.comma_pedal, idx))
