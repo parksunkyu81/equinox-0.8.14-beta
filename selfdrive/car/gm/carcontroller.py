@@ -12,7 +12,7 @@ from selfdrive.ntune import ntune_scc_get
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
 
-CREEP_SPEED = 1.12   # 4km
+CREEP_SPEED = 2.5   # 4km
 
 class CarController():
 
