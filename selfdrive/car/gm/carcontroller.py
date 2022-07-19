@@ -78,13 +78,13 @@ class CarController():
 
           ## =============================================== ##
 
-          #start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.19, 0.19, 0.0])
-          #is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
-          #boost = start_boost * is_accelerating
-          #pedal_command = PEDAL_SCALE * (actuators.accel + boost)
+          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.19, 0.19, 0.0])
+          is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
+          boost = start_boost * is_accelerating
+          pedal_command = PEDAL_SCALE * (actuators.accel + boost)
 
           ## ================================================ ##
-          pedal_command = PEDAL_SCALE * actuators.accel
+          #pedal_command = PEDAL_SCALE * actuators.accel
           self.comma_pedal = clip(pedal_command, 0., 1.)
 
           """acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
