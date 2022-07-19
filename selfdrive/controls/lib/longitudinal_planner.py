@@ -18,23 +18,12 @@ from selfdrive.swaglog import cloudlog
 LON_MPC_STEP = 0.2  # first step is 0.2s
 AWARENESS_DECEL = -0.2  # car smoothly decel at .2m/s^2 when user is distracted
 A_CRUISE_MIN = -1.2
-A_CRUISE_MAX_VALS = [1.5, 1.2, 0.8, 0.6]
+A_CRUISE_MAX_VALS = [1.2, 1.2, 0.8, 0.6]
 A_CRUISE_MAX_BP = [0., 15., 25., 40.]
 
 # Lookup table for turns
 _A_TOTAL_MAX_V = [1.7, 3.2]
 _A_TOTAL_MAX_BP = [20., 40.]
-
-_DP_CRUISE_MIN_V = [-2.5, -2.3, -2.0, -1.8, -1.5]
-_DP_CRUISE_MIN_BP = [0.0, 5.0, 10.0, 20.0, 30.0]
-
-_DP_CRUISE_MAX_V = [1.3, 1.2, 0.8, 0.65, 0.5]
-_DP_CRUISE_MAX_BP = [0., 5., 10., 20., 30.]
-
-def dp_calc_cruise_accel_limits(v_ego):
-  a_cruise_min = interp(v_ego, _DP_CRUISE_MIN_BP, _DP_CRUISE_MIN_V)
-  a_cruise_max = interp(v_ego, _DP_CRUISE_MAX_BP, _DP_CRUISE_MAX_V)
-  return a_cruise_min, a_cruise_max
 
 
 def get_max_accel(v_ego):
@@ -78,7 +67,6 @@ class Planner:
     v_cruise_kph = min(v_cruise_kph, V_CRUISE_MAX)
     v_cruise = v_cruise_kph * CV.KPH_TO_MS
 
-    long_control_state = sm['controlsState'].longControlState
     long_control_off = sm['controlsState'].longControlState == LongCtrlState.off
     force_slow_decel = sm['controlsState'].forceDecel
 
