@@ -285,7 +285,7 @@ class Controls:
                         target_speed = max(target_speed, self.kph_to_clu(10))
                         return target_speed"""
 
-                if 0. < d < -lead.vRel * 20.:
+                if 0. < d < -lead.vRel * 25.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
