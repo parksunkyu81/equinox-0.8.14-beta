@@ -820,19 +820,8 @@ class AcadosOcpSolver:
         dlclose.argtypes = [c_void_p]
 
     @classmethod
-    def generate(cls, acados_ocp, json_file='acados_ocp_nlp.json', simulink_opts=None, cmake_builder: CMakeBuilder = None, build=True):
-        """
-        Generates the code for an acados OCP solver, given the description in acados_ocp.
-            :param acados_ocp: type AcadosOcp - description of the OCP for acados
-            :param json_file: name for the json file used to render the templated code - default: `acados_ocp_nlp.json`
-            :param simulink_opts: Options to configure Simulink S-function blocks, mainly to activate possible inputs and
-                   outputs; default: `None`
-            :param cmake_builder: type :py:class:`~acados_template.builders.CMakeBuilder` generate a `CMakeLists.txt` and use
-                   the `CMake` pipeline instead of a `Makefile` (`CMake` seems to be the better option in conjunction with
-                   `MS Visual Studio`); default: `None`
-        """
+    def generate(cls, acados_ocp, json_file='acados_ocp_nlp.json', simulink_opts=None, build=True):
         model = acados_ocp.model
-        acados_ocp.code_export_directory = os.path.abspath(acados_ocp.code_export_directory)
 
         if simulink_opts is None:
             simulink_opts = get_simulink_default_opts()
@@ -857,18 +846,16 @@ class AcadosOcpSolver:
         ocp_formulation_json_dump(acados_ocp, simulink_opts, json_file)
 
         code_export_dir = acados_ocp.code_export_directory
-
         # render templates
-        ocp_render_templates(acados_ocp, json_file, cmake_builder=cmake_builder)
-        acados_ocp.json_file = json_file
+        ocp_render_templates(acados_ocp, json_file)
 
         if build:
-          ## Compile solver
-          cwd=os.getcwd()
-          os.chdir(code_export_dir)
-          os.system('make clean_ocp_shared_lib')
-          os.system('make ocp_shared_lib')
-          os.chdir(cwd)
+            ## Compile solver
+            cwd = os.getcwd()
+            os.chdir(code_export_dir)
+            os.system('make clean_ocp_shared_lib')
+            os.system('make ocp_shared_lib')
+            os.chdir(cwd)
 
 
     @classmethod
