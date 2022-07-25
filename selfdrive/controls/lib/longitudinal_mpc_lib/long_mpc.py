@@ -13,7 +13,8 @@ from common.travis_checker import gh_actions
 if __name__ == '__main__':  # generating code
   from pyextra.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
 else:
-  from selfdrive.controls.lib.longitudinal_mpc_lib.c_generated_code.acados_ocp_solver_pyx import AcadosOcpSolverCython  # pylint: disable=no-name-in-module, import-error
+  from selfdrive.controls.lib.longitudinal_mpc_lib.c_generated_code.acados_ocp_solver_pyx import \
+    AcadosOcpSolverFast  # pylint: disable=no-name-in-module, import-error
 
 from casadi import SX, vertcat
 
@@ -26,7 +27,7 @@ SOURCES = ['lead0', 'lead1', 'cruise']
 
 X_DIM = 3
 U_DIM = 1
-PARAM_DIM = 4
+PARAM_DIM = 5
 COST_E_DIM = 5
 COST_DIM = COST_E_DIM + 1
 CONSTR_DIM = 4
@@ -36,7 +37,7 @@ X_EGO_COST = 0.
 V_EGO_COST = 0.
 A_EGO_COST = 0.
 J_EGO_COST = 5.0
-A_CHANGE_COST = 300. # DEF 200.
+A_CHANGE_COST = .5 # DEF 200.
 DANGER_ZONE_COST = 100.
 CRASH_DISTANCE = .5
 LIMIT_COST = 1e6
@@ -100,8 +101,7 @@ def gen_long_model():
   model.f_expl_expr = f_expl
   return model
 
-
-def gen_long_ocp():
+def gen_long_mpc_solver():
   ocp = AcadosOcp()
   ocp.model = gen_long_model()
 
@@ -154,6 +154,7 @@ def gen_long_ocp():
                         (a_max - a_ego),
                         ((x_obstacle - x_ego) - (3/4) * (desired_dist_comfort)) / (v_ego + 10.))
   ocp.model.con_h_expr = constraints
+  ocp.model.con_h_expr_e = vertcat(np.zeros(CONSTR_DIM))
 
   x0 = np.zeros(X_DIM)
   ocp.constraints.x0 = x0
@@ -169,7 +170,7 @@ def gen_long_ocp():
   ocp.constraints.lh = np.zeros(CONSTR_DIM)
   ocp.constraints.lh_e = np.zeros(CONSTR_DIM)
   ocp.constraints.uh = 1e4*np.ones(CONSTR_DIM)
-  ocp.constraints.uh_e = 1e4 * np.ones(CONSTR_DIM)
+  ocp.constraints.uh_e = 1e4*np.ones(CONSTR_DIM)
   ocp.constraints.idxsh = np.arange(CONSTR_DIM)
 
   # The HPIPM solver can give decent solutions even when it is stopped early
@@ -179,13 +180,12 @@ def gen_long_ocp():
   ocp.solver_options.qp_solver = 'PARTIAL_CONDENSING_HPIPM'
   ocp.solver_options.hessian_approx = 'GAUSS_NEWTON'
   ocp.solver_options.integrator_type = 'ERK'
-  ocp.solver_options.nlp_solver_type = ACADOS_SOLVER_TYPE
+  ocp.solver_options.nlp_solver_type = 'SQP_RTI'
   ocp.solver_options.qp_solver_cond_N = N//4
 
   # More iterations take too much time and less lead to inaccurate convergence in
   # some situations. Ideally we would run just 1 iteration to ensure fixed runtime.
   ocp.solver_options.qp_solver_iter_max = 10
-  ocp.solver_options.qp_tol = 1e-3
 
   # set prediction horizon
   ocp.solver_options.tf = Tf
@@ -194,20 +194,20 @@ def gen_long_ocp():
   ocp.code_export_directory = EXPORT_DIR
   return ocp
 
-
 class LongitudinalMpc:
   def __init__(self, e2e=False, desired_TR=T_FOLLOW):
     self.dynamic_follow = DynamicFollow()
     self.e2e = e2e
     self.desired_TR = desired_TR
     self.v_ego = 0.
-    self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
+    #self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.reset()
     self.source = SOURCES[2]
 
   def reset(self):
+    self.solver = AcadosOcpSolverFast('long', N, EXPORT_DIR)
     # self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
-    self.solver.reset()
+    #self.solver.reset()
     # self.solver.options_set('print_level', 2)
     self.v_solution = np.zeros(N+1)
     self.a_solution = np.zeros(N+1)
@@ -234,33 +234,42 @@ class LongitudinalMpc:
     self.x0 = np.zeros(X_DIM)
     self.set_weights()
 
-  def set_weights(self, prev_accel_constraint=True):
+  def set_weights(self):
     if self.e2e:
       self.set_weights_for_xva_policy()
       self.params[:,0] = -10.
       self.params[:,1] = 10.
       self.params[:,2] = 1e5
+      self.params[:, 4] = T_FOLLOW
     else:
-      self.set_weights_for_lead_policy(prev_accel_constraint)
+      self.set_weights_for_lead_policy()
 
-  def set_weights_for_lead_policy(self, prev_accel_constraint=True):
-    a_change_cost = A_CHANGE_COST if prev_accel_constraint else 0
-    W = np.asfortranarray(np.diag([X_EGO_OBSTACLE_COST, X_EGO_COST, V_EGO_COST, A_EGO_COST, a_change_cost, J_EGO_COST]))
+  def set_weights_for_lead_policy(self):
+    # WARNING: deceleration tests with these costs:
+    # 1.0 TR fails at 3 m/s/s test
+    # 1.1 TR fails at 3+ m/s/s test
+    # 1.2-1.8 TR succeeds at all tests with no FCW
+
+    # TRs = [1.2, 1.8, 2.7]
+    x_ego_obstacle_cost_multiplier = 1  # interp(self.desired_TR, TRs, [3., 1.0, 0.1])
+    j_ego_cost_multiplier = 1  # interp(self.desired_TR, TRs, [0.5, 1.0, 1.0])
+    d_zone_cost_multiplier = 1  # interp(self.desired_TR, TRs, [4., 1.0, 1.0])
+
+    W = np.asfortranarray(np.diag([X_EGO_OBSTACLE_COST * x_ego_obstacle_cost_multiplier, X_EGO_COST, V_EGO_COST, A_EGO_COST, A_CHANGE_COST, J_EGO_COST * j_ego_cost_multiplier]))
     for i in range(N):
-      # reduce the cost on (a-a_prev) later in the horizon.
-      W[4,4] = a_change_cost * np.interp(T_IDXS[i], [0.0, 1.0, 2.0], [1.0, 1.0, 0.0])
+      W[4,4] = A_CHANGE_COST * np.interp(T_IDXS[i], [0.0, 1.0, 2.0], [1.0, 1.0, 0.0])
       self.solver.cost_set(i, 'W', W)
     # Setting the slice without the copy make the array not contiguous,
     # causing issues with the C interface.
     self.solver.cost_set(N, 'W', np.copy(W[:COST_E_DIM, :COST_E_DIM]))
 
     # Set L2 slack cost on lower bound constraints
-    Zl = np.array([LIMIT_COST, LIMIT_COST, LIMIT_COST, DANGER_ZONE_COST])
+    Zl = np.array([LIMIT_COST, LIMIT_COST, LIMIT_COST, DANGER_ZONE_COST * d_zone_cost_multiplier])
     for i in range(N):
       self.solver.cost_set(i, 'Zl', Zl)
 
   def set_weights_for_xva_policy(self):
-    W = np.asfortranarray(np.diag([0., 0.2, 0.25, 1., 0.0, .1]))
+    W = np.asfortranarray(np.diag([0., 10., 1., 10., 0.0, 1.]))
     for i in range(N):
       self.solver.cost_set(i, 'W', W)
     # Setting the slice without the copy make the array not contiguous,
@@ -273,12 +282,14 @@ class LongitudinalMpc:
       self.solver.cost_set(i, 'Zl', Zl)
 
   def set_cur_state(self, v, a):
-    v_prev = self.x0[1]
-    self.x0[1] = v
-    self.x0[2] = a
-    if abs(v_prev - v) > 2.: # probably only helps if v < v_prev
+    if abs(self.x0[1] - v) > 2.:
+      self.x0[1] = v
+      self.x0[2] = a
       for i in range(0, N+1):
         self.solver.set(i, 'x', self.x0)
+    else:
+      self.x0[1] = v
+      self.x0[2] = a
 
   @staticmethod
   def extrapolate_lead(x_lead, v_lead, a_lead, a_lead_tau):
@@ -288,19 +299,23 @@ class LongitudinalMpc:
     lead_xv = np.column_stack((x_lead_traj, v_lead_traj))
     return lead_xv
 
-  def process_lead(self, lead):
+  def process_lead(self, lead, id):
     v_ego = self.x0[1]
     if lead is not None and lead.status:
       x_lead = lead.dRel
       v_lead = lead.vLead
       a_lead = lead.aLeadK
       a_lead_tau = lead.aLeadTau
+      if id == 0:
+        self.dynamic_follow.update_lead(v_lead, a_lead, x_lead, lead.status, False)
     else:
       # Fake a fast lead car, so mpc can keep running in the same mode
       x_lead = 50.0
       v_lead = v_ego + 10.0
       a_lead = 0.0
       a_lead_tau = _LEAD_ACCEL_TAU
+      if id == 0:
+        self.dynamic_follow.update_lead(new_lead=False)
 
     # MPC will not converge if immediate crash is expected
     # Clip lead distance to what is still possible to brake for
@@ -314,6 +329,10 @@ class LongitudinalMpc:
   def set_accel_limits(self, min_a, max_a):
     self.cruise_min_a = min_a
     self.cruise_max_a = max_a
+
+  def set_desired_TR(self, desired_TR):
+    self.desired_TR = desired_TR
+    self.set_weights()
 
   def update(self, carstate, radarstate, v_cruise, prev_accel_constraint=False):
     self.v_ego = carstate.vEgo
@@ -363,11 +382,6 @@ class LongitudinalMpc:
       self.crash_cnt = 0
 
   def update_with_xva(self, x, v, a):
-    # v, and a are in local frame, but x is wrt the x[0] position
-    # In >90degree turns, x goes to 0 (and may even be -ve)
-    # So, we use integral(v) + x[0] to obtain the forward-distance
-    xforward = ((v[1:] + v[:-1]) / 2) * (T_IDXS[1:] - T_IDXS[:-1])
-    x = np.cumsum(np.insert(xforward, 0, x[0]))
     self.yref[:,1] = x
     self.yref[:,2] = v
     self.yref[:,3] = a
@@ -386,10 +400,10 @@ class LongitudinalMpc:
     self.solver.constraints_set(0, "ubx", self.x0)
 
     self.solution_status = self.solver.solve()
-    self.solve_time = float(self.solver.get_stats('time_tot')[0])
-    self.time_qp_solution = float(self.solver.get_stats('time_qp')[0])
-    self.time_linearization = float(self.solver.get_stats('time_lin')[0])
-    self.time_integrator = float(self.solver.get_stats('time_sim')[0])
+    #self.solve_time = float(self.solver.get_stats('time_tot')[0])
+    #self.time_qp_solution = float(self.solver.get_stats('time_qp')[0])
+    #self.time_linearization = float(self.solver.get_stats('time_lin')[0])
+    #self.time_integrator = float(self.solver.get_stats('time_sim')[0])
 
     # qp_iter = self.solver.get_stats('statistics')[-1][-1] # SQP_RTI specific
     # print(f"long_mpc timings: tot {self.solve_time:.2e}, qp {self.time_qp_solution:.2e}, lin {self.time_linearization:.2e}, integrator {self.time_integrator:.2e}, qp_iter {qp_iter}")
@@ -419,6 +433,6 @@ class LongitudinalMpc:
 
 
 if __name__ == "__main__":
-  ocp = gen_long_ocp()
+  ocp = gen_long_mpc_solver()
   AcadosOcpSolver.generate(ocp, json_file=JSON_FILE, build=False)
   # AcadosOcpSolver.build(ocp.code_export_directory, with_cython=True)
