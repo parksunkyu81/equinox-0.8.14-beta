@@ -820,7 +820,7 @@ class AcadosOcpSolver:
         dlclose.argtypes = [c_void_p]
 
     @classmethod
-    def generate(cls, acados_ocp, json_file='acados_ocp_nlp.json', simulink_opts=None, cmake_builder: CMakeBuilder = None, build=True):
+    def generate(cls, acados_ocp, json_file='acados_ocp_nlp.json', simulink_opts=None, cmake_builder: CMakeBuilder = None):
         """
         Generates the code for an acados OCP solver, given the description in acados_ocp.
             :param acados_ocp: type AcadosOcp - description of the OCP for acados
@@ -856,19 +856,9 @@ class AcadosOcpSolver:
         # dump to json
         ocp_formulation_json_dump(acados_ocp, simulink_opts, json_file)
 
-        code_export_dir = acados_ocp.code_export_directory
-
         # render templates
         ocp_render_templates(acados_ocp, json_file, cmake_builder=cmake_builder)
         acados_ocp.json_file = json_file
-
-        if build:
-          ## Compile solver
-          cwd=os.getcwd()
-          os.chdir(code_export_dir)
-          os.system('make clean_ocp_shared_lib')
-          os.system('make ocp_shared_lib')
-          os.chdir(cwd)
 
 
     @classmethod
