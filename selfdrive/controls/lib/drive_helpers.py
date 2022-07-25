@@ -36,11 +36,6 @@ CRUISE_INTERVAL_SIGN = {
   ButtonType.decelCruise: -1,
 }
 
-class MPC_COST_LONG:
-  TTC = 5.0
-  DISTANCE = 0.1
-  ACCELERATION = 10.0
-  JERK = 20.0
 
 class MPC_COST_LAT:
   PATH = 1.0
