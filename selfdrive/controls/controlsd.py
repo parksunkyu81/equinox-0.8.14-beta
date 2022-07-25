@@ -36,9 +36,7 @@ from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, CONTROL_N
 from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
 from common.params import Params
-
-from selfdrive.controls.lib.dynamic_follow.df_manager import dfManager
-from common.op_params import opParams
+import datetime
 
 MIN_SET_SPEED_KPH = V_CRUISE_MIN
 MAX_SET_SPEED_KPH = V_CRUISE_MAX
@@ -102,13 +100,6 @@ class Controls:
                  'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
                  'managerState', 'liveParameters', 'radarState'] + self.camera_packets + joystick_packet,
                 ignore_alive=ignore, ignore_avg_freq=['radarState', 'longitudinalPlan'])
-
-        self.sm_smiskol = messaging.SubMaster(['radarState', 'dynamicFollowData'])
-
-        self.op_params = opParams()
-        self.df_manager = dfManager()
-        self.last_model_long = False
-
 
         self.can_sock = can_sock
         if can_sock is None:
