@@ -91,7 +91,7 @@ def make_ocp_dims_consistent(acados_ocp):
         raise Exception('inconsistent dimension np, regarding model.p and parameter_values.' + \
             f'\nGot np = {dims.np}, acados_ocp.parameter_values.shape = {acados_ocp.parameter_values.shape[0]}\n')
 
-    # cost
+    ## cost
     # initial stage - if not set, copy fields from path constraints
     if cost.cost_type_0 is None:
         cost.cost_type_0 = cost.cost_type
@@ -133,6 +133,15 @@ def make_ocp_dims_consistent(acados_ocp):
                             f'\nGot W_0[{cost.W.shape}], yref_0[{cost.yref_0.shape}]\n')
         dims.ny_0 = ny_0
 
+    elif cost.cost_type_0 == 'EXTERNAL':
+        if opts.hessian_approx == 'GAUSS_NEWTON' and opts.ext_cost_num_hess == 0 and model.cost_expr_ext_cost_custom_hess_0 is None:
+            print("\nWARNING: Gauss-Newton Hessian approximation with EXTERNAL cost type not possible!\n"
+            "got cost_type_0: EXTERNAL, hessian_approx: 'GAUSS_NEWTON.'\n"
+            "GAUSS_NEWTON hessian is only supported for cost_types [NON]LINEAR_LS.\n"
+            "If you continue, acados will proceed computing the exact hessian for the cost term.\n"
+            "Note: There is also the option to use the external cost module with a numerical hessian approximation (see `ext_cost_num_hess`).\n"
+            "OR the option to provide a symbolic custom hessian approximation (see `cost_expr_ext_cost_custom_hess`).\n")
+
     # path
     if cost.cost_type == 'LINEAR_LS':
         ny = cost.W.shape[0]
@@ -162,6 +171,15 @@ def make_ocp_dims_consistent(acados_ocp):
                             f'\nGot W[{cost.W.shape}], yref[{cost.yref.shape}]\n')
         dims.ny = ny
 
+    elif cost.cost_type == 'EXTERNAL':
+        if opts.hessian_approx == 'GAUSS_NEWTON' and opts.ext_cost_num_hess == 0 and model.cost_expr_ext_cost_custom_hess is None:
+            print("\nWARNING: Gauss-Newton Hessian approximation with EXTERNAL cost type not possible!\n"
+            "got cost_type: EXTERNAL, hessian_approx: 'GAUSS_NEWTON.'\n"
+            "GAUSS_NEWTON hessian is only supported for cost_types [NON]LINEAR_LS.\n"
+            "If you continue, acados will proceed computing the exact hessian for the cost term.\n"
+            "Note: There is also the option to use the external cost module with a numerical hessian approximation (see `ext_cost_num_hess`).\n"
+            "OR the option to provide a symbolic custom hessian approximation (see `cost_expr_ext_cost_custom_hess`).\n")
+
     # terminal
     if cost.cost_type_e == 'LINEAR_LS':
         ny_e = cost.W_e.shape[0]
@@ -184,6 +202,14 @@ def make_ocp_dims_consistent(acados_ocp):
             raise Exception('inconsistent dimension: regarding W_e, yref_e.')
         dims.ny_e = ny_e
 
+    elif cost.cost_type_e == 'EXTERNAL':
+        if opts.hessian_approx == 'GAUSS_NEWTON' and opts.ext_cost_num_hess == 0 and model.cost_expr_ext_cost_custom_hess_e is None:
+            print("\nWARNING: Gauss-Newton Hessian approximation with EXTERNAL cost type not possible!\n"
+            "got cost_type_e: EXTERNAL, hessian_approx: 'GAUSS_NEWTON.'\n"
+            "GAUSS_NEWTON hessian is only supported for cost_types [NON]LINEAR_LS.\n"
+            "If you continue, acados will proceed computing the exact hessian for the cost term.\n"
+            "Note: There is also the option to use the external cost module with a numerical hessian approximation (see `ext_cost_num_hess`).\n"
+            "OR the option to provide a symbolic custom hessian approximation (see `cost_expr_ext_cost_custom_hess`).\n")
 
     ## constraints
     # initial
@@ -435,18 +461,14 @@ def make_ocp_dims_consistent(acados_ocp):
         if np.shape(opts.shooting_nodes)[0] != dims.N+1:
             raise Exception('inconsistent dimension N, regarding shooting_nodes.')
 
-        # time_steps = opts.shooting_nodes[1:] - opts.shooting_nodes[0:-1]
-        # # identify constant time-steps: due to numerical reasons the content of time_steps might vary a bit
-        # delta_time_steps = time_steps[1:] - time_steps[0:-1]
-        # avg_time_steps = np.average(time_steps)
-        # # criterion for constant time-step detection: the min/max difference in values normalized by the average
-        # check_const_time_step = np.max(delta_time_steps)-np.min(delta_time_steps) / avg_time_steps
-        # # if the criterion is small, we have a constant time-step
-        # if check_const_time_step < 1e-9:
-        #     time_steps[:] = avg_time_steps  # if we have a constant time-step: apply the average time-step
-        time_steps = np.zeros((dims.N,))
-        for i in range(dims.N):
-            time_steps[i] = opts.shooting_nodes[i+1] - opts.shooting_nodes[i] # TODO use commented code above
+        time_steps = opts.shooting_nodes[1:] - opts.shooting_nodes[0:-1]
+        # identify constant time_steps: due to numerical reasons the content of time_steps might vary a bit
+        avg_time_steps = np.average(time_steps)
+        # criterion for constant time step detection: the min/max difference in values normalized by the average
+        check_const_time_step = (np.max(time_steps)-np.min(time_steps)) / avg_time_steps
+        # if the criterion is small, we have a constant time_step
+        if check_const_time_step < 1e-9:
+            time_steps[:] = avg_time_steps  # if we have a constant time_step: apply the average time_step
 
         opts.time_steps = time_steps
 
@@ -493,8 +515,6 @@ def make_ocp_dims_consistent(acados_ocp):
         opts.sim_method_jac_reuse = np.reshape(opts.sim_method_jac_reuse, (dims.N,)).astype(np.int64)
     else:
         raise Exception("Wrong value for sim_method_jac_reuse. Should be either int or array of ints of shape (N,).")
-
-
 
 
 def get_simulink_default_opts():
