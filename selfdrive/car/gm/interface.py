@@ -130,17 +130,18 @@ class CarInterface(CarInterfaceBase):
                                                                              tire_stiffness_factor=tire_stiffness_factor)
 
         # longitudinal
-        ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kpV = [1.35, 1.20, 1.125, 0.65]
+        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
+                                       130. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.kpV = [1.2, 1.0, 0.93, 0.88, 0.5]
+        ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.kiV = [0.1, 0.05]
+        ret.longitudinalActuatorDelayLowerBound = 0.3
+        ret.longitudinalActuatorDelayUpperBound = 0.3
 
-        ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kiV = [0.18, 0.13, 0.10]  # [0.18, 0.13, 0.10]
-
-        ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.deadzoneV = [0., 0.10]
-
-        ret.longitudinalActuatorDelayLowerBound = 0.12
-        ret.longitudinalActuatorDelayUpperBound = 0.25
+        ret.stopAccel = -2.0
+        ret.stoppingDecelRate = 0.4  # brake_travel/s while trying to stop
+        ret.vEgoStopping = 0.5
+        ret.vEgoStarting = 0.5
 
         ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
