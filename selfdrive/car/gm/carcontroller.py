@@ -29,7 +29,6 @@ class CarController():
 
     self.lka_steering_cmd_counter_last = -1
     self.lka_icon_status_last = (False, False)
-    self.steer_rate_limited = False
 
     self.params = CarControllerParams(CP)
 
@@ -55,7 +54,6 @@ class CarController():
       if lkas_enabled:
         new_steer = int(round(actuators.steer * P.STEER_MAX))
         apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, P)
-        self.steer_rate_limited = new_steer != apply_steer
       else:
         apply_steer = 0
 
