@@ -104,20 +104,20 @@ class CarInterface(CarInterfaceBase):
         else:
             ret.lateralTuning.init('torque')
             ret.lateralTuning.torque.useSteeringAngle = True
-            max_lat_accel = 2.5
+            max_lat_accel = 2.0
             ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
             ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
             ret.lateralTuning.torque.ki = 0.1 / max_lat_accel
             ret.lateralTuning.torque.friction = 0.01
-            ret.lateralTuning.torque.kd = 0.0
-            ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 0.0
-
 
         ret.steerRatio = 17.0
+        ret.lateralTuning.torque.kd = 0.0
+        ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 1.0
+
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
         # steerratecost를 높이면 핸들링이 부드러워(둔감)해 집니다. 다시 말해 도로의 작은 변화에 기민하게 반응하지 않게 됩니다.
         # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
-        ret.steerActuatorDelay = 0.2  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
+        ret.steerActuatorDelay = 0.1  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
         ret.steerLimitTimer = 0.4  # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
 
         # TODO: get actual value, for now starting with reasonable value for
@@ -132,21 +132,19 @@ class CarInterface(CarInterfaceBase):
         # longitudinal
         """ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kpV = [1.35, 1.20, 1.125, 0.65]
-
         ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kiV = [0.18, 0.13, 0.10]  # [0.18, 0.13, 0.10]
-
         ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
         ret.longitudinalTuning.deadzoneV = [0., 0.10]
-
         ret.longitudinalActuatorDelayLowerBound = 0.12
         ret.longitudinalActuatorDelayUpperBound = 0.25"""
 
-        ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kpV = [1.35, 1.20, 1.125, 0.65]
-
-        ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kiV = [0.18, 0.13, 0.10]
+        ret.longitudinalTuning.deadzoneBP = [0., 8.05]
+        ret.longitudinalTuning.deadzoneV = [.0, .14]
+        ret.longitudinalTuning.kpBP = [0., 5., 20.]
+        ret.longitudinalTuning.kpV = [1.3, 1.0, 0.7]
+        ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
+        ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]  # 숫자가 높을수록 속도 줄이는 효과 높아짐
 
         ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
@@ -163,8 +161,6 @@ class CarInterface(CarInterfaceBase):
         ret = self.CS.update(self.cp, self.cp_loopback)
 
         ret.canValid = self.cp.can_valid and self.cp_loopback.can_valid
-        ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
-
         ret.cruiseState.enabled = ret.cruiseState.available
 
         buttonEvents = []
