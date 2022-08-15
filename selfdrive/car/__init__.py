@@ -99,25 +99,6 @@ def crc8_pedal(data):
   return crc
 
 
-def create_gas_interceptor_command2(packer, enable: bool, gas_amount: float, idx: int):
-  # Common gas pedal msg generator
-
-  values = {
-    "ENABLE": enable,
-    "COUNTER_PEDAL": idx & 0xF,
-  }
-
-  if enable:
-    values["GAS_COMMAND"] = int(gas_amount * 255.)
-    values["GAS_COMMAND2"] = int(gas_amount * 255.)
-
-  dat = packer.make_can_msg("GAS_COMMAND", 0, values)[2]
-
-  checksum = crc8_pedal(dat[:-1])
-  values["CHECKSUM_PEDAL"] = checksum
-
-  return packer.make_can_msg("GAS_COMMAND", 0, values)
-
 def create_gas_interceptor_command(packer, gas_amount, idx):
   # Common gas pedal msg generator
   enable = gas_amount > 0.001
