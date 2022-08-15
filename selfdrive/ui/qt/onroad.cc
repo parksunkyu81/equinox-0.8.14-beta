@@ -877,7 +877,11 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto roadLimitSpeed = sm["roadLimitSpeed"].getRoadLimitSpeed();
 
-  bool long_control = scc_smoother.getLongControl();
+  const auto controls_state = sm["controlsState"].getControlsState();
+
+  float applyMaxSpeed = controls_state.getApplyMaxSpeed();
+  float cruiseMaxSpeed = controls_state.getCruiseMaxSpeed();
+  bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
 
   int activeNDA = roadLimitSpeed.getActive();
   int camLimitSpeed = roadLimitSpeed.getCamLimitSpeed();
@@ -953,11 +957,7 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
 
     if(is_cruise_set) {
       configFont(p, "Inter", 80, "Bold");
-
-      if(is_metric)
-        str.sprintf( "%d", (int)(cruiseMaxSpeed + 0.5));
-      else
-        str.sprintf( "%d", (int)(cruiseMaxSpeed*KM_TO_MILE + 0.5));
+      str.sprintf( "%d", (int)(cruiseMaxSpeed + 0.5));
     }
     else {
       configFont(p, "Inter", 60, "Bold");
