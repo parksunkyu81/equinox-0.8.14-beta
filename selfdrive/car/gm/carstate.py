@@ -84,7 +84,7 @@ class CarState(CarStateBase):
 
     return ret
 
-  """@staticmethod
+  @staticmethod
   def get_cam_can_parser(CP):
     signals = []
     checks = []
@@ -92,7 +92,7 @@ class CarState(CarStateBase):
       signals.append(("ACCSpeedSetpoint", "ASCMActiveCruiseControlStatus"))
       checks.append(("ASCMActiveCruiseControlStatus", 25))
 
-    return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, CanBus.CAMERA)"""
+    return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, CanBus.CAMERA)
 
   @staticmethod
   def get_can_parser(CP):
