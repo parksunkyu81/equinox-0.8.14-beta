@@ -884,7 +884,7 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
   bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
 
   int activeNDA = roadLimitSpeed.getActive();
-  int roadLimitSpeed = roadLimitSpeed.getRoadLimitSpeed();
+  int roadLimit_Speed = roadLimitSpeed.getRoadLimitSpeed();
   int camLimitSpeed = roadLimitSpeed.getCamLimitSpeed();
   int camLimitSpeedLeftDist = roadLimitSpeed.getCamLimitSpeedLeftDist();
   int sectionLimitSpeed = roadLimitSpeed.getSectionLimitSpeed();
@@ -936,7 +936,7 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
       path.addRoundedRect(QRectF(x_start, y_start, board_width, board_height-board_width/2), corner_radius, corner_radius);
       path.addRoundedRect(QRectF(x_start, y_start+corner_radius, board_width, board_height-corner_radius), board_width/2, board_width/2);
     }
-    else if(roadLimitSpeed > 0 && roadLimitSpeed < 200) {
+    else if(roadLimit_Speed > 0 && roadLimit_Speed < 200) {
       board_height = 485;
       path.addRoundedRect(QRectF(x_start, y_start, board_width, board_height), corner_radius, corner_radius);
     }
@@ -1048,7 +1048,7 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
     p.setPen(QColor(255, 255, 255, 230));
     p.drawText(rcLeftDist, Qt::AlignCenter|Qt::AlignVCenter, strLeftDist);
   }
-  else if(roadLimitSpeed > 0 && roadLimitSpeed < 200) {
+  else if(roadLimit_Speed > 0 && roadLimit_Speed < 200) {
     QRectF board_rect = QRectF(x_start, y_start+max_speed_height, board_width, board_height-max_speed_height);
     int padding = 14;
     board_rect.adjust(padding, padding, -padding, -padding);
@@ -1073,7 +1073,7 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
     }
 
     {
-      str.sprintf("%d", roadLimitSpeed);
+      str.sprintf("%d", roadLimit_Speed);
       configFont(p, "Inter", 75, "Bold");
 
       QRect text_rect = getRect(p, Qt::AlignCenter, str);
