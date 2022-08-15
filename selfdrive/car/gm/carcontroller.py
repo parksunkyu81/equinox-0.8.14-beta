@@ -6,7 +6,7 @@ from selfdrive.car import apply_std_steer_torque_limits, create_gas_interceptor_
 from selfdrive.car.gm import gmcan
 from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams
 from opendbc.can.packer import CANPacker
-from selfdrive.controls.lib.drive_helpers import V_CRUISE_ENABLE_MIN
+from selfdrive.controls.lib.drive_helpers import V_CRUISE_ENABLE_MIN, rate_limit
 from selfdrive.ntune import ntune_scc_get
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
@@ -14,18 +14,55 @@ GearShifter = car.CarState.GearShifter
 
 CREEP_SPEED = 2.5   # 4km
 
-class CarController():
+def compute_gas_brake(accel, speed):
+  creep_brake = 0.0
+  creep_speed = 2.3
+  creep_brake_value = 0.15
+  if speed < creep_speed:
+    creep_brake = (creep_speed - speed) / creep_speed * creep_brake_value
+  gb = float(accel) / 4.8 - creep_brake
+  return clip(gb, 0.0, 1.0), clip(-gb, 0.0, 1.0)
 
-  def get_lead(self, sm):
-    radar = sm['radarState']
-    if radar.leadOne.status:
-      return radar.leadOne
-    return None
+# TODO not clear this does anything useful
+def actuator_hysteresis(brake, braking, brake_steady):
+  # hyst params
+  brake_hyst_on = 0.02    # to activate brakes exceed this value
+  brake_hyst_off = 0.005  # to deactivate brakes below this value
+  brake_hyst_gap = 0.01   # don't change brake command for small oscillations within this value
+
+  # *** hysteresis logic to avoid brake blinking. go above 0.1 to trigger
+  if (brake < brake_hyst_on and not braking) or brake < brake_hyst_off:
+    brake = 0.
+  braking = brake > 0.
+
+  # for small brake oscillations within brake_hyst_gap, don't change the brake command
+  if brake == 0.:
+    brake_steady = 0.
+  elif brake > brake_steady + brake_hyst_gap:
+    brake_steady = brake - brake_hyst_gap
+  elif brake < brake_steady - brake_hyst_gap:
+    brake_steady = brake + brake_hyst_gap
+  brake = brake_steady
+
+  return brake, braking, brake_steady
+
+class CarController():
 
   def __init__(self, dbc_name, CP, VM):
     self.apply_steer_last = 0
     self.comma_pedal = 0.0
-    self.accel = 0
+
+    self.braking = False
+    self.brake_steady = 0.
+    self.brake_last = 0.
+    self.apply_brake_last = 0
+    self.last_pump_ts = 0.
+
+    self.accel = 0.0
+    self.speed = 0.0
+    self.gas = 0.0
+    self.brake = 0.0
+
 
     self.lka_steering_cmd_counter_last = -1
     self.lka_icon_status_last = (False, False)
@@ -41,8 +78,24 @@ class CarController():
 
     P = self.params
 
+    if c.active:
+      accel = actuators.accel
+      gas, brake = compute_gas_brake(actuators.accel, CS.out.vEgo)
+    else:
+      accel = 0.0
+      gas, brake = 0.0, 0.0
+
+    # *** 브레이크 히스테리시스 적용 ***
+    pre_limit_brake, self.braking, self.brake_steady = actuator_hysteresis(brake, self.braking, self.brake_steady)
+
+    # *** 활성화 확인 후 속도 제한 ***
+    self.brake_last = rate_limit(pre_limit_brake, self.brake_last, -2., DT_CTRL)
+
     # Send CAN commands.
     can_sends = []
+
+    # 고속에서 공기 저항으로 인한 윈드 브레이크 감속
+    wind_brake = interp(CS.out.vEgo, [0.0, 2.3, 35.0], [0.001, 0.002, 0.15])
 
     # Steering (50Hz)
     # Avoid GM EPS faults when transmitting messages too close together: skip this transmit if we just received the
@@ -70,25 +123,19 @@ class CarController():
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
 
-          PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
+          """PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
                                             [0.22, 0.25, 0.27, 0.24])
-          #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, CREEP_SPEED*2], [-.5, 0.15, 0.2])
-
-          ## =============================================== ##
 
           start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.20, 0.20, 0.0])
           is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
           boost = start_boost * is_accelerating
           pedal_command = PEDAL_SCALE * (actuators.accel + boost)
 
-          ## ================================================ ##
-          #pedal_command = PEDAL_SCALE * actuators.accel
-          self.comma_pedal = clip(pedal_command, 0., 1.)
+          self.comma_pedal = clip(pedal_command, 0., 1.)"""
 
-          """acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
-                            [0.17, 0.24, 0.265, 0.24])
-          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 1.5*CREEP_SPEED], [-0.4, 0.20, 0.15])
-          self.comma_pedal = clip(acc_mult * (actuators.accel + start_boost), 0., 1.)"""
+          # Honda mode
+          gas_mult = interp(CS.out.vEgo, [0., 10.], [0.4, 1.0])
+          self.comma_pedal = clip(gas_mult * (gas - brake + wind_brake * 3 / 4), 0., 1.)
 
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.0
