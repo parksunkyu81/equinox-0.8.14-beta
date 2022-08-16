@@ -978,7 +978,10 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
 
     configFont(p, "Inter", 50, "Bold");
     if(is_cruise_set && applyMaxSpeed > 0) {
-      str.sprintf( "%d", (int)(applyMaxSpeed + 0.5));
+      if(is_metric)
+        str.sprintf( "%d", (int)(applyMaxSpeed + 0.5));
+      else
+        str.sprintf( "%d", (int)(applyMaxSpeed*KM_TO_MILE + 0.5));
     }
     else {
       str = "MAX";
