@@ -884,7 +884,6 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
   bool is_cruise_set = (cruiseMaxSpeed > 0 && cruiseMaxSpeed < 255);
 
   int activeNDA = roadLimitSpeed.getActive();
-  int roadLimitSpeed = roadLimitSpeed.getRoadLimitSpeed();
   int camLimitSpeed = roadLimitSpeed.getCamLimitSpeed();
   int camLimitSpeedLeftDist = roadLimitSpeed.getCamLimitSpeedLeftDist();
   int sectionLimitSpeed = roadLimitSpeed.getSectionLimitSpeed();
