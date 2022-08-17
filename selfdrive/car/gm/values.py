@@ -12,8 +12,8 @@ MIN_CURVE_SPEED = 40. * CV.KPH_TO_MS  # 커브 속도 설정
 
 class CarControllerParams():
 
-    ACCEL_MAX = 2.0
-    ACCEL_MIN = -3.5   # 브레이크에 의미가 없다. def : -3.5 (엑셀만 때는 경우 속도)
+    ACCEL_MAX = 2.  # m/s^2
+    ACCEL_MIN = -4.  # m/s^2
 
     def __init__(self, CP):
         self.STEER_MAX = 300  # Safety limit, not LKA max. Trucks use 600.
@@ -53,14 +53,6 @@ class CarControllerParams():
             self.STEER_DRIVER_MULTIPLIER = 4
             self.STEER_DRIVER_FACTOR = 100
 
-        # if CP.enableGasInterceptor:
-        # TODO: Pedal may need different accel_max and min?
-
-        #self.MAX_ACC_REGEN = 1404  # Max ACC regen is slightly less than max paddle regen
-        #self.GAS_LOOKUP_BP = [-1., 0., self.ACCEL_MAX]
-        #self.GAS_LOOKUP_V = [self.MAX_ACC_REGEN, self.ZERO_GAS, self.MAX_GAS]
-        #self.BRAKE_LOOKUP_BP = [self.ACCEL_MIN, -1.]
-        #self.BRAKE_LOOKUP_V = [self.MAX_BRAKE, 0.]
 
 
 STEER_THRESHOLD = 1.0
