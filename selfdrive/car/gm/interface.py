@@ -108,10 +108,9 @@ class CarInterface(CarInterfaceBase):
             ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
             ret.lateralTuning.torque.ki = 0.19 / max_lat_accel
             ret.lateralTuning.torque.friction = 0.02
+            ret.lateralTuning.torque.kd = 1.0
 
-        ret.steerRatio = 17.0
-        ret.lateralTuning.torque.kd = 0.0
-        ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 1.0
+        ret.steerRatio = 16.85
 
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
         # steerratecost를 높이면 핸들링이 부드러워(둔감)해 집니다. 다시 말해 도로의 작은 변화에 기민하게 반응하지 않게 됩니다.
@@ -138,10 +137,24 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalActuatorDelayLowerBound = 0.3
         ret.longitudinalActuatorDelayUpperBound = 0.3"""
 
-        ret.longitudinalTuning.kpBP = [0., 5., 35.]
-        ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
-        ret.longitudinalTuning.kiBP = [0., 35.]
-        ret.longitudinalTuning.kiV = [0.18, 0.12]
+        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
+                                       130. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.kpV = [1.2, 1.0, 0.93, 0.88, 0.5]
+        ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.kiV = [0.1, 0.05]
+
+        ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.deadzoneV = [0., 0.10]
+        ret.longitudinalActuatorDelayLowerBound = 0.12
+        ret.longitudinalActuatorDelayUpperBound = 0.25
+
+        # ret.startAccel = -0.8 #### REMOVED
+        ret.stopAccel = -2.0
+        # ret.startingAccelRate = 5.0 #### REMOVED
+        ret.stoppingDecelRate = 4.0
+        ret.vEgoStopping = 0.5
+        ret.vEgoStarting = 0.5
+        ret.stoppingControl = True
 
         ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
@@ -252,26 +265,15 @@ class CarInterface(CarInterfaceBase):
         return self.CS.out
 
     def apply(self, c, controls):
-        hud_control = c.hudControl
-        hud_v_cruise = hud_control.setSpeed
+        # return self.CC.update(c, self.CS, controls)
+        hud_v_cruise = c.hudControl.setSpeed
         if hud_v_cruise > 70:
             hud_v_cruise = 0
 
         # For Openpilot, "enabled" includes pre-enable.
-        # In GM, PCM faults out if ACC command overlaps user gas.
-        # Does not apply when no built-in ACC
-        # TODO: This isn't working right... should maybe use unsafe blah blah
-        # pedal was disengaging
-        if not self.CP.enableGasInterceptor or self.CP.carFingerprint in NO_ASCM:
-            enabled = c.enabled  # and not self.CS.out.gasPressed
-        else:
-            enabled = c.enabled
-
-        new_actuators, can_sends = self.CC.update(c, enabled, self.CS, self.frame,
-                                                  controls,
+        new_actuators, can_sends = self.CC.update(c, c.enabled, self.CS, controls,
                                                   c.actuators,
-                                                  hud_v_cruise, hud_control.lanesVisible,
-                                                  hud_control.leadVisible, hud_control.visualAlert)
+                                                  hud_v_cruise, c.hudControl.lanesVisible,
+                                                  c.hudControl.leadVisible, c.hudControl.visualAlert)
 
-        self.frame += 1
         return new_actuators, can_sends
