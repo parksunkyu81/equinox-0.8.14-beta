@@ -4,7 +4,7 @@ from common.numpy_fast import interp, clip
 from common.conversions import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits, create_gas_interceptor_command
 from selfdrive.car.gm import gmcan
-from selfdrive.car.gm.values import DBC, CanBus, CarControllerParams
+from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams
 from opendbc.can.packer import CANPacker
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_ENABLE_MIN
 from selfdrive.ntune import ntune_scc_get
@@ -30,7 +30,7 @@ class CarController():
     self.lka_steering_cmd_counter_last = -1
     self.lka_icon_status_last = (False, False)
 
-    self.params = CarControllerParams()
+    self.params = CarControllerParams(CP)
 
     self.packer_pt = CANPacker(DBC[CP.carFingerprint]['pt'])
     #self.packer_obj = CANPacker(DBC[CP.carFingerprint]['radar'])
@@ -72,14 +72,23 @@ class CarController():
 
           PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
                                             [0.22, 0.25, 0.27, 0.24])
+          #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, CREEP_SPEED*2], [-.5, 0.15, 0.2])
+
+          ## =============================================== ##
 
           start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.20, 0.20, 0.0])
           is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
           boost = start_boost * is_accelerating
           pedal_command = PEDAL_SCALE * (actuators.accel + boost)
 
+          ## ================================================ ##
+          #pedal_command = PEDAL_SCALE * actuators.accel
           self.comma_pedal = clip(pedal_command, 0., 1.)
 
+          """acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
+                            [0.17, 0.24, 0.265, 0.24])
+          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 1.5*CREEP_SPEED], [-0.4, 0.20, 0.15])
+          self.comma_pedal = clip(acc_mult * (actuators.accel + start_boost), 0., 1.)"""
 
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.0

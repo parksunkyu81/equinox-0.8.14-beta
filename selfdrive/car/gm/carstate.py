@@ -3,7 +3,7 @@ from common.numpy_fast import mean
 from opendbc.can.can_define import CANDefine
 from opendbc.can.parser import CANParser
 from selfdrive.car.interfaces import CarStateBase
-from selfdrive.car.gm.values import DBC, CAR, AccState, CanBus, STEER_THRESHOLD
+from selfdrive.car.gm.values import DBC, CAR, EV_CAR, AccState, CanBus, STEER_THRESHOLD
 
 
 class CarState(CarStateBase):
@@ -159,14 +159,21 @@ class CarState(CarStateBase):
       ("EBCMBrakePedalPosition", 100),
     ]
 
-    signals.append(("EPBClosed", "EPBStatus", 0))
-    checks.append(("EPBStatus", 20))
+    # TODO: Might be wise to find the non-electronic parking brake signal
+    # TODO: JJS Add hasEPB to cereal
+    if CP.carFingerprint != CAR.SUBURBAN and CP.carFingerprint != CAR.TAHOE_NR:
+      signals.append(("EPBClosed", "EPBStatus", 0))
+      checks.append(("EPBStatus", 20))
     
 
     if CP.enableGasInterceptor:
       signals.append(("INTERCEPTOR_GAS", "GAS_SENSOR"))
       signals.append(("INTERCEPTOR_GAS2", "GAS_SENSOR"))
       checks.append(("GAS_SENSOR", 50))
+
+    if CP.carFingerprint in EV_CAR:
+      signals.append(("RegenPaddle", "EBCMRegenPaddle"))
+      checks.append(("EBCMRegenPaddle", 50))
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, CanBus.POWERTRAIN)
 
