@@ -13,7 +13,7 @@ MIN_CURVE_SPEED = 40. * CV.KPH_TO_MS  # 커브 속도 설정
 class CarControllerParams():
 
     ACCEL_MAX = 2.0
-    ACCEL_MIN = -3.55   # 브레이크에 의미가 없다. def : -3.5 (엑셀만 때는 경우 속도)
+    ACCEL_MIN = -4.0   # 브레이크에 의미가 없다. def : -3.5 (엑셀만 때는 경우 속도)
 
     def __init__(self, CP):
         self.STEER_MAX = 300  # Safety limit, not LKA max. Trucks use 600.
