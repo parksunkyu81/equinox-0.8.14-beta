@@ -4,7 +4,7 @@ from common.numpy_fast import interp
 from math import fabs
 from common.conversions import Conversions as CV
 from selfdrive.ntune import ntune_scc_get
-from selfdrive.car.gm.values import CAR, CruiseButtons, CarControllerParams, NO_ASCM
+from selfdrive.car.gm.values import CAR, CruiseButtons, CarControllerParams
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, \
     get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
@@ -27,25 +27,8 @@ class CarInterface(CarInterfaceBase):
         #return params.ACCEL_MIN, interp(v_current_kph, accel_max_bp, accel_max_v)
 
     # Determined by iteratively plotting and minimizing error for f(angle, speed) = steer.
-    @staticmethod
-    def get_steer_feedforward_volt(desired_angle, v_ego):
-        desired_angle *= 0.02904609
-        sigmoid = desired_angle / (1 + fabs(desired_angle))
-        return 0.10006696 * sigmoid * (v_ego + 3.12485927)
-
-    @staticmethod
-    def get_steer_feedforward_acadia(desired_angle, v_ego):
-        desired_angle *= 0.09760208
-        sigmoid = desired_angle / (1 + fabs(desired_angle))
-        return 0.04689655 * sigmoid * (v_ego + 10.028217)
-
     def get_steer_feedforward_function(self):
-        if self.CP.carFingerprint == CAR.VOLT:
-            return self.get_steer_feedforward_volt
-        elif self.CP.carFingerprint == CAR.ACADIA:
-            return self.get_steer_feedforward_acadia
-        else:
-            return CarInterfaceBase.get_steer_feedforward_default
+        return CarInterfaceBase.get_steer_feedforward_default
 
     @staticmethod
     def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None, disable_radar=False):
@@ -108,10 +91,9 @@ class CarInterface(CarInterfaceBase):
             ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
             ret.lateralTuning.torque.ki = 0.19 / max_lat_accel
             ret.lateralTuning.torque.friction = 0.02
+            ret.lateralTuning.torque.kd = 1.0
 
-        ret.steerRatio = 17.0
-        ret.lateralTuning.torque.kd = 0.0
-        ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 1.0
+        ret.steerRatio = 16.85
 
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
         # steerratecost를 높이면 핸들링이 부드러워(둔감)해 집니다. 다시 말해 도로의 작은 변화에 기민하게 반응하지 않게 됩니다.
@@ -130,18 +112,13 @@ class CarInterface(CarInterfaceBase):
 
 
         # longitudinal
-        """ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
+        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
                                        130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kpV = [1.2, 1.0, 0.93, 0.88, 0.5]
         ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kiV = [0.1, 0.05]
         ret.longitudinalActuatorDelayLowerBound = 0.3
-        ret.longitudinalActuatorDelayUpperBound = 0.3"""
-
-        ret.longitudinalTuning.kpBP = [0., 5., 35.]
-        ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
-        ret.longitudinalTuning.kiBP = [0., 35.]
-        ret.longitudinalTuning.kiV = [0.18, 0.12]
+        ret.longitudinalActuatorDelayUpperBound = 0.3
 
         ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
@@ -262,10 +239,7 @@ class CarInterface(CarInterfaceBase):
         # Does not apply when no built-in ACC
         # TODO: This isn't working right... should maybe use unsafe blah blah
         # pedal was disengaging
-        if not self.CP.enableGasInterceptor or self.CP.carFingerprint in NO_ASCM:
-            enabled = c.enabled  # and not self.CS.out.gasPressed
-        else:
-            enabled = c.enabled
+        enabled = c.enabled
 
         new_actuators, can_sends = self.CC.update(c, enabled, self.CS, self.frame,
                                                   controls,
