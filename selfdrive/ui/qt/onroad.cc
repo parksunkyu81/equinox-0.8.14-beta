@@ -877,8 +877,6 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto roadLimitSpeed = sm["roadLimitSpeed"].getRoadLimitSpeed();
 
-  bool long_control = scc_smoother.getLongControl();
-
   int activeNDA = roadLimitSpeed.getActive();
   int camLimitSpeed = roadLimitSpeed.getCamLimitSpeed();
   int camLimitSpeedLeftDist = roadLimitSpeed.getCamLimitSpeedLeftDist();
@@ -984,7 +982,7 @@ void NvgWindow::drawSpeedLimit(QPainter &p) {
         str.sprintf( "%d", (int)(applyMaxSpeed*KM_TO_MILE + 0.5));
     }
     else {
-      str = "MAX";
+      str = long_control ? "OP" : "MAX";
     }
 
     QRect speed_rect = getRect(p, Qt::AlignCenter, str);
