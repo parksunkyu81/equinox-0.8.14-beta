@@ -59,7 +59,7 @@ class CarInterface(CarInterfaceBase):
         ret.pcmCruise = False  # stock cruise control is kept off
         ret.networkLocation = NetworkLocation.fwdCamera
         ret.openpilotLongitudinalControl = True  # ASCM vehicles use OP for long
-        ret.radarOffCan = False  # ASCM vehicles (typically) have radar
+        ret.radarOffCan = True  # ASCM vehicles (typically) have radar
 
         # Default to normal torque limits
         ret.safetyConfigs[0].safetyParam = 0
