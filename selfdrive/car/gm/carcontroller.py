@@ -96,7 +96,7 @@ class CarController():
 
         if (frame % 4) == 0:
           idx = (frame // 4) % 4
-          can_sends.append(create_gas_interceptor_command(self.packer_pt, self.comma_pedal, idx))
+          can_sends.append(create_gas_interceptor_command(self.packer_pt, CS.adaptive_Cruise, self.comma_pedal, idx))
 
     # Show green icon when LKA torque is applied, and
     # alarming orange icon when approaching torque limit.
