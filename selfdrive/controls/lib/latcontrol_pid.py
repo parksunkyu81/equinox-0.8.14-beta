@@ -4,7 +4,6 @@ from cereal import log
 from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
 from selfdrive.controls.lib.pid import PIDController
 
-ERROR_RATE_FRAME = 5
 
 class LatControlPID(LatControl):
   def __init__(self, CP, CI):
