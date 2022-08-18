@@ -273,7 +273,7 @@ class Controls:
             if lead is not None:
                 # d : 비전 거리
                 d = lead.dRel
-                if 0. < d < -lead.vRel * 25.:
+                if 0. < d < -lead.vRel * 20.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -370,7 +370,7 @@ class Controls:
             self.slowing_down = False
 
         lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
-        if lead_speed >= self.min_set_speed_clu:
+        if self.limited_lead == False and lead_speed >= self.min_set_speed_clu:
             if lead_speed < max_speed_clu:
               max_speed_clu = min(max_speed_clu, lead_speed)
               if not self.limited_lead:
