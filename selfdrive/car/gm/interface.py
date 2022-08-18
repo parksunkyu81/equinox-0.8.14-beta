@@ -214,7 +214,7 @@ class CarInterface(CarInterfaceBase):
                         break
                     if (b.type == ButtonType.accelCruise and not b.pressed) and not self.CS.adaptive_Cruise:
                         self.CS.adaptive_Cruise = True
-                        self.CS.enable_lkas = False
+                        self.CS.enable_lkas = True
                         events.add(EventName.buttonEnable)
                         break
                     if (b.type == ButtonType.cancel and b.pressed) and self.CS.adaptive_Cruise:
@@ -226,26 +226,18 @@ class CarInterface(CarInterfaceBase):
                     if (b.type == ButtonType.altButton3 and b.pressed):  # and self.CS.adaptive_Cruise
                         self.CS.adaptive_Cruise = False
                         self.CS.enable_lkas = True
-                        #events.add(EventName.buttonEnable)  # 어느 이벤트가 먼저인지 확인
+                        events.add(EventName.buttonEnable)  # 어느 이벤트가 먼저인지 확인
                         break
             else:  # lat engage
-                for b in ret.buttonEvents:
-                    if not self.CS.adaptive_Cruise and (
-                            b.type == ButtonType.altButton3 and b.pressed):  # and self.CS.adaptive_Cruise
-                        self.CS.adaptive_Cruise = False
-                        self.CS.enable_lkas = False
-                        break
-                #self.CS.adaptive_Cruise = False
-                #self.CS.enable_lkas = True
+                self.CS.adaptive_Cruise = False
+                self.CS.enable_lkas = True
+
         else:
             if self.CS.main_on:  # wihtout pedal case
                 self.CS.adaptive_Cruise = False
                 self.CS.enable_lkas = True
-            else:
-                self.CS.adaptive_Cruise = False
-                self.CS.enable_lkas = False
 
-        #############################################################################################################
+        ###
 
         ret.events = events.to_msg()
 
