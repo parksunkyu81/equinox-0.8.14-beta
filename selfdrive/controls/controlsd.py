@@ -359,7 +359,7 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        """lead_speed = self.get_long_lead_speed(sm, CS, vEgo)
+        lead_speed = self.get_long_lead_speed(sm, CS, vEgo)
         if lead_speed >= self.min_set_speed_clu:
             if lead_speed < max_speed_clu:
               max_speed_clu = min(max_speed_clu, lead_speed)
@@ -367,7 +367,7 @@ class Controls:
                 self.max_speed_clu = vEgo + 3.
                 self.limited_lead = True
         else:
-           self.limited_lead = False"""
+           self.limited_lead = False
 
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS,
@@ -612,16 +612,16 @@ class Controls:
         self.CP.pcmCruise = self.CI.CP.pcmCruise
 
         # if stock cruise is completely disabled, then we can use our own set speed logic
-        if not self.CP.pcmCruise:
+        """if not self.CP.pcmCruise:
             self.v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.button_timers, self.enabled, self.is_metric)
         elif CS.cruiseState.enabled:
-            self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
+            self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH"""
 
-        """if CS.adaptiveCruise:
+        if CS.adaptiveCruise:
             self.v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.button_timers, self.enabled,
                                                 self.is_metric)
         elif not CS.adaptiveCruise and CS.cruiseState.enabled:
-            self.v_cruise_kph = 20"""
+            self.v_cruise_kph = 20
 
 
         # decrement the soft disable timer at every step, as it's reset on
@@ -931,7 +931,6 @@ class Controls:
             controlsState.vCruise = float(controlsState.cruiseMaxSpeed)
         elif controlsState.applyMaxSpeed < controlsState.cruiseMaxSpeed:
             controlsState.vCruise = float(controlsState.applyMaxSpeed)
-
 
         controlsState.upAccelCmd = float(self.LoC.pid.p)
         controlsState.uiAccelCmd = float(self.LoC.pid.i)
