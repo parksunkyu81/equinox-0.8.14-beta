@@ -47,24 +47,8 @@ class CarController():
 
     P = self.params
 
-    if c.active:
-      accel = actuators.accel
-      gas, brake = compute_gas_brake(actuators.accel, CS.out.vEgo)
-    else:
-      accel = 0.0
-      gas, brake = 0.0, 0.0
-
-    # *** 브레이크 히스테리시스 적용 ***
-    pre_limit_brake, self.braking, self.brake_steady = actuator_hysteresis(brake, self.braking, self.brake_steady)
-
-    # *** 활성화 확인 후 속도 제한 ***
-    self.brake_last = rate_limit(pre_limit_brake, self.brake_last, -2., DT_CTRL)
-
     # Send CAN commands.
     can_sends = []
-
-    # 고속에서 공기 저항으로 인한 윈드 브레이크 감속
-    wind_brake = interp(CS.out.vEgo, [0.0, 2.3, 35.0], [0.001, 0.002, 0.15])
 
     # Steering (50Hz)
     # Avoid GM EPS faults when transmitting messages too close together: skip this transmit if we just received the
