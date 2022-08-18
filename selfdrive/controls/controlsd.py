@@ -273,7 +273,7 @@ class Controls:
             if lead is not None:
                 # d : 비전 거리
                 d = lead.dRel
-                if 0. < d < -lead.vRel * 25.:
+                if 0. < d < -lead.vRel * 20.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -283,14 +283,14 @@ class Controls:
                         target_speed = max(target_speed, self.kph_to_clu(10))
                         return target_speed
 
-                """elif 0. < d < -lead.vRel * 30.:
+                elif 0. < d < -lead.vRel * 30.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
 
                     if accel < 0.:
                         target_speed = vEgo + accel
-                        target_speed = max(target_speed, self.kph_to_clu(20))
+                        target_speed = max(target_speed, self.kph_to_clu(10))
                         return target_speed
 
                 elif 0. < d < -lead.vRel * 40.:
@@ -300,8 +300,8 @@ class Controls:
 
                     if accel < 0.:
                         target_speed = vEgo + accel
-                        target_speed = max(target_speed, self.kph_to_clu(30))
-                        return target_speed"""
+                        target_speed = max(target_speed, self.kph_to_clu(10))
+                        return target_speed
 
         return 0
 
@@ -508,7 +508,7 @@ class Controls:
             self.events.add(EventName.vehicleModelInvalid)
         if not self.sm['lateralPlan'].mpcSolutionValid and not (EventName.turningIndicatorOn in self.events.names):
             self.events.add(EventName.plannerError)
-        if not (self.sm['liveParameters'].sensorValid or self.sm['liveLocationKalman'].sensorsOK) and not NOSENSOR:
+        if not self.sm['liveLocationKalman'].sensorsOK and not NOSENSOR:
             if self.sm.frame > 5 / DT_CTRL:  # Give locationd some time to receive all the inputs
                 self.events.add(EventName.sensorDataInvalid)
         if not self.sm['liveLocationKalman'].posenetOK:
@@ -812,13 +812,8 @@ class Controls:
             if len(dpath_points):
                 # Check if we deviated from the path
                 # TODO use desired vs actual curvature
-                if self.CP.steerControlType == car.CarParams.SteerControlType.angle:
-                    steering_value = actuators.steeringAngleDeg
-                else:
-                    steering_value = actuators.steer
-
-                left_deviation = steering_value > 0 and dpath_points[0] < -0.20
-                right_deviation = steering_value < 0 and dpath_points[0] > 0.20
+                left_deviation = actuators.steer > 0 and dpath_points[0] < -0.20
+                right_deviation = actuators.steer < 0 and dpath_points[0] > 0.20
 
                 if left_deviation or right_deviation:
                     self.events.add(EventName.steerSaturated)
