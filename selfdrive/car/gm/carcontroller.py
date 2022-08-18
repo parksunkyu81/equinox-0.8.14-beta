@@ -162,4 +162,6 @@ class CarController():
     new_actuators.accel = self.accel
     new_actuators.gas = self.comma_pedal
 
+    self.frame += 1
+
     return new_actuators, can_sends
