@@ -56,7 +56,7 @@ class CarInterface(CarInterfaceBase):
         ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.gm)]
         ret.transmissionType = TransmissionType.automatic
         ret.alternativeExperience = 1  # UNSAFE_DISABLE_DISENGAGE_ON_GAS
-        ret.pcmCruise = True  # stock cruise control is kept off
+        ret.pcmCruise = False  # stock cruise control is kept off
         ret.networkLocation = NetworkLocation.fwdCamera
         ret.openpilotLongitudinalControl = True  # ASCM vehicles use OP for long
         ret.radarOffCan = True  # ASCM vehicles (typically) have radar
