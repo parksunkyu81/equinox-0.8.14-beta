@@ -10,12 +10,6 @@ from selfdrive.ntune import ntune_common_get
 # 경고: 이 값은 모델의 훈련 분포를 기반으로 결정되었으며,
 # 이 속도 이상의 모델 예측은 예측할 수 없습니다.
 
-# cruise button by neokii
-ButtonType = car.CarState.ButtonEvent.Type
-ButtonPrev = ButtonType.unknown
-ButtonCnt = 0
-LongPressed = False
-
 # kph
 V_CRUISE_MAX = 145
 V_CRUISE_MIN = 20
