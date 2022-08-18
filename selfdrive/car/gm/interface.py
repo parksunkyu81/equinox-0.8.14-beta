@@ -13,8 +13,7 @@ from common.params import Params
 ButtonType = car.CarState.ButtonEvent.Type
 EventName = car.CarEvent.EventName
 GearShifter = car.CarState.GearShifter
-TransmissionType = car.CarParams.TransmissionType
-NetworkLocation = car.CarParams.NetworkLocation
+
 
 class CarInterface(CarInterfaceBase):
 
@@ -54,12 +53,10 @@ class CarInterface(CarInterfaceBase):
         ret = CarInterfaceBase.get_std_params(candidate, fingerprint)
         ret.carName = "gm"
         ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.gm)]
-        ret.transmissionType = TransmissionType.automatic
         ret.alternativeExperience = 1  # UNSAFE_DISABLE_DISENGAGE_ON_GAS
-        ret.pcmCruise = True  # stock cruise control is kept off
-        ret.networkLocation = NetworkLocation.fwdCamera
+        ret.pcmCruise = False  # stock cruise control is kept off
         ret.openpilotLongitudinalControl = True  # ASCM vehicles use OP for long
-        ret.radarOffCan = True  # ASCM vehicles (typically) have radar
+        ret.radarOffCan = False  # ASCM vehicles (typically) have radar
 
         # Default to normal torque limits
         ret.safetyConfigs[0].safetyParam = 0
@@ -107,21 +104,20 @@ class CarInterface(CarInterfaceBase):
         else:
             ret.lateralTuning.init('torque')
             ret.lateralTuning.torque.useSteeringAngle = True
-            max_lat_accel = 2.0
-            ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
+            max_lat_accel = 2.275
+            ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
             ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-            ret.lateralTuning.torque.ki = 0.1 / max_lat_accel
-            ret.lateralTuning.torque.friction = 0.05
-            ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 1.0
+            ret.lateralTuning.torque.ki = 0.19 / max_lat_accel
+            ret.lateralTuning.torque.friction = 0.02
 
         ret.steerRatio = 17.0
-        #ret.lateralTuning.torque.kd = 0.0
-
+        ret.lateralTuning.torque.kd = 0.0
+        ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 1.0
 
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
         # steerratecost를 높이면 핸들링이 부드러워(둔감)해 집니다. 다시 말해 도로의 작은 변화에 기민하게 반응하지 않게 됩니다.
         # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
-        ret.steerActuatorDelay = 0.1  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
+        ret.steerActuatorDelay = 0.21  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
         ret.steerLimitTimer = 0.4  # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
 
         # TODO: get actual value, for now starting with reasonable value for
