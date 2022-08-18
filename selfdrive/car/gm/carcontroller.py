@@ -2,7 +2,7 @@ from cereal import car
 from common.realtime import DT_CTRL
 from common.numpy_fast import interp, clip
 from common.conversions import Conversions as CV
-from selfdrive.car import apply_std_steer_torque_limits, create_gas_interceptor_command
+from selfdrive.car import apply_std_steer_torque_limits, create_gas_interceptor_command2
 from selfdrive.car.gm import gmcan
 from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams
 from opendbc.can.packer import CANPacker
@@ -95,7 +95,8 @@ class CarController():
 
         if (frame % 4) == 0:
           idx = (frame // 4) % 4
-          can_sends.append(create_gas_interceptor_command(self.packer_pt, self.comma_pedal, idx))
+          can_sends.append(create_gas_interceptor_command2(self.packer_pt, c.active, self.comma_pedal, idx))
+          #can_sends.append(create_gas_interceptor_command(self.packer_pt, self.comma_pedal, idx))
 
     # Show green icon when LKA torque is applied, and
     # alarming orange icon when approaching torque limit.
