@@ -110,7 +110,7 @@ class CarInterface(CarInterfaceBase):
             ret.lateralTuning.torque.ki = 0.19 / max_lat_accel
             ret.lateralTuning.torque.friction = 0.02
 
-        ret.steerRatio = 16.88
+        ret.steerRatio = 17.0
         ret.lateralTuning.torque.kd = 0.0
         ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 1.0
 
@@ -130,12 +130,22 @@ class CarInterface(CarInterfaceBase):
                                                                              tire_stiffness_factor=tire_stiffness_factor)
 
         # longitudinal
-        ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS,
-                                       70. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kpV = [1.35, 1.20, 1.125, 0.9, 0.65]
-        ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
-        ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
+        """ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.kpV = [1.35, 1.20, 1.125, 0.65]
+        ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.kiV = [0.18, 0.13, 0.10]  # [0.18, 0.13, 0.10]
+        ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.deadzoneV = [0., 0.10]
+        ret.longitudinalActuatorDelayLowerBound = 0.12
+        ret.longitudinalActuatorDelayUpperBound = 0.25"""
 
+        # longitudinal
+        ret.longitudinalTuning.kpBP = [0., 4., 9., 17., 23., 31.]
+        ret.longitudinalTuning.kpV = [1.2, 1.1, 1.0, 0.9, 0.75, 0.65]
+        ret.longitudinalTuning.kiBP = [0., 4., 9., 17., 23., 31.]
+        ret.longitudinalTuning.kiV = [0.27, 0.24, 0.23, 0.2, 0.17, 0.15]
+        ret.longitudinalTuning.deadzoneBP = [0., 4.]
+        ret.longitudinalTuning.deadzoneV = [0., 0.1]
 
         ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
