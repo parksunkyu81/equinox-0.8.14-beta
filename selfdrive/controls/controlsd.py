@@ -328,12 +328,12 @@ class Controls:
         else:
             max_speed_clu = self.kph_to_clu(self.v_cruise_kph)
 
-        """if road_speed_limiter.roadLimitSpeed is not None:
+        if road_speed_limiter.roadLimitSpeed is not None:
             camSpeedFactor = clip(road_speed_limiter.roadLimitSpeed.camSpeedFactor, 1.0, 1.1)
             self.over_speed_limit = road_speed_limiter.roadLimitSpeed.camLimitSpeedLeftDist > 0 and \
                                     0 < road_limit_speed * camSpeedFactor < vEgo + 2
         else:
-            self.over_speed_limit = False"""
+            self.over_speed_limit = False
 
         max_speed_log = ""
 
