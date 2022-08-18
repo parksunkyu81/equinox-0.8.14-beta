@@ -672,11 +672,11 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_road.png",
                                             this));
 
-  /*toggles.append(new ParamControl("CustomLeadMark",
-                                            "Use custom lead mark",
+  toggles.append(new ParamControl("SafeDistanceSpeed",
+                                            "Activate safe distance speed",
                                             "",
                                             "../assets/offroad/icon_road.png",
-                                            this));*/
+                                            this));
 
   for(ParamControl *toggle : toggles) {
     if(main_layout->count() != 0) {

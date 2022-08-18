@@ -60,6 +60,8 @@ def manager_init() -> None:
     ("DisableOpFcw", "0"),
     ("ShowDebugUI", "0"),
     ("NewRadarInterface", "0"),
+    ("RestartForceAccel", "0"),
+    ("SafeDistanceSpeed", "0"),
 
   ]
   if not PC:

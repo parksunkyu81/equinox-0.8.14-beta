@@ -8,6 +8,7 @@ from selfdrive.car.gm.values import DBC, NO_ASCM, CanBus, CarControllerParams
 from opendbc.can.packer import CANPacker
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_ENABLE_MIN
 from selfdrive.ntune import ntune_scc_get
+from common.params import Params
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 GearShifter = car.CarState.GearShifter
@@ -29,6 +30,7 @@ class CarController():
 
     self.lka_steering_cmd_counter_last = -1
     self.lka_icon_status_last = (False, False)
+    self.RestartForceAccel = Params().get_bool('RestartForceAccel')
 
     self.params = CarControllerParams(CP)
 
@@ -76,10 +78,13 @@ class CarController():
 
           ## =============================================== ##
 
-          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.20, 0.20, 0.0])
-          is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
-          boost = start_boost * is_accelerating
-          pedal_command = PEDAL_SCALE * (actuators.accel + boost)
+          if self.RestartForceAccel:
+            start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.20, 0.20, 0.0])
+            is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
+            boost = start_boost * is_accelerating
+            pedal_command = PEDAL_SCALE * (actuators.accel + boost)
+          else:
+            pedal_command = PEDAL_SCALE * actuators.accel
 
           ## ================================================ ##
           #pedal_command = PEDAL_SCALE * actuators.accelf

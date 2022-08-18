@@ -179,6 +179,7 @@ class Controls:
         self.roadLimitSpeedLeftDist = 0
 
         self.slow_on_curves = Params().get_bool('SccSmootherSlowOnCurves')
+        self.safe_distance_speed = Params().get_bool('SafeDistanceSpeed')
 
         self.min_set_speed_clu = self.kph_to_clu(MIN_SET_SPEED_KPH)
         self.max_set_speed_clu = self.kph_to_clu(MAX_SET_SPEED_KPH)
@@ -275,7 +276,7 @@ class Controls:
             if lead is not None:
                 # d : 비전 거리
                 d = lead.dRel
-                if 0. < d < -lead.vRel * 20.:
+                if 0. < d < -lead.vRel * 15.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -285,7 +286,7 @@ class Controls:
                         target_speed = max(target_speed, self.kph_to_clu(10))
                         return target_speed
 
-                elif 0. < d < -lead.vRel * 30.:
+                elif 0. < d < -lead.vRel * 20.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -295,7 +296,7 @@ class Controls:
                         target_speed = max(target_speed, self.kph_to_clu(20))
                         return target_speed
 
-                elif 0. < d < -lead.vRel * 40.:
+                elif 0. < d < -lead.vRel * 25.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -380,15 +381,16 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
-        if lead_speed >= self.min_set_speed_clu:
-            if lead_speed < max_speed_clu:
-              max_speed_clu = min(max_speed_clu, lead_speed)
-              if not self.limited_lead:
-                self.max_speed_clu = vEgo + 3.
-                self.limited_lead = True
-        else:
-           self.limited_lead = False
+        if self.safe_distance_speed:
+            lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
+            if lead_speed >= self.min_set_speed_clu:
+                if lead_speed < max_speed_clu:
+                  max_speed_clu = min(max_speed_clu, lead_speed)
+                  if not self.limited_lead:
+                    self.max_speed_clu = vEgo + 3.
+                    self.limited_lead = True
+            else:
+               self.limited_lead = False
 
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS,
