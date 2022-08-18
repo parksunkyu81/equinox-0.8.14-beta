@@ -22,26 +22,8 @@ class CarInterface(CarInterfaceBase):
         params = CarControllerParams(CP)
         return params.ACCEL_MIN, params.ACCEL_MAX
 
-    # Determined by iteratively plotting and minimizing error for f(angle, speed) = steer.
-    @staticmethod
-    def get_steer_feedforward_volt(desired_angle, v_ego):
-        desired_angle *= 0.02904609
-        sigmoid = desired_angle / (1 + fabs(desired_angle))
-        return 0.10006696 * sigmoid * (v_ego + 3.12485927)
-
-    @staticmethod
-    def get_steer_feedforward_acadia(desired_angle, v_ego):
-        desired_angle *= 0.09760208
-        sigmoid = desired_angle / (1 + fabs(desired_angle))
-        return 0.04689655 * sigmoid * (v_ego + 10.028217)
-
     def get_steer_feedforward_function(self):
-        if self.CP.carFingerprint == CAR.VOLT:
-            return self.get_steer_feedforward_volt
-        elif self.CP.carFingerprint == CAR.ACADIA:
-            return self.get_steer_feedforward_acadia
-        else:
-            return CarInterfaceBase.get_steer_feedforward_default
+        return CarInterfaceBase.get_steer_feedforward_default
 
     @staticmethod
     def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None, disable_radar=False):
