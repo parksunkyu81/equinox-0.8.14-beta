@@ -82,3 +82,4 @@ selfdrive/modeld/thneed/compile
 build/
 
 !**/.gitkeep
+*.patch
