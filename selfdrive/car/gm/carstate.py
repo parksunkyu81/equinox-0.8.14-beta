@@ -1,9 +1,13 @@
 from cereal import car
+from common.conversions import Conversions as CV
 from common.numpy_fast import mean
 from opendbc.can.can_define import CANDefine
 from opendbc.can.parser import CANParser
 from selfdrive.car.interfaces import CarStateBase
-from selfdrive.car.gm.values import DBC, CAR, EV_CAR, AccState, CanBus, STEER_THRESHOLD
+from selfdrive.car.gm.values import DBC, AccState, CanBus, STEER_THRESHOLD
+
+TransmissionType = car.CarParams.TransmissionType
+NetworkLocation = car.CarParams.NetworkLocation
 
 
 class CarState(CarStateBase):
@@ -12,18 +16,9 @@ class CarState(CarStateBase):
     can_define = CANDefine(DBC[CP.carFingerprint]["pt"])
     self.shifter_values = can_define.dv["ECMPRDNL2"]["PRNDL2"]
     self.lka_steering_cmd_counter = 0
-    self.park_brake = 0
 
-    self.adaptive_Cruise = False
-    self.enable_lkas = False
-    self.main_on = False
-
-
-  def update(self, pt_cp, loopback_cp):
+  def update(self, pt_cp, cam_cp, loopback_cp):
     ret = car.CarState.new_message()
-
-    ret.adaptiveCruise = self.adaptive_Cruise
-    ret.lkasEnable = self.enable_lkas
 
     self.prev_cruise_buttons = self.cruise_buttons
     self.cruise_buttons = pt_cp.vl["ASCMSteeringButton"]["ACCButtons"]
@@ -37,32 +32,22 @@ class CarState(CarStateBase):
     ret.vEgoRaw = mean([ret.wheelSpeeds.fl, ret.wheelSpeeds.fr, ret.wheelSpeeds.rl, ret.wheelSpeeds.rr])
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
     ret.standstill = ret.vEgoRaw < 0.01
-    gmGear = self.shifter_values.get(pt_cp.vl["ECMPRDNL2"]["PRNDL2"], None)
-    manualMode = bool(pt_cp.vl["ECMPRDNL2"]["ManualMode"])
-    
-    # In manumatic, the value of PRNDL2 represents the max gear
-    # parse_gear_shifter expects "T" for manumatic
-    # TODO: JJS Add manumatic max gear to cereal and parse (validate value in Acadia)
-    if manualMode:
-      gmGear = "T"
-    
-    # TODO: JJS: Should We just have 0 map to P in the dbc?
-    if gmGear == "Shifting":
-      gmGear = "P"
-    
-    ret.gearShifter = self.parse_gear_shifter(gmGear)
-    ret.brakePressed = pt_cp.vl["ECMEngineStatus"]["Brake_Pressed"] != 0
-    ret.brake = 0.
-    
-    if ret.brakePressed:
-      ret.brake = pt_cp.vl["EBCMBrakePedalPosition"]["BrakePedalPosition"] / 0xd0
 
-    if self.CP.enableGasInterceptor:
-      ret.gas = (pt_cp.vl["GAS_SENSOR"]["INTERCEPTOR_GAS"] + pt_cp.vl["GAS_SENSOR"]["INTERCEPTOR_GAS2"]) / 2.
-      ret.gasPressed = ret.gas > 15
+    if pt_cp.vl["ECMPRDNL2"]["ManualMode"] == 1:
+      ret.gearShifter = self.parse_gear_shifter("T")
     else:
-      ret.gas = pt_cp.vl["AcceleratorPedal2"]["AcceleratorPedal2"] / 254.
-      ret.gasPressed = ret.gas > 1e-5
+      ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(pt_cp.vl["ECMPRDNL2"]["PRNDL2"], None))
+
+    # Brake pedal's potentiometer returns near-zero reading even when pedal is not pressed.
+    ret.brake = pt_cp.vl["EBCMBrakePedalPosition"]["BrakePedalPosition"] / 0xd0
+    ret.brakePressed = pt_cp.vl["EBCMBrakePedalPosition"]["BrakePedalPosition"] >= 10
+
+    # Regen braking is braking
+    if self.CP.transmissionType == TransmissionType.direct:
+      ret.brakePressed = ret.brakePressed or pt_cp.vl["EBCMRegenPaddle"]["RegenPaddle"] != 0
+
+    ret.gas = pt_cp.vl["AcceleratorPedal2"]["AcceleratorPedal2"] / 254.
+    ret.gasPressed = ret.gas > 1e-5
 
     ret.steeringAngleDeg = pt_cp.vl["PSCMSteeringAngle"]["SteeringWheelAngle"]
     ret.steeringRateDeg = pt_cp.vl["PSCMSteeringAngle"]["SteeringWheelRate"]
@@ -86,32 +71,28 @@ class CarState(CarStateBase):
     ret.seatbeltUnlatched = pt_cp.vl["BCMDoorBeltStatus"]["LeftSeatBelt"] == 0
     ret.leftBlinker = pt_cp.vl["BCMTurnSignals"]["TurnSignals"] == 1
     ret.rightBlinker = pt_cp.vl["BCMTurnSignals"]["TurnSignals"] == 2
-    #TODO: JJS: Add hasEPB to cereal and use detection rather than hard coding...
-    #if self.CP.hasEPB:
-    self.park_brake = pt_cp.vl["EPBStatus"]["EPBClosed"]
-    ret.autoHold = pt_cp.vl["EPBStatus"]["EPBClosed"]
 
+    ret.parkingBrake = pt_cp.vl["VehicleIgnitionAlt"]["ParkBrake"] == 1
     ret.cruiseState.available = pt_cp.vl["ECMEngineStatus"]["CruiseMainOn"] != 0
-
-    # 크루즈 메인버튼 활성 여부
-    self.main_on = bool(pt_cp.vl["ECMEngineStatus"]["CruiseMainOn"])
-    ret.mainOn = self.main_on
-
-    if self.CP.enableGasInterceptor: # Flip CC main logic when pedal is being used for long
-      ret.cruiseState.available = (not ret.cruiseState.available)
-
     ret.espDisabled = pt_cp.vl["ESPStatus"]["TractionControlOn"] != 1
-    self.pcm_acc_status = pt_cp.vl["AcceleratorPedal2"]["CruiseState"]
+    ret.accFaulted = pt_cp.vl["AcceleratorPedal2"]["CruiseState"] == AccState.FAULTED
 
-    #ret.cruiseState.enabled = self.pcm_acc_status != AccState.OFF
-    #ret.cruiseState.standstill = self.pcm_acc_status == AccState.STANDSTILL
-
-    ret.cruiseState.available = self.pcm_acc_status != 0
-    ret.cruiseState.standstill = False
-
-    ret.cruiseState.enabled = self.main_on or ret.adaptiveCruise
+    ret.cruiseState.enabled = pt_cp.vl["AcceleratorPedal2"]["CruiseState"] != AccState.OFF
+    ret.cruiseState.standstill = pt_cp.vl["AcceleratorPedal2"]["CruiseState"] == AccState.STANDSTILL
+    if self.CP.networkLocation == NetworkLocation.fwdCamera:
+      ret.cruiseState.speed = cam_cp.vl["ASCMActiveCruiseControlStatus"]["ACCSpeedSetpoint"] * CV.KPH_TO_MS
 
     return ret
+
+  """@staticmethod
+  def get_cam_can_parser(CP):
+    signals = []
+    checks = []
+    if CP.networkLocation == NetworkLocation.fwdCamera:
+      signals.append(("ACCSpeedSetpoint", "ASCMActiveCruiseControlStatus"))
+      checks.append(("ASCMActiveCruiseControlStatus", 25))
+
+    return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, CanBus.CAMERA)"""
 
   @staticmethod
   def get_can_parser(CP):
@@ -140,8 +121,8 @@ class CarState(CarStateBase):
       ("LKATorqueDelivered", "PSCMStatus"),
       ("LKATorqueDeliveredStatus", "PSCMStatus"),
       ("TractionControlOn", "ESPStatus"),
+      ("ParkBrake", "VehicleIgnitionAlt"),
       ("CruiseMainOn", "ECMEngineStatus"),
-      ("Brake_Pressed", "ECMEngineStatus"),
     ]
 
     checks = [
@@ -150,6 +131,7 @@ class CarState(CarStateBase):
       ("PSCMStatus", 10),
       ("ESPStatus", 10),
       ("BCMDoorBeltStatus", 10),
+      ("VehicleIgnitionAlt", 10),
       ("EBCMWheelSpdFront", 20),
       ("EBCMWheelSpdRear", 20),
       ("AcceleratorPedal2", 33),
@@ -159,19 +141,7 @@ class CarState(CarStateBase):
       ("EBCMBrakePedalPosition", 100),
     ]
 
-    # TODO: Might be wise to find the non-electronic parking brake signal
-    # TODO: JJS Add hasEPB to cereal
-    if CP.carFingerprint != CAR.SUBURBAN and CP.carFingerprint != CAR.TAHOE_NR:
-      signals.append(("EPBClosed", "EPBStatus", 0))
-      checks.append(("EPBStatus", 20))
-    
-
-    if CP.enableGasInterceptor:
-      signals.append(("INTERCEPTOR_GAS", "GAS_SENSOR"))
-      signals.append(("INTERCEPTOR_GAS2", "GAS_SENSOR"))
-      checks.append(("GAS_SENSOR", 50))
-
-    if CP.carFingerprint in EV_CAR:
+    if CP.transmissionType == TransmissionType.direct:
       signals.append(("RegenPaddle", "EBCMRegenPaddle"))
       checks.append(("EBCMRegenPaddle", 50))
 
@@ -184,7 +154,9 @@ class CarState(CarStateBase):
     ]
 
     checks = [
-      ("ASCMLKASteeringCmd", 50),
+      ("ASCMLKASteeringCmd", 10), # 10 Hz is the stock inactive rate (every 100ms).
+      #                             While active 50 Hz (every 20 ms) is normal
+      #                             EPS will tolerate around 200ms when active before faulting
     ]
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, CanBus.LOOPBACK)
