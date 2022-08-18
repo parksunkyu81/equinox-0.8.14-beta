@@ -271,15 +271,16 @@ class Controls:
         if CS.adaptiveCruise:
             lead = self.get_lead(sm)
             if lead is not None:
-                d = lead.dRel - 5.
-                if 0. < d < -lead.vRel * 15. * 2. and lead.vRel < -1.:
+                # d : 비전 거리
+                d = lead.dRel
+                if 0. < d < -lead.vRel * 25.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
 
                     if accel < 0.:
                         target_speed = vEgo + accel
-                        target_speed = max(target_speed, self.min_set_speed_clu)
+                        target_speed = max(target_speed, self.kph_to_clu(10))
                         return target_speed
 
                 """elif 0. < d < -lead.vRel * 30.:
@@ -338,7 +339,7 @@ class Controls:
 
         curv_limit = 0
         self.cal_curve_speed(sm, vEgo, frame)
-        if self.slow_on_curves and self.curve_speed_ms >= MIN_CURVE_SPEED:
+        if self.slow_on_curves and SLOW_ON_CURVES and self.curve_speed_ms >= MIN_CURVE_SPEED:
             max_speed_clu = min(self.v_cruise_kph * CV.KPH_TO_MS, self.curve_speed_ms) * self.speed_conv_to_clu
             curv_limit = int(max_speed_clu)
         else:
@@ -346,7 +347,7 @@ class Controls:
 
         max_speed_log = ""
 
-        if apply_limit_speed >= self.kph_to_clu(10):       # 크루즈 최저 속도보다 큰 경우 설정
+        if apply_limit_speed >= self.kph_to_clu(V_CRUISE_MIN):       # 크루즈 최저 속도보다 큰 경우 설정
 
             # 크루즈 초기 설정 속도 (PSK)
             # controls.v_cruise_kph : 크루즈 설정 속도
