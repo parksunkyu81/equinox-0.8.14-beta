@@ -140,13 +140,12 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalActuatorDelayUpperBound = 0.25"""
 
         # longitudinal
-        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
-                                       130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kpV = [1.2, 1.0, 0.93, 0.88, 0.5]
-        ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kiV = [0.1, 0.05]
-        ret.longitudinalActuatorDelayLowerBound = 0.3
-        ret.longitudinalActuatorDelayUpperBound = 0.3
+        ret.longitudinalTuning.deadzoneBP = [0., 8.05]
+        ret.longitudinalTuning.deadzoneV = [.0, .14]
+        ret.longitudinalTuning.kpBP = [0., 5., 20.]
+        ret.longitudinalTuning.kpV = [1.3, 1.0, 0.7]
+        ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
+        ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
 
         ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 

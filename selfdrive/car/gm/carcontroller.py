@@ -70,8 +70,8 @@ class CarController():
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
 
-          PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 50 * CV.KPH_TO_MS],
-                                            [0.22, 0.25, 0.28, 0.31])
+          PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 50 * CV.KPH_TO_MS, 80 * CV.KPH_TO_MS],
+                                            [0.22, 0.25, 0.28, 0.29, 0.31])
           #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, CREEP_SPEED*2], [-.5, 0.15, 0.2])
 
           ## =============================================== ##
@@ -82,7 +82,7 @@ class CarController():
           pedal_command = PEDAL_SCALE * (actuators.accel + boost)
 
           ## ================================================ ##
-          #pedal_command = PEDAL_SCALE * actuators.accel
+          #pedal_command = PEDAL_SCALE * actuators.accelf
           self.comma_pedal = clip(pedal_command, 0., 1.)
 
           """acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
