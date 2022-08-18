@@ -867,12 +867,6 @@ void NvgWindow::drawSpeed(QPainter &p) {
   drawText(p, rect().center().x(), 310, s->scene.is_metric ? "km/h" : "mph", 200);
 }
 
-QRect getRect(QPainter &p, int flags, QString text) {
-  QFontMetrics fm(p.font());
-  QRect init_rect = fm.boundingRect(text);
-  return fm.boundingRect(init_rect, flags, text);
-}
-
 void NvgWindow::drawSpeedLimit(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto roadLimitSpeed = sm["roadLimitSpeed"].getRoadLimitSpeed();
