@@ -618,7 +618,7 @@ class Controls:
             self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH"""
 
         if CS.adaptiveCruise:
-            self.v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.button_timers, self.enabled,
+            self.v_cruise_kph = update_v_cr3uise(self.v_cruise_kph, CS.buttonEvents, self.button_timers, self.enabled,
                                                 self.is_metric)
         elif not CS.adaptiveCruise and CS.cruiseState.enabled:
             self.v_cruise_kph = 20
