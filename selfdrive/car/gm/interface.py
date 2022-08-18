@@ -20,10 +20,10 @@ class CarInterface(CarInterfaceBase):
     @staticmethod
     def get_pid_accel_limits(CP, current_speed, cruise_speed):
         params = CarControllerParams(CP)
-        v_current_kph = current_speed * CV.MS_TO_KPH
-        # return params.ACCEL_MIN, params.ACCEL_MAX
+        return params.ACCEL_MIN, params.ACCEL_MAX
+        """v_current_kph = current_speed * CV.MS_TO_KPH
         accel_max_bp = [10., 20., 50.]
-        accel_max_v = [1.45, 1.425, 1.35]
+        accel_max_v = [1.45, 1.425, 1.35]"""
 
         return params.ACCEL_MIN, interp(v_current_kph, accel_max_bp, accel_max_v)
 
