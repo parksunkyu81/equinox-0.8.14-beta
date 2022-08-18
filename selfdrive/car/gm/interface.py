@@ -133,8 +133,8 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS,
                                        70. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kpV = [1.35, 1.20, 1.125, 0.9, 0.65]
-        #ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
-        #ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
+        ret.longitudinalTuning.kiBP = [0., 5., 12., 20., 27.]
+        ret.longitudinalTuning.kiV = [.35, .23, .20, .17, .1]
 
 
         ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
