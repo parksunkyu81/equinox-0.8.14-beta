@@ -32,7 +32,8 @@ from selfdrive.hardware import HARDWARE, TICI, EON
 from selfdrive.manager.process_config import managed_processes
 
 from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_get
-from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_speed_limiter_get_active
+from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_speed_limiter_get_active, \
+    get_road_speed_limiter
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, CONTROL_N
 from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
 from common.params import Params
@@ -189,6 +190,7 @@ class Controls:
         self.slowing_down_alert = False
         self.slowing_down_sound_alert = False
         self.active_cam = False
+        self.over_speed_limit = False
 
         # scc smoother
         self.is_cruise_enabled = False
@@ -283,7 +285,7 @@ class Controls:
                         target_speed = max(target_speed, self.kph_to_clu(10))
                         return target_speed
 
-                if 0. < d < -lead.vRel * 30.:
+                elif 0. < d < -lead.vRel * 30.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -328,6 +330,8 @@ class Controls:
     # [크루즈 MAX 속도 설정] #
     def cal_max_speed(self, frame: int, vEgo, sm, CS):
 
+        road_speed_limiter = get_road_speed_limiter()
+
         apply_limit_speed, road_limit_speed, left_dist, first_started, max_speed_log = \
             road_speed_limiter_get_max_speed(vEgo, self.is_metric)
 
@@ -344,6 +348,13 @@ class Controls:
             curv_limit = int(max_speed_clu)
         else:
             max_speed_clu = self.kph_to_clu(self.v_cruise_kph)
+
+        if road_speed_limiter.roadLimitSpeed is not None:
+            camSpeedFactor = clip(road_speed_limiter.roadLimitSpeed.camSpeedFactor, 1.0, 1.1)
+            self.over_speed_limit = road_speed_limiter.roadLimitSpeed.camLimitSpeedLeftDist > 0 and \
+                                    0 < road_limit_speed * camSpeedFactor < vEgo + 2
+        else:
+            self.over_speed_limit = False
 
         max_speed_log = ""
 
@@ -369,7 +380,7 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        """lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
+        lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
         if lead_speed >= self.min_set_speed_clu:
             if lead_speed < max_speed_clu:
               max_speed_clu = min(max_speed_clu, lead_speed)
@@ -377,7 +388,7 @@ class Controls:
                 self.max_speed_clu = vEgo + 3.
                 self.limited_lead = True
         else:
-           self.limited_lead = False"""
+           self.limited_lead = False
 
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS,
@@ -982,6 +993,7 @@ class Controls:
         controlsState.roadLimitSpeedActive = road_speed_limiter_get_active()
         controlsState.roadLimitSpeed = road_limit_speed
         controlsState.roadLimitSpeedLeftDist = left_dist
+        controlsState.overSpeedLimit = self.over_speed_limit
 
         controlsState.steerRatio = self.VM.sR
         controlsState.steerActuatorDelay = ntune_common_get('steerActuatorDelay')
