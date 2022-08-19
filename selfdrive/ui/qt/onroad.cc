@@ -540,7 +540,8 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
-  float textSize = 60.f;
+  //float textSize = 60.f;
+  float textSize = 50.f;
   textColor = QColor(255, 255, 255, 200);
 
   str.sprintf("%.0f°", steer_angle);
@@ -561,7 +562,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
-  textSize = 55.f;
   textColor = QColor(255, 255, 255, 200);
 
   auto lead_vision = sm["modelV2"].getModelV2().getLeadsV3()[0];
@@ -596,7 +596,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
-  textSize = 60.f;
   textColor = QColor(255, 255, 255, 200);
 
   if(lkas_bool == true and cur_speed > 10) {
@@ -639,7 +638,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
-  textSize = 60.f;
   textColor = QColor(255, 255, 255, 200);
   str = long_state[longControlState];
 
@@ -662,7 +660,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  textSize = 65.f;
   textColor = QColor(255, 255, 255, 200);
 
   if(accel > 0) {
@@ -694,7 +691,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  textSize = 60.f;
   textColor = QColor(255, 255, 255, 200);
 
   if(accel > 0) {
@@ -702,7 +698,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     textColor = QColor(120, 255, 120, 200);
   }
   else if(accel == 0.0) {
-    str = "--";
+    str = "MANUAL";
     textColor = QColor(255, 185, 15, 200);
   }
   else {
@@ -724,7 +720,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  textSize = 60.f;
   textColor = QColor(255, 255, 255, 200);
 
   if(acc_bool == true) {

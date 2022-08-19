@@ -58,7 +58,9 @@ protected:
   void drawTextWithColor(QPainter &p, int x, int y, const QString &text, QColor& color);
   void paintEvent(QPaintEvent *event) override;
 
-  const int radius = 192;
+  // 원형 사이즈
+  //const int radius = 192;
+  const int radius = 172;
   const int img_size = (radius / 2) * 1.5;
 
   // neokii
