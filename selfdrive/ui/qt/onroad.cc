@@ -498,13 +498,15 @@ void NvgWindow::drawHud(QPainter &p) {
   }
 
   QString infoText;
-  infoText.sprintf("%s SR(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d)",
+  infoText.sprintf("%s SR(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d) CURVE(%d) SAFE_SPEED(%d)",
                       s->lat_control.c_str(),
                       controls_state.getSteerRatio(),
                       device_State.getBatteryPercent(),
                       cpuTemp,
                       cpuUsage,
-                      device_State.getMemoryUsagePercent()
+                      device_State.getMemoryUsagePercent(),
+                      Params().getBool("SccSmootherSlowOnCurves"),
+                      Params().getBool("SafeDistanceSpeed")
                       );
 
   // info
@@ -520,7 +522,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
   auto car_control = sm["carControl"].getCarControl();
-  auto controls_state = sm["controlsState"].getControlsState();
+  //auto controls_state = sm["controlsState"].getControlsState();
 
   // 1. 핸들 토크 각도
   int x = 140;
