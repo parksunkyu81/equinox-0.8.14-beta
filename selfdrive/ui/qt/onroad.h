@@ -60,7 +60,7 @@ protected:
 
   // 원형 사이즈
   //const int radius = 192;
-  const int radius = 172;
+  const int radius = 165;
   const int img_size = (radius / 2) * 1.5;
 
   // neokii

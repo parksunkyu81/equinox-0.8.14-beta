@@ -541,7 +541,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
   //float textSize = 60.f;
-  float textSize = 42.f;
+  float textSize = 40.f;
   textColor = QColor(255, 255, 255, 200);
 
   str.sprintf("%.0f°", steer_angle);
@@ -698,7 +698,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     textColor = QColor(120, 255, 120, 200);
   }
   else if(accel == 0.0) {
-    str = "MANUAL";
+    str = "──";
     textColor = QColor(255, 185, 15, 200);
   }
   else {
