@@ -541,7 +541,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
   //float textSize = 60.f;
-  float textSize = 50.f;
+  float textSize = 42.f;
   textColor = QColor(255, 255, 255, 200);
 
   str.sprintf("%.0f°", steer_angle);
