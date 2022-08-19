@@ -543,11 +543,11 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
   //float textSize = 60.f;
-  float textSize = 45.f;
+  float textSize = 48.f;
   textColor = QColor(255, 255, 255, 200);
 
   str.sprintf("%.0f°", steer_angle);
-  configFont(p, "Open Sans", 38, "Bold");
+  configFont(p, "Open Sans", textSize, "Bold");
   textColor = QColor(255, 255, 255, 200);
   drawTextWithColor(p, x, y1-20, str, textColor);
 
