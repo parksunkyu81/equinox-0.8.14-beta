@@ -630,7 +630,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   }
 
   // 5.long state
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
+  /*x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
   int longControlState = (int)controls_state.getLongControlState();
   const char* long_state[] = {"off", "pid", "stopping", "starting"};
 
@@ -646,7 +646,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y1+50, str, textColor);
-  p.setOpacity(1.0);
+  p.setOpacity(1.0);*/
 
   // ================================================================================================================ //
 
