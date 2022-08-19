@@ -543,11 +543,11 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
   //float textSize = 60.f;
-  float textSize = 40.f;
+  float textSize = 45.f;
   textColor = QColor(255, 255, 255, 200);
 
   str.sprintf("%.0f°", steer_angle);
-  configFont(p, "Open Sans", 45, "Bold");
+  configFont(p, "Open Sans", 38, "Bold");
   textColor = QColor(255, 255, 255, 200);
   drawTextWithColor(p, x, y1-20, str, textColor);
 
@@ -583,7 +583,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     str = "──";
   }
 
-  configFont(p, "Open Sans", 45, "Bold");
+  configFont(p, "Open Sans", 38, "Bold");
   drawText(p, x, y1-20, "DIST", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
@@ -613,7 +613,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     textColor = QColor(254, 32, 32, 200);
   }
 
-  configFont(p, "Open Sans", 45, "Bold");
+  configFont(p, "Open Sans", 38, "Bold");
   drawText(p, x, y1-20, "LKAS", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
@@ -677,7 +677,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     textColor = QColor(255, a, a, 230);
   }
 
-  configFont(p, "Open Sans", 45, "Bold");
+  configFont(p, "Open Sans", 38, "Bold");
   drawText(p, x, y2-20, "SPEED", 200);
 
   str.sprintf("%.0f", cur_speed);
@@ -708,7 +708,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     textColor = QColor(254, 32, 32, 200);
   }
 
-  configFont(p, "Open Sans", 45, "Bold");
+  configFont(p, "Open Sans", 38, "Bold");
   drawText(p, x, y2-20, "PEDAL", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
@@ -733,7 +733,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     textColor = QColor(254, 32, 32, 200);
   }
 
-  configFont(p, "Open Sans", 45, "Bold");
+  configFont(p, "Open Sans", 38, "Bold");
   drawText(p, x, y2-20, "ACC", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
@@ -775,7 +775,7 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
     else
         snprintf(str, sizeof(str), "%d", (int)(applyMaxSpeed*KM_TO_MILE + 0.5));
 
-    configFont(p, "Open Sans", 45, "Bold");
+    configFont(p, "Open Sans", 38, "Bold");
     drawText(p, rc.center().x(), 100, str, 255);
 
     if (is_metric)
