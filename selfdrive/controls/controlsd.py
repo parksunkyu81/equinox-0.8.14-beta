@@ -276,7 +276,7 @@ class Controls:
             if lead is not None:
                 # d : 비전 거리
                 d = lead.dRel
-                if 0. < d < -lead.vRel * 15.:
+                if 0. < d < -lead.vRel * 20.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -286,7 +286,7 @@ class Controls:
                         target_speed = max(target_speed, self.kph_to_clu(10))
                         return target_speed
 
-                elif 0. < d < -lead.vRel * 20.:
+                elif 0. < d < -lead.vRel * 30.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -296,7 +296,7 @@ class Controls:
                         target_speed = max(target_speed, self.kph_to_clu(20))
                         return target_speed
 
-                elif 0. < d < -lead.vRel * 25.:
+                """elif 0. < d < -lead.vRel * 40.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -304,7 +304,7 @@ class Controls:
                     if accel < 0.:
                         target_speed = vEgo + accel
                         target_speed = max(target_speed, self.kph_to_clu(30))
-                        return target_speed
+                        return target_speed"""
 
         return 0
 
@@ -381,16 +381,15 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        if self.safe_distance_speed:
-            lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
-            if lead_speed >= self.min_set_speed_clu:
-                if lead_speed < max_speed_clu:
-                  max_speed_clu = min(max_speed_clu, lead_speed)
-                  if not self.limited_lead:
+        lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
+        if self.safe_distance_speed and lead_speed >= self.min_set_speed_clu:
+            if lead_speed < max_speed_clu:
+                max_speed_clu = min(max_speed_clu, lead_speed)
+                if not self.limited_lead:
                     self.max_speed_clu = vEgo + 3.
                     self.limited_lead = True
-            else:
-               self.limited_lead = False
+        else:
+          self.limited_lead = False
 
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS,
