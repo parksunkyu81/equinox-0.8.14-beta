@@ -81,13 +81,22 @@ class CarInterface(CarInterfaceBase):
         else:
             ret.lateralTuning.init('torque')
             ret.lateralTuning.torque.useSteeringAngle = True
-            max_lat_accel = 2.275
-            ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
+            # (커질수록) 언더스티어 발생
+            max_lat_accel = 2.0
+            ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
             ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-            ret.lateralTuning.torque.ki = 0.19 / max_lat_accel
-            ret.lateralTuning.torque.friction = 0.02
+            ret.lateralTuning.torque.ki = 0.1 / max_lat_accel\
+            # 값이 커질수록 회전각이 커지고 커브 반응이 빨라 진다
+            ret.lateralTuning.torque.friction = 0.05
 
-        ret.steerRatio = 17.0
+            # max_lat_accel = 2.275
+            # ret.lateralTuning.torque.kp = 2.0 / max_lat_accel
+            # ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
+            # ret.lateralTuning.torque.ki = 0.19 / max_lat_accel
+            # ret.lateralTuning.torque.friction = 0.02
+
+
+        ret.steerRatio = 16.8
         ret.lateralTuning.torque.kd = 0.0
         ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 1.0
 
