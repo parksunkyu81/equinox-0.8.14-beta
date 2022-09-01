@@ -50,9 +50,21 @@ T_IDXS_LST = [index_function(idx, max_val=MAX_T, max_idx=N) for idx in range(N+1
 T_IDXS = np.array(T_IDXS_LST)
 T_DIFFS = np.diff(T_IDXS, prepend=[0.])
 MIN_ACCEL = -3.5
-T_FOLLOW = 1.45
-COMFORT_BRAKE = 2.5
-STOP_DISTANCE = 6.0
+
+# 전방차량과의 추돌시간 (작으면 작을수록 바짝붙어가게 된다.)
+# 주행시 현재속도대비 전방차량의 추돌에 관련있는 시간입니다. 1.2~1.45정도로 하면 좋습니다.
+# stop_distance 를 늘이고 t_follow 를 줄이는 방법
+# DEF : 1.45
+T_FOLLOW = 1.25
+
+# DEF : 2.5
+# 현재의 속도로 주행중에 정상적인(편안한)감속을 했을때 거리를 계산
+COMFORT_BRAKE = 2.3
+
+# DEF : 6.0
+# COMFORT_BRAKE를 줄여주고, STOP_DISTANCE를 줄여주면 원하는 것을 얻을 수 있을것이라
+# 일찌감치 속도를 서서히 줄여주다가 전방차량에 좀더 가까이 멈추는...
+STOP_DISTANCE = 6.25
 
 def get_stopped_equivalence_factor(v_lead):
   return (v_lead**2) / (2 * COMFORT_BRAKE)
