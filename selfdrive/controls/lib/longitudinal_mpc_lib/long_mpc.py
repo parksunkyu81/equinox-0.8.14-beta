@@ -64,7 +64,7 @@ COMFORT_BRAKE = 2.3
 # DEF : 6.0
 # COMFORT_BRAKE를 줄여주고, STOP_DISTANCE를 줄여주면 원하는 것을 얻을 수 있을것이라
 # 일찌감치 속도를 서서히 줄여주다가 전방차량에 좀더 가까이 멈추는...
-STOP_DISTANCE = 6.0
+STOP_DISTANCE = 5.8
 
 def get_stopped_equivalence_factor(v_lead):
   return (v_lead**2) / (2 * COMFORT_BRAKE)
