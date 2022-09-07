@@ -55,7 +55,7 @@ MIN_ACCEL = -3.5
 # 주행시 현재속도대비 전방차량의 추돌에 관련있는 시간입니다. 1.2~1.45정도로 하면 좋습니다.
 # stop_distance 를 늘이고 t_follow 를 줄이는 방법
 # DEF : 1.45
-T_FOLLOW = 1.25
+T_FOLLOW = 1.2
 
 # DEF : 2.5
 # 현재의 속도로 주행중에 정상적인(편안한)감속을 했을때 거리를 계산
@@ -64,7 +64,7 @@ COMFORT_BRAKE = 2.3
 # DEF : 6.0
 # COMFORT_BRAKE를 줄여주고, STOP_DISTANCE를 줄여주면 원하는 것을 얻을 수 있을것이라
 # 일찌감치 속도를 서서히 줄여주다가 전방차량에 좀더 가까이 멈추는...
-STOP_DISTANCE = 5.8
+STOP_DISTANCE = 5.5
 
 def get_stopped_equivalence_factor(v_lead):
   return (v_lead**2) / (2 * COMFORT_BRAKE)
