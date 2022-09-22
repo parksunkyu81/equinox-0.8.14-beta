@@ -72,12 +72,6 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
       "../assets/offroad/icon_road.png",
     },
     {
-      "EndToEndLong",
-      tr("🌮 End-to-end longitudinal (extremely alpha) 🌮"),
-      "",
-      "../assets/offroad/icon_road.png",
-    },
-    {
       "DisengageOnAccelerator",
       "Disengage On Accelerator Pedal",
       "When enabled, pressing the accelerator pedal will disengage openpilot.",
