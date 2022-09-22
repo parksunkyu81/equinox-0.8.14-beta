@@ -52,7 +52,7 @@ class LongitudinalPlanner:
 
     # TODO read param in the loop for live toggling
     #mode = 'blended' if params.get_bool('EndToEndLong') else 'acc'
-    e2e = Params().get_bool('EndToEndLong') and self.CP.openpilotLongitudinalControl
+    e2e = Params.get_bool('EndToEndLong') and self.CP.openpilotLongitudinalControl
     mode = 'blended' if e2e else 'acc'
 
     self.mpc = LongitudinalMpc(mode=mode)
