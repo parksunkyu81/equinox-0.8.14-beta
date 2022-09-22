@@ -50,8 +50,12 @@ class LongitudinalPlanner:
   def __init__(self, CP, init_v=0.0, init_a=0.0):
     self.CP = CP
     params = Params()
+
     # TODO read param in the loop for live toggling
-    mode = 'blended' if params.get_bool('EndToEndLong') else 'acc'
+    #mode = 'blended' if params.get_bool('EndToEndLong') else 'acc'
+    e2e = self.params.get_bool('EndToEndLong') and self.CP.openpilotLongitudinalControl
+    mode = 'blended' if e2e else 'acc'
+
     self.mpc = LongitudinalMpc(mode=mode)
 
     self.fcw = False
