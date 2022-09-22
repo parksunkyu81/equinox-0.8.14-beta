@@ -303,7 +303,25 @@ void NvgWindow::drawLaneLines(QPainter &painter, const UIState *s) {
 
   // paint path
   QLinearGradient bg(0, height(), 0, height() / 4);
-  if (scene.end_to_end) {
+  float start_hue, end_hue;
+  if (scene.end_to_end_long) {
+    const auto &acceleration = (*s->sm)["modelV2"].getModelV2().getAcceleration();
+    float acceleration_future = 0;
+    if (acceleration.getZ().size() > 16) {
+      acceleration_future = acceleration.getX()[16];  // 2.5 seconds
+    }
+    start_hue = 60;
+    // speed up: 120, slow down: 0
+    end_hue = fmax(fmin(start_hue + acceleration_future * 30, 120), 0);
+
+    // FIXME: painter.drawPolygon can be slow if hue is not rounded
+    end_hue = int(end_hue * 100 + 0.5) / 100;
+
+    bg.setColorAt(0.0, QColor::fromHslF(start_hue / 360., 0.97, 0.56, 0.4));
+    bg.setColorAt(0.5, QColor::fromHslF(end_hue / 360., 1.0, 0.68, 0.35));
+    bg.setColorAt(1.0, QColor::fromHslF(end_hue / 360., 1.0, 0.68, 0.0));
+  }
+  else if (scene.end_to_end) {
     const auto &orientation = (*s->sm)["modelV2"].getModelV2().getOrientation();
     float orientation_future = 0;
     if (orientation.getZ().size() > 16) {
@@ -314,16 +332,17 @@ void NvgWindow::drawLaneLines(QPainter &painter, const UIState *s) {
     // FIXME: painter.drawPolygon can be slow if hue is not rounded
     curve_hue = int(curve_hue * 100 + 0.5) / 100;
 
-    bg.setColorAt(0.0 / 1.5, QColor::fromHslF(148 / 360., 1.0, 0.5, 1.0));
-    bg.setColorAt(0.55 / 1.5, QColor::fromHslF(112 / 360., 1.0, 0.68, 0.8));
-    bg.setColorAt(0.9 / 1.5, QColor::fromHslF(curve_hue / 360., 1.0, 0.65, 0.6));
-    bg.setColorAt(1.0, QColor::fromHslF(curve_hue / 360., 1.0, 0.65, 0.0));
+    bg.setColorAt(0.0, QColor::fromHslF(148 / 360., 0.94, 0.51, 0.4));
+    bg.setColorAt(0.75 / 1.5, QColor::fromHslF(curve_hue / 360., 1.0, 0.68, 0.35));
+    bg.setColorAt(1.0, QColor::fromHslF(curve_hue / 360., 1.0, 0.68, 0.0));
   } else {
     bg.setColorAt(0, whiteColor(200));
     bg.setColorAt(1, whiteColor(0));
   }
   painter.setBrush(bg);
-  painter.drawPolygon(scene.track_vertices.v, scene.track_vertices.cnt);
+  painter.drawPolygon(scene.track_vertices);
+
+  painter.restore();
 }
 
 void NvgWindow::drawLead(QPainter &painter, const cereal::ModelDataV2::LeadDataV3::Reader &lead_data, const QPointF &vd, bool is_radar) {
