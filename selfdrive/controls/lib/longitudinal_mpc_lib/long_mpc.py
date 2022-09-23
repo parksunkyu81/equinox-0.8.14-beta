@@ -7,8 +7,6 @@ from common.numpy_fast import clip, interp
 from selfdrive.swaglog import cloudlog
 from selfdrive.modeld.constants import index_function
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
-from selfdrive.controls.lib.dynamic_follow import DynamicFollow
-from common.travis_checker import gh_actions
 
 if __name__ == '__main__':  # generating code
   from pyextra.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
@@ -204,11 +202,8 @@ def gen_long_ocp():
 
 
 class LongitudinalMpc:
-  def __init__(self, e2e=False, desired_TR=T_FOLLOW):
-    self.dynamic_follow = DynamicFollow()
+  def __init__(self, e2e=False):
     self.e2e = e2e
-    self.desired_TR = desired_TR
-    self.v_ego = 0.
     self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.reset()
     self.source = SOURCES[2]
