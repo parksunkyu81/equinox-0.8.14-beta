@@ -1,13 +1,8 @@
 
-**This is based on xx979xx for Hyundai, Kia, Genesis.**
-
-https://github.com/xx979xx/openpilot
-
 It is open source and inherits MIT license.  By installing this software you accept all responsibility for anything that might occur while you use it.  All contributors to this fork are not liable.  <b>Use at your own risk.</b>
 
 
 ------------------------------------------------------
-
 
 ![](https://i.imgur.com/b0ZyIx5.jpg)
 
@@ -15,7 +10,6 @@ Table of Contents
 =======================
 
 * [What is openpilot?](#what-is-openpilot)
-* [Running in a car](#running-in-a-car)
 * [Running on PC](#running-on-pc)
 * [Community and Contributing](#community-and-contributing)
 * [User Data and comma Account](#user-data-and-comma-account)
@@ -56,15 +50,6 @@ To use openpilot in a car, you need four things
 * A way to connect to your car. With a comma two or three, you need only a [car harness](https://comma.ai/shop/products/car-harness). With an EON Gold or PC, you also need a [black panda](https://comma.ai/shop/products/panda).
 
 We have detailed instructions for [how to install the device in a car](https://comma.ai/setup).
-
-Running on PC
-------
-
-All of openpilot's services can run as normal on a PC, even without special hardware or a car. To develop or experiment with openpilot you can run openpilot on recorded or simulated data.
-
-With openpilot's tools you can plot logs, replay drives and watch the full-res camera streams. See [the tools README](tools/README.md) for more information.
-
-You can also run openpilot in simulation [with the CARLA simulator](tools/sim/README.md). This allows openpilot to drive around a virtual car on your Ubuntu machine. The whole setup should only take a few minutes, but does require a decent GPU.
 
 
 Community and Contributing
