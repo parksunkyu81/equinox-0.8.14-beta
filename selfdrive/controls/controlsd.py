@@ -962,6 +962,10 @@ class Controls:
         #controlsState.sccStockCamAct = self.sccStockCamAct
         #controlsState.sccStockCamStatus = self.sccStockCamStatus
 
+        # Dynamic Follow
+        controlsState.dynamicFollowMpcTR = self.sm.dynamicFollowData['mpcTR']
+        controlsState.dynamicFollowProfilePred = self.sm.dynamicFollowData['profilePred']
+
         # NDA
         controlsState.roadLimitSpeedActive = road_speed_limiter_get_active()
         controlsState.roadLimitSpeed = road_limit_speed
