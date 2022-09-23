@@ -651,7 +651,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   }
 
   // 5.dynamic follow profile
-  int profilePred = controls_state.getDynamicFollowProfilePred();
+  int profilePred = controls_state.getProfilePred();
 
   x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
   p.setPen(Qt::NoPen);
@@ -800,7 +800,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setOpacity(1.0);
 
   // 5. Dynamic Follow mpcTR
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
+  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4;
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(200));
@@ -808,7 +808,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   textColor = QColor(255, 255, 255, 200);
 
-  float mpcTR = controls_state.getDynamicFollowMpcTR();
+  float mpcTR = controls_state.getMpcTR();
 
   str.sprintf("%.2f", mpcTR);
 
