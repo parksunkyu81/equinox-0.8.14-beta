@@ -134,8 +134,7 @@ class opParams:
       # 'toyota_distance_btn': Param(False, bool, 'Set to True to use the steering wheel distance button to control the dynamic follow profile.\n'
       #                                           'Works on TSS2 vehicles and on TSS1 vehicles with an sDSU with a Sep. 2020 firmware or newer.', static=True),
 
-      'dynamic_follow': Param('stock', str, 'Can be: (\'traffic\', \'relaxed\', \'stock\', \'auto\')\n'
-                                                 '동적 팔로잉 프로필 변경'),
+      'dynamic_follow': Param('stock', str, static=True, hidden=True),
       # 'lane_speed_alerts': Param('silent', str, static=True, hidden=True),
     }
 
