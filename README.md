@@ -1,8 +1,4 @@
 
-추가 기능
-------
-
-
 It is open source and inherits MIT license.  By installing this software you accept all responsibility for anything that might occur while you use it.  All contributors to this fork are not liable.  <b>Use at your own risk.</b>
 
 

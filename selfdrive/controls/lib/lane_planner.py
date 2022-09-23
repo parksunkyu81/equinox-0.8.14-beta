@@ -10,10 +10,10 @@ ENABLE_ZORROBYTE = True
 ENABLE_INC_LANE_PROB = True
 
 TRAJECTORY_SIZE = 33
-# 카메라 오프셋은 중앙 자동차에서 카메라까지 미터입니다.
-# 모델 경로가 카메라 프레임에 있습니다. 경험적으로
-# 모델은 TICI와 EON의 차이를 알고 있다.
-# 따라서 경로 오프셋이 필요하지 않습니다.
+# camera offset is meters from center car to camera
+# model path is in the frame of the camera. Empirically 
+# the model knows the difference between TICI and EON
+# so a path offset is not needed
 PATH_OFFSET = 0.00
 if EON:
   CAMERA_OFFSET = -0.06
