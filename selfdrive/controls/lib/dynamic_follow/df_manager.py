@@ -18,10 +18,14 @@ class dfManager:
   def __init__(self):
     self.op_params = opParams()
     self.df_profiles = dfProfiles()
-    self.sm = messaging.SubMaster(['dynamicFollowData'])
+    self.sm = messaging.SubMaster(['dynamicFollowButton', 'dynamicFollowData'])
     self.button_updated = False
 
-    self.cur_user_profile = self.op_params.get('dynamic_follow').strip().lower()
+    if self.op_params.get('toyota_distance_btn'):
+      # Toyota always resets to stock on car ignition
+      self.cur_user_profile = "stock"
+    else:
+      self.cur_user_profile = self.op_params.get('dynamic_follow').strip().lower()
 
     if not isinstance(self.cur_user_profile, str) or self.cur_user_profile not in self.df_profiles.to_idx:
       self.cur_user_profile = self.df_profiles.default  # stock (1.45s)
@@ -48,8 +52,11 @@ class dfManager:
   def update(self):
     self.sm.update(0)
     df_out = dfReturn()
+    if self.sm.updated['dynamicFollowButton']:
+      self.button_updated = True
 
-    self.cur_user_profile = self.op_params.get('dynamic_follow').strip().lower()
+    if self.button_updated:  # only update when button is first pressed
+      self.cur_user_profile = self.sm['dynamicFollowButton'].status
 
     df_out.user_profile = self.cur_user_profile
     df_out.user_profile_text = self.df_profiles.to_profile[df_out.user_profile]
