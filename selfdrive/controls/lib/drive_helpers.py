@@ -42,11 +42,6 @@ class MPC_COST_LAT:
   HEADING = 1.0
   STEER_RATE = 0.4
 
-class MPC_COST_LONG:
-  TTC = 5.0
-  DISTANCE = 0.1
-  ACCELERATION = 10.0
-  JERK = 20.0
 
 def apply_deadzone(error, deadzone):
   if error > deadzone:
