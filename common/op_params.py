@@ -145,7 +145,7 @@ class opParams:
 
   def _run_init(self):  # does first time initializing of default params
     # Two required parameters for opEdit
-    # self.fork_params['username'] = Param(None, [type(None), str, bool], 'Your identifier provided with any crash logs sent to Sentry.\nHelps the developer reach out to you if anything goes wrong')
+    self.fork_params['username'] = Param(None, [type(None), str, bool], 'Your identifier provided with any crash logs sent to Sentry.\nHelps the developer reach out to you if anything goes wrong')
     self.fork_params['op_edit_live_mode'] = Param(False, bool, 'This parameter controls which mode opEdit starts in', hidden=True)
 
     self.params = self._load_params(can_import=True)
