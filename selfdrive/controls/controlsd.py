@@ -30,6 +30,7 @@ from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.locationd.calibrationd import Calibration
 from selfdrive.hardware import HARDWARE, TICI, EON
 from selfdrive.manager.process_config import managed_processes
+from selfdrive.controls.lib.dynamic_follow.df_manager import dfManager
 
 from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_get
 from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_speed_limiter_get_active, \
@@ -90,6 +91,7 @@ class Controls:
             self.camera_packets.append("wideRoadCameraState")
 
         params = Params()
+        self.df_manager = dfManager()
         self.joystick_mode = params.get_bool("JoystickDebugMode")
         joystick_packet = ['testJoystick'] if self.joystick_mode else []
 
@@ -99,7 +101,7 @@ class Controls:
             self.sm = messaging.SubMaster(
                 ['deviceState', 'pandaStates', 'peripheralState', 'modelV2', 'liveCalibration',
                  'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
-                 'managerState', 'liveParameters', 'radarState'] + self.camera_packets + joystick_packet,
+                 'managerState', 'liveParameters', 'radarState', 'dynamicFollowData'] + self.camera_packets + joystick_packet,
                 ignore_alive=ignore, ignore_avg_freq=['radarState', 'longitudinalPlan'])
 
         self.can_sock = can_sock
@@ -381,7 +383,7 @@ class Controls:
             self.slowing_down_alert = False
             self.slowing_down = False
 
-        """lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
+        lead_speed = self.get_long_lead_safe_speed(sm, CS, vEgo)
         if self.safe_distance_speed and lead_speed >= self.min_set_speed_clu:
             if lead_speed < max_speed_clu:
                 max_speed_clu = min(max_speed_clu, lead_speed)
@@ -389,7 +391,7 @@ class Controls:
                     self.max_speed_clu = vEgo + 3.
                     self.limited_lead = True
         else:
-          self.limited_lead = False"""
+          self.limited_lead = False
 
 
         self.update_max_speed(int(max_speed_clu + 0.5), CS,
