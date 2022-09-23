@@ -19,6 +19,7 @@ class dfManager:
     self.op_params = opParams()
     self.df_profiles = dfProfiles()
     self.sm = messaging.SubMaster(['dynamicFollowData'])
+    self.button_updated = False
 
     self.cur_user_profile = self.op_params.get('dynamic_follow').strip().lower()
 
