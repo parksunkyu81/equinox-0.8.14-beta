@@ -541,7 +541,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
   auto car_control = sm["carControl"].getCarControl();
-  auto controls_state = sm["controlsState"].getControlsState();
+  //auto controls_state = sm["controlsState"].getControlsState();
 
   // 1. 핸들 토크 각도
   int x = 140;
@@ -649,38 +649,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
     p.setOpacity(1.0);
   }
-
-  // 5.dynamic follow profile
-  int profilePred = controls_state.getProfilePred();
-
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(200));
-  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
-
-  textColor = QColor(255, 255, 255, 200);
-
-  /*if(lkas_bool == true and cur_speed > 10) {
-    str = "ON";
-    textColor = QColor(120, 255, 120, 200);
-  }
-  else if(lkas_bool == true and cur_speed <= 10) {
-    str = "OFF";
-    textColor = QColor(254, 32, 32, 200);
-  }
-  else {
-    str = "OFF";
-    textColor = QColor(254, 32, 32, 200);
-  }*/
-
-  str.sprintf("%d", profilePred);
-
-  configFont(p, "Open Sans", 38, "Bold");
-  drawText(p, x, y1-20, "PRED", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1+50, str, textColor);
-  p.setOpacity(1.0);
 
   // 5.long state
   /*x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
@@ -797,26 +765,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   img_alpha = brake_valid ? 1.0f : 0.15f;
   bg_alpha = brake_valid ? 0.3f : 0.1f;
   drawIcon(p, x, y2, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
-  p.setOpacity(1.0);
-
-  // 5. Dynamic Follow mpcTR
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4;
-
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(200));
-  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
-
-  textColor = QColor(255, 255, 255, 200);
-
-  float mpcTR = controls_state.getMpcTR();
-
-  str.sprintf("%.2f", mpcTR);
-
-  configFont(p, "Open Sans", 38, "Bold");
-  drawText(p, x, y2-20, "mpcTR", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y2+50, str, textColor);
   p.setOpacity(1.0);
 
 }
