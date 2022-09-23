@@ -7,9 +7,6 @@ from common.numpy_fast import clip, interp
 from selfdrive.swaglog import cloudlog
 from selfdrive.modeld.constants import index_function
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
-from selfdrive.controls.lib.dynamic_follow import DynamicFollow
-from common.travis_checker import gh_actions
-
 
 if __name__ == '__main__':  # generating code
   from pyextra.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
@@ -27,7 +24,7 @@ SOURCES = ['lead0', 'lead1', 'cruise']
 
 X_DIM = 3
 U_DIM = 1
-PARAM_DIM = 5
+PARAM_DIM = 4
 COST_E_DIM = 5
 COST_DIM = COST_E_DIM + 1
 CONSTR_DIM = 4
@@ -72,11 +69,11 @@ STOP_DISTANCE = 5.5
 def get_stopped_equivalence_factor(v_lead):
   return (v_lead**2) / (2 * COMFORT_BRAKE)
 
-def get_safe_obstacle_distance(v_ego, t_follow=T_FOLLOW):
-  return (v_ego**2) / (2 * COMFORT_BRAKE) + t_follow * v_ego + STOP_DISTANCE
+def get_safe_obstacle_distance(v_ego):
+  return (v_ego**2) / (2 * COMFORT_BRAKE) + T_FOLLOW * v_ego + STOP_DISTANCE
 
-def desired_follow_distance(v_ego, v_lead, t_follow=T_FOLLOW):
-  return get_safe_obstacle_distance(v_ego, t_follow) - get_stopped_equivalence_factor(v_lead)
+def desired_follow_distance(v_ego, v_lead):
+  return get_safe_obstacle_distance(v_ego) - get_stopped_equivalence_factor(v_lead)
 
 
 def gen_long_model():
@@ -100,12 +97,11 @@ def gen_long_model():
   model.xdot = vertcat(x_ego_dot, v_ego_dot, a_ego_dot)
 
   # live parameters
-  desired_TR = SX.sym('desired_TR')
   a_min = SX.sym('a_min')
   a_max = SX.sym('a_max')
   x_obstacle = SX.sym('x_obstacle')
   prev_a = SX.sym('prev_a')
-  model.p = vertcat(a_min, a_max, x_obstacle, prev_a, desired_TR)
+  model.p = vertcat(a_min, a_max, x_obstacle, prev_a)
 
   # dynamics model
   f_expl = vertcat(v_ego, a_ego, j_ego)
@@ -139,12 +135,11 @@ def gen_long_ocp():
   a_min, a_max = ocp.model.p[0], ocp.model.p[1]
   x_obstacle = ocp.model.p[2]
   prev_a = ocp.model.p[3]
-  desired_TR = ocp.model.p[4]
 
   ocp.cost.yref = np.zeros((COST_DIM, ))
   ocp.cost.yref_e = np.zeros((COST_E_DIM, ))
 
-  desired_dist_comfort = get_safe_obstacle_distance(v_ego, desired_TR)
+  desired_dist_comfort = get_safe_obstacle_distance(v_ego)
 
   # The main cost in normal operation is how close you are to the "desired" distance
   # from an obstacle at every timestep. This obstacle can be a lead car
@@ -154,7 +149,7 @@ def gen_long_ocp():
            x_ego,
            v_ego,
            a_ego,
-           20 * (a_ego - prev_a),
+           a_ego - prev_a,
            j_ego]
   ocp.model.cost_y_expr = vertcat(*costs)
   ocp.model.cost_y_expr_e = vertcat(*costs[:-1])
@@ -167,11 +162,10 @@ def gen_long_ocp():
                         (a_max - a_ego),
                         ((x_obstacle - x_ego) - (3/4) * (desired_dist_comfort)) / (v_ego + 10.))
   ocp.model.con_h_expr = constraints
-  ocp.model.con_h_expr_e = vertcat(np.zeros(CONSTR_DIM))
 
   x0 = np.zeros(X_DIM)
   ocp.constraints.x0 = x0
-  ocp.parameter_values = np.array([-1.2, 1.2, 0.0, 0.0, T_FOLLOW])  # defaults
+  ocp.parameter_values = np.array([-1.2, 1.2, 0.0, 0.0])
 
   # We put all constraint cost weights to 0 and only set them at runtime
   cost_weights = np.zeros(CONSTR_DIM)
@@ -181,9 +175,7 @@ def gen_long_ocp():
   ocp.cost.zu = cost_weights
 
   ocp.constraints.lh = np.zeros(CONSTR_DIM)
-  ocp.constraints.lh_e = np.zeros(CONSTR_DIM)
   ocp.constraints.uh = 1e4*np.ones(CONSTR_DIM)
-  ocp.constraints.uh_e = 1e4 * np.ones(CONSTR_DIM)
   ocp.constraints.idxsh = np.arange(CONSTR_DIM)
 
   # The HPIPM solver can give decent solutions even when it is stopped early
@@ -210,11 +202,8 @@ def gen_long_ocp():
 
 
 class LongitudinalMpc:
-  def __init__(self, e2e=False, desired_TR=T_FOLLOW):
-    self.dynamic_follow = DynamicFollow()
+  def __init__(self, e2e=False):
     self.e2e = e2e
-    self.desired_TR = desired_TR
-    self.v_ego = 0.
     self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.reset()
     self.source = SOURCES[2]
@@ -254,7 +243,6 @@ class LongitudinalMpc:
       self.params[:,0] = -10.
       self.params[:,1] = 10.
       self.params[:,2] = 1e5
-      self.params[:,4] = T_FOLLOW
     else:
       self.set_weights_for_lead_policy(prev_accel_constraint)
 
@@ -303,23 +291,19 @@ class LongitudinalMpc:
     lead_xv = np.column_stack((x_lead_traj, v_lead_traj))
     return lead_xv
 
-  def process_lead(self, lead, id):
+  def process_lead(self, lead):
     v_ego = self.x0[1]
     if lead is not None and lead.status:
       x_lead = lead.dRel
       v_lead = lead.vLead
       a_lead = lead.aLeadK
       a_lead_tau = lead.aLeadTau
-      if id == 0:
-        self.dynamic_follow.update_lead(v_lead, a_lead, x_lead, lead.status, False)
     else:
       # Fake a fast lead car, so mpc can keep running in the same mode
       x_lead = 50.0
       v_lead = v_ego + 10.0
       a_lead = 0.0
       a_lead_tau = _LEAD_ACCEL_TAU
-      if id == 0:
-        self.dynamic_follow.update_lead(new_lead=False)
 
     # MPC will not converge if immediate crash is expected
     # Clip lead distance to what is still possible to brake for
@@ -334,21 +318,12 @@ class LongitudinalMpc:
     self.cruise_min_a = min_a
     self.cruise_max_a = max_a
 
-  def set_desired_TR(self, desired_TR):
-    self.desired_TR = desired_TR
-    self.set_weights()
-
-  def update(self, carstate, radarstate, v_cruise, prev_accel_constraint=False):
-    self.v_ego = carstate.vEgo
+  def update(self, carstate, radarstate, v_cruise):
     v_ego = self.x0[1]
-    a_ego = self.x0[2]
     self.status = radarstate.leadOne.status or radarstate.leadTwo.status
 
     lead_xv_0 = self.process_lead(radarstate.leadOne)
     lead_xv_1 = self.process_lead(radarstate.leadTwo)
-
-    if not gh_actions:
-      self.set_desired_TR(self.dynamic_follow.update(carstate))  # update dynamic follow and get desired TR
 
     # set accel limits in params
     self.params[:,0] = interp(float(self.status), [0.0, 1.0], [self.cruise_min_a, MIN_ACCEL])
@@ -367,16 +342,12 @@ class LongitudinalMpc:
     v_cruise_clipped = np.clip(v_cruise * np.ones(N+1),
                                v_lower,
                                v_upper)
-    cruise_obstacle = np.cumsum(T_DIFFS * v_cruise_clipped) + get_safe_obstacle_distance(v_cruise_clipped, self.desired_TR)
+    cruise_obstacle = np.cumsum(T_DIFFS * v_cruise_clipped) + get_safe_obstacle_distance(v_cruise_clipped)
 
     x_obstacles = np.column_stack([lead_0_obstacle, lead_1_obstacle, cruise_obstacle])
     self.source = SOURCES[np.argmin(x_obstacles[0])]
     self.params[:,2] = np.min(x_obstacles, axis=1)
-    if prev_accel_constraint:
-      self.params[:, 3] = np.copy(self.prev_a)
-    else:
-      self.params[:, 3] = a_ego
-    self.params[:, 4] = self.desired_TR
+    self.params[:,3] = np.copy(self.prev_a)
 
     self.run()
     if (np.any(lead_xv_0[:,0] - self.x_sol[:,0] < CRASH_DISTANCE) and
