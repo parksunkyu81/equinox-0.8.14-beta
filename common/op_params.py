@@ -99,11 +99,11 @@ class opParams:
 
     self.fork_params = {
       # 'camera_offset': Param(-0.04 if TICI else 0.06, NUMBER, 'Your camera offset to use in lane_planner.py\n', live=True),
-      'global_df_mod': Param(1.0, NUMBER, '동적 추종에서 사용되는 현재 거리에 대한 승수입니다. 범위는 0.85 ~ 2.5로 제한됩니다.\n'
-                                          '값이 작을수록 더 가까워지고, 클수록 더 멀어집니다.\n'
+      'global_df_mod(0.85 ~ 2.5, def 1.0)': Param(1.0, NUMBER, 'The multiplier for the current distance used by dynamic follow. The range is limited from 0.85 to 2.5\n'
+                                          'Smaller values will get you closer, larger will get you farther\n'
                                           'This is multiplied by any profile that\'s active. Set to 1. to disable', live=True),
-      'min_TR': Param(0.9, NUMBER, '허용되는 최소 추종 거리(초)입니다. 기본값은 0.9초입니다.\n'
-                                   '범위는 0.85 ~ 2.7로 제한됩니다.', live=True),
+      'min_TR(0.85 ~ 2.7, def 0.9)': Param(0.9, NUMBER, 'The minimum allowed following distance in seconds. Default is 0.9 seconds\n'
+                                   'The range is limited from 0.85 to 2.7', live=True),
       # 'alca_no_nudge_speed': Param(90., NUMBER, 'Above this speed (mph), lane changes initiate IMMEDIATELY. Behavior is stock under'),
       # 'steer_ratio': Param(None, NONE_OR_NUMBER, '(Can be: None, or a float) If you enter None, openpilot will use the learned sR.\n'
       #                                            'If you use a float/int, openpilot will use that steer ratio instead', live=True),
