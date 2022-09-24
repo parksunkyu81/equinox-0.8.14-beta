@@ -61,7 +61,7 @@ class LatControlTorque(LatControl):
       actual_lateral_accel = actual_curvature * CS.vEgo ** 2
       lateral_accel_deadzone = curvature_deadzone * CS.vEgo ** 2
 
-      isLowSpeed  = ntune_option_enabled('isLowSpeedFactor') if Params().get_bool('UseNpilotManager') else Params().get_bool('IsLowSpeedFactor')
+      isLowSpeed  = Params().get_bool('IsLowSpeedFactor')
 
       if isLowSpeed:
         low_speed_factor = interp(CS.vEgo, [0, 10, 20], [100, 75, 75])
