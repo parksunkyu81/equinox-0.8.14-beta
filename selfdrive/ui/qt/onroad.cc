@@ -541,7 +541,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
   auto car_control = sm["carControl"].getCarControl();
-  auto live_torque = sm["liveTorqueParameters"].getLiveTorqueParameters();
   //auto controls_state = sm["controlsState"].getControlsState();
 
   // 1. 핸들 토크 각도
@@ -650,44 +649,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
     p.setOpacity(1.0);
   }
-
-  // 5.live torque lat accel factor
-  float latAccelFactor = live_torque.getLatAccelFactorFiltered();
-
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(200));
-  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
-
-  textColor = QColor(255, 255, 255, 200);
-
-  str.sprintf("%.2f", latAccelFactor);
-
-  configFont(p, "Open Sans", 20, "Bold");
-  drawText(p, x, y1-20, "latAccelFactor", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1+50, str, textColor);
-  p.setOpacity(1.0);
-
-  // 6.live torque lat accel Offset
-  float latAccelOffset = live_torque.getLatAccelOffsetFiltered();
-
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 5);
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(200));
-  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
-
-  textColor = QColor(255, 255, 255, 200);
-
-  str.sprintf("%.2f", latAccelOffset);
-
-  configFont(p, "Open Sans", 20, "Bold");
-  drawText(p, x, y1-20, "latAccelOffset", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1+50, str, textColor);
-  p.setOpacity(1.0);
 
   // 5.long state
   /*x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
@@ -804,26 +765,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   img_alpha = brake_valid ? 1.0f : 0.15f;
   bg_alpha = brake_valid ? 0.3f : 0.1f;
   drawIcon(p, x, y2, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
-  p.setOpacity(1.0);
-
-  // 5. live torque friction
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
-
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(200));
-  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
-
-  textColor = QColor(255, 255, 255, 200);
-
-  float torque_friction = live_torque.getFrictionCoefficientFiltered();
-
-  str.sprintf("%.2f", torque_friction);
-
-  configFont(p, "Open Sans", 20, "Bold");
-  drawText(p, x, y2-20, "torque friction", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y2+50, str, textColor);
   p.setOpacity(1.0);
 
 }
