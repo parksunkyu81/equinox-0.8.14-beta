@@ -208,6 +208,8 @@ std::unordered_map<std::string, uint32_t> keys = {
 
     {"RestartForceAccel", PERSISTENT},
     {"SafeDistanceSpeed", PERSISTENT},
+
+    {"IsLiveTorque", PERSISTENT},
 };
 
 } // namespace
