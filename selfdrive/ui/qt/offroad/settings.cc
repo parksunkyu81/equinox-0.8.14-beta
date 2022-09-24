@@ -678,6 +678,12 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_road.png",
                                             this));
 
+  toggles.append(new ParamControl("IsLiveTorque",
+                                              "Enable Live Torque",
+                                              "",
+                                              "../assets/offroad/icon_shell.png",
+                                              this));
+
   for(ParamControl *toggle : toggles) {
     if(main_layout->count() != 0) {
       toggleLayout->addWidget(horizontal_line());

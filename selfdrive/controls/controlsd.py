@@ -37,7 +37,7 @@ from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, CONTROL_N
 from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
 from common.params import Params
-import datetime
+from decimal import Decimal
 
 MIN_SET_SPEED_KPH = V_CRUISE_MIN
 MAX_SET_SPEED_KPH = V_CRUISE_MAX
@@ -99,7 +99,7 @@ class Controls:
             self.sm = messaging.SubMaster(
                 ['deviceState', 'pandaStates', 'peripheralState', 'modelV2', 'liveCalibration',
                  'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
-                 'managerState', 'liveParameters', 'radarState'] + self.camera_packets + joystick_packet,
+                 'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters'] + self.camera_packets + joystick_packet,
                 ignore_alive=ignore, ignore_avg_freq=['radarState', 'longitudinalPlan'])
 
         self.can_sock = can_sock
@@ -121,6 +121,7 @@ class Controls:
 
 
         # read params
+        self.is_live_torque = params.get_bool("IsLiveTorque")
         self.is_metric = params.get_bool("IsMetric")
         self.is_ldw_enabled = params.get_bool("IsLdwEnabled")
         openpilot_enabled_toggle = params.get_bool("OpenpilotEnabledToggle")
@@ -722,6 +723,31 @@ class Controls:
             sr = max(ntune_common_get('steerRatio'), 0.1)
 
         self.VM.update_params(x, sr)
+
+        # Update Torque Params
+        if self.CP.lateralTuning.which() == 'torque':
+            if self.is_live_torque:
+                torque_params = self.sm['liveTorqueParameters']
+                # Todo: Figure out why this is needed, and remove it
+                if (torque_params.latAccelFactorFiltered > 0) and (self.sm.valid['liveTorqueParameters']):
+                    self.torque_latAccelFactor = torque_params.latAccelFactorFiltered
+                    self.torque_latAccelOffset = torque_params.latAccelOffsetFiltered
+                    self.torque_friction = torque_params.frictionCoefficientFiltered
+                    self.LaC.update_live_torque_params(torque_params.latAccelFactorFiltered,
+                                                       torque_params.latAccelOffsetFiltered,
+                                                       torque_params.frictionCoefficientFiltered)
+                else:
+                    self.torque_latAccelFactor = float(2.5)
+                    self.torque_latAccelOffset = 0.
+                    self.torque_friction = float(0.15)
+                    self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset,
+                                                       self.torque_friction)
+            else:
+                self.torque_latAccelFactor = float(2.5)
+                self.torque_latAccelOffset = 0.
+                self.torque_friction = float(0.15)
+                self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset,
+                                                   self.torque_friction)
 
         lat_plan = self.sm['lateralPlan']
         long_plan = self.sm['longitudinalPlan']

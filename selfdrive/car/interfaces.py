@@ -8,9 +8,11 @@ from common.kalman.simple_kalman import KF1D
 from common.realtime import DT_CTRL
 from selfdrive.car import gen_empty_fingerprint
 from common.conversions import Conversions as CV
-from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX
+from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, apply_deadzone
 from selfdrive.controls.lib.events import Events
 from selfdrive.controls.lib.vehicle_model import VehicleModel
+from common.numpy_fast import interp
+
 
 GearShifter = car.CarState.GearShifter
 EventName = car.CarEvent.EventName
@@ -18,6 +20,7 @@ EventName = car.CarEvent.EventName
 MAX_CTRL_SPEED = (V_CRUISE_MAX + 4) * CV.KPH_TO_MS
 ACCEL_MAX = 2.0
 ACCEL_MIN = -3.5
+FRICTION_THRESHOLD = 0.2
 
 
 # generic car and radar interfaces
@@ -71,6 +74,24 @@ class CarInterfaceBase(ABC):
   def get_steer_feedforward_function(self):
     return self.get_steer_feedforward_default
 
+  @staticmethod
+  def torque_from_lateral_accel_linear(lateral_accel_value, torque_params, lateral_accel_error=None,
+                                       lateral_accel_deadzone=None, friction_compensation=False):
+    # The default is a linear relationship between torque and lateral acceleration (accounting for road roll and steering friction)
+    if friction_compensation:
+      assert (lateral_accel_error is not None) and (lateral_accel_deadzone is not None)
+      friction = interp(
+        apply_deadzone(lateral_accel_error, lateral_accel_deadzone),
+        [-FRICTION_THRESHOLD, FRICTION_THRESHOLD],
+        [-torque_params['friction'], torque_params['friction']]
+      )
+    else:
+      friction = 0.0
+    return (lateral_accel_value / torque_params['latAccelFactor']) + friction
+
+  def torque_from_lateral_accel(self):
+    return self.torque_from_lateral_accel_linear
+
   # returns a set of default params to avoid repetition in car specific params
   @staticmethod
   def get_std_params(candidate, fingerprint):
@@ -81,7 +102,7 @@ class CarInterfaceBase(ABC):
     ret.steerControlType = car.CarParams.SteerControlType.torque
     ret.minSteerSpeed = 0.
     ret.wheelSpeedFactor = 1.0
-    ret.maxLateralAccel = float('nan')
+    ret.maxLateralAccel = 1.8
 
     ret.pcmCruise = True     # openpilot's state is tied to the PCM's cruise state on most cars
     ret.minEnableSpeed = -1. # enable is done by stock ACC, so ignore this
@@ -104,6 +125,19 @@ class CarInterfaceBase(ABC):
     ret.longitudinalActuatorDelayUpperBound = 0.15
     ret.steerLimitTimer = 1.0
     return ret
+
+  @staticmethod
+  def configure_torque_tune(tune, LAT_ACCEL_FACTOR=2.5, FRICTION=0.01, steering_angle_deadzone_deg=0.0,
+                            use_steering_angle=True):
+    tune.init('torque')
+    tune.torque.useSteeringAngle = use_steering_angle
+    tune.torque.kp = 1.0
+    tune.torque.kf = 1.0
+    tune.torque.ki = 0.1
+    tune.torque.friction = FRICTION
+    tune.torque.latAccelFactor = LAT_ACCEL_FACTOR
+    tune.torque.latAccelOffset = 0.0
+    tune.torque.steeringAngleDeadzoneDeg = steering_angle_deadzone_deg
 
   @abstractmethod
   def _update(self, c: car.CarControl) -> car.CarState:
