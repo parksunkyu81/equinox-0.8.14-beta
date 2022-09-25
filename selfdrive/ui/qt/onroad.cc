@@ -653,25 +653,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     p.setOpacity(1.0);
   }
 
-  // 5.TR Mode
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
-  //int tr_mode = controls_state.getDynamicTRMode();
-
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(200));
-  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
-
-  textColor = QColor(255, 255, 255, 200);
-
-  str = "──";
-
-  configFont(p, "Open Sans", 38, "Bold");
-  drawText(p, x, y1-20, "DIST", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1+50, str, textColor);
-  p.setOpacity(1.0);
-
 
   // ================================================================================================================ //
 
@@ -774,18 +755,20 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   // 5.TR Value
   x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
   float tr_value = controls_state.getDynamicTRValue();
+  int tr_mode = controls_state.getDynamicTRMode();
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
   str.sprintf("%.2f", tr_value);
+  str2.sprintf("TR mode: %d", tr_mode);
 
   configFont(p, "Open Sans", textSize, "Bold");
   textColor = QColor(255, 255, 255, 200);
 
   configFont(p, "Open Sans", 30, "Bold");
-  drawText(p, x, y1-20, "TR Value", 200);
+  drawText(p, x, y1-20, str2, 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y1+50, str, textColor);
