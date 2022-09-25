@@ -595,6 +595,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
 
   vlayout->addSpacing(10);
   vlayout->addLayout(layoutBtn, 0);
+  vlayout->addLayout(layoutBtn_2, 0);
   vlayout->addSpacing(10);
   vlayout->addWidget(scroller, 1);
 
