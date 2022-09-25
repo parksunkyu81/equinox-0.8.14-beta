@@ -588,9 +588,9 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
      main_layout->setCurrentWidget(homeScreen);
   });
   main_layout->addWidget(lateralControl);
-  //QHBoxLayout* layoutBtn_2 = new QHBoxLayout(homeWidget);
-  layoutBtn->addWidget(cruiseGapBtn);
-  layoutBtn->addSpacing(10);
+  QHBoxLayout* layoutBtn_2 = new QHBoxLayout(homeWidget);
+  layoutBtn_2->addWidget(cruiseGapBtn);
+  layoutBtn_2->addSpacing(10);
   // =============================================================================================================== //
 
   vlayout->addSpacing(10);
