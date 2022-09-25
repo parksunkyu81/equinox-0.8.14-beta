@@ -221,6 +221,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"CustomTREnabled", PERSISTENT},
     {"DynamicTRSpd", PERSISTENT},
     {"DynamicTRSet", PERSISTENT},
+    {"cruiseGap", PERSISTENT},
 
 };
 

@@ -547,11 +547,9 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   });
   main_layout->addWidget(selectCar);*/
 
-  //QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
   QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
   if(lateral_control.length() == 0)
     lateral_control = "3";
-  //QPushButton* lateralControlBtn = new QPushButton(lateral_control);
   QPushButton* lateralControlBtn = new QPushButton("Dynamic TR Gap");
   lateralControlBtn->setObjectName("lateralControlBtn");
 
@@ -559,21 +557,41 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   lateralControl = new LateralControl(this);
   connect(lateralControl, &LateralControl::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
   connect(lateralControl, &LateralControl::selected, [=]() {
-     //QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
      QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
      if(lateral_control.length() == 0)
        lateral_control = "3";
      lateralControlBtn->setText(lateral_control);
      main_layout->setCurrentWidget(homeScreen);
   });
+
+  QString lateral_control_2 = QString::fromStdString(Params().get("cruiseGap"));
+  if(lateral_control_2.length() == 0)
+    lateral_control_2 = "4";
+  QPushButton* lateralControlBtn_2 = new QPushButton("Cruise Gap");
+  lateralControlBtn_2->setObjectName("lateralControlBtn_2");
+
+  connect(lateralControlBtn_2, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(lateral_control_2); });
+  lateralControl_2 = new lateralControl_2(this);
+  connect(lateralControl_2, &LateralControl_2::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
+  connect(lateralControl_2, &LateralControl_2::selected, [=]() {
+     QString lateral_control_2 = QString::fromStdString(Params().get("cruiseGap"));
+     if(lateral_control_2.length() == 0)
+       lateral_control = "4";
+     lateralControlBtn_2->setText(lateral_control_2);
+     main_layout->setCurrentWidget(homeScreen);
+  });
+
+
   main_layout->addWidget(lateralControl);
   QHBoxLayout* layoutBtn = new QHBoxLayout(homeWidget);
   layoutBtn->addWidget(lateralControlBtn);
   layoutBtn->addSpacing(10);
-  //layoutBtn->addWidget(selectCarBtn);
-  vlayout->addSpacing(10);
-  vlayout->addLayout(layoutBtn, 0);
-  vlayout->addSpacing(10);
+
+  main_layout->addWidget(lateralControl_2);
+  QHBoxLayout* layoutBtn = new QHBoxLayout(homeWidget);
+  layoutBtn->addWidget(lateralControlBtn_2);
+  layoutBtn->addSpacing(10);
+
   vlayout->addWidget(scroller, 1);
   QPalette pal = palette();
   pal.setColor(QPalette::Background, QColor(0x29, 0x29, 0x29));
@@ -581,7 +599,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   setPalette(pal);
 
   setStyleSheet(R"(
-    #back_btn, #selectCarBtn, #lateralControlBtn {
+    #back_btn, #selectCarBtn, #lateralControlBtn, #lateralControlBtn_2 {
       font-size: 50px;
       margin: 0px;
       padding: 20px;
@@ -752,6 +770,56 @@ LateralControl::LateralControl(QWidget* parent): QWidget(parent) {
 
     //Params().put("LateralControl", list->currentItem()->text().toStdString());
     Params().put("DynamicTRGap", list->currentItem()->text().toStdString());
+    emit selected();
+
+    QTimer::singleShot(1000, []() {
+        Params().putBool("SoftRestartTriggered", true);
+      });
+
+    });
+
+  main_layout->addWidget(list);
+}
+
+LateralControl_2::LateralControl_2(QWidget* parent): QWidget(parent) {
+
+  QVBoxLayout* main_layout = new QVBoxLayout(this);
+  main_layout->setMargin(20);
+  main_layout->setSpacing(20);
+
+  // Back button
+  QPushButton* back = new QPushButton("Back");
+  back->setObjectName("back_btn");
+  back->setFixedSize(500, 100);
+  connect(back, &QPushButton::clicked, [=]() { emit backPress(); });
+  main_layout->addWidget(back, 0, Qt::AlignLeft);
+
+  QListWidget* list = new QListWidget(this);
+  list->setStyleSheet("QListView {padding: 40px; background-color: #393939; border-radius: 15px; height: 140px;} QListView::item{height: 100px}");
+  QScroller::grabGesture(list->viewport(), QScroller::LeftMouseButtonGesture);
+  list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+  QStringList items = {"1", "2", "3", "4"};
+  list->addItems(items);
+  list->setCurrentRow(0);
+
+  //QString selectedControl = QString::fromStdString(Params().get("LateralControl"));
+  QString selectedControl = QString::fromStdString(Params().get("cruiseGap"));
+
+  int index = 0;
+  for(QString item : items) {
+    if(selectedControl == item) {
+        list->setCurrentRow(index);
+        break;
+    }
+    index++;
+  }
+
+  QObject::connect(list, QOverload<QListWidgetItem*>::of(&QListWidget::itemClicked),
+    [=](QListWidgetItem* item){
+
+    //Params().put("LateralControl", list->currentItem()->text().toStdString());
+    Params().put("cruiseGap", list->currentItem()->text().toStdString());
     emit selected();
 
     QTimer::singleShot(1000, []() {
