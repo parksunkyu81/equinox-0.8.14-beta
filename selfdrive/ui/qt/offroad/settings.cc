@@ -581,15 +581,15 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   lateralControl = new LateralControl(this);
   connect(lateralControl, &LateralControl::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
   connect(lateralControl, &LateralControl::selected, [=]() {
-     QString lateral_control = QString::fromStdString(Params().get("cruiseGap"));
-     if(lateral_control.length() == 0)
-       lateral_control = "4";
-     lateralControlBtn->setText("Cruise Gap : " + lateral_control);
+     QString cruise_gap = QString::fromStdString(Params().get("cruiseGap"));
+     if(cruise_gap.length() == 0)
+       cruise_gap = "4";
+     lateralControlBtn->setText("Cruise Gap : " + cruise_gap);
      main_layout->setCurrentWidget(homeScreen);
   });
   main_layout->addWidget(lateralControl);
   QHBoxLayout* layoutBtn_2 = new QHBoxLayout(homeWidget);
-  layoutBtn->addWidget(layoutBtn_2);
+  layoutBtn->addWidget(cruiseGapBtn);
   layoutBtn->addSpacing(10);
   // =============================================================================================================== //
 
