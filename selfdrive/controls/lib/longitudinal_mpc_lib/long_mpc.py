@@ -362,7 +362,8 @@ class LongitudinalMpc:
     lead_xv_1 = self.process_lead(radarstate.leadTwo)
 
     if self.custom_tr_enabled:
-      cruise_gap = int(clip(carstate.cruiseGapSet, 1., 4.))
+      #cruise_gap = int(clip(carstate.cruiseGapSet, 1., 4.))
+      cruise_gap = 4
       self.dynamic_TR = interp(self.v_ego*self.ms_to_spd, self.dynamic_tr_spd, self.dynamic_tr_set)
       if self.dynamic_TR_mode == 1:
         self.TR = interp(float(cruise_gap), [1., 2., 3., 4.], [self.dynamic_TR, self.cruise_gap2, self.cruise_gap3, self.cruise_gap4])
