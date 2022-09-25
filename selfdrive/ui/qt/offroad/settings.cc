@@ -577,8 +577,8 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   QPushButton* cruiseGapBtn = new QPushButton("Cruise Gap : " + cruise_gap);
   cruiseGapBtn->setObjectName("cruiseGapBtn");
 
-  connect(lateralControlBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(lateralControl); });
-  lateralControl = new CruiseGap(this);
+  connect(cruiseGapBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(lateralControl); });
+  cruiseGap = new CruiseGap(this);
   connect(cruiseGap, &CruiseGap::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
   connect(cruiseGap, &CruiseGap::selected, [=]() {
      QString cruise_gap = QString::fromStdString(Params().get("cruiseGap"));
@@ -606,7 +606,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   setPalette(pal);
 
   setStyleSheet(R"(
-    #back_btn, #selectCarBtn, #lateralControlBtn {
+    #back_btn, #selectCarBtn, #lateralControlBtn, #cruiseGapBtn {
       font-size: 50px;
       margin: 0px;
       padding: 20px;
