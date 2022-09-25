@@ -998,6 +998,12 @@ class Controls:
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
 
+        # Torque Live
+        controlsState.latAccelFactor = self.torque_latAccelFactor
+        controlsState.latAccelOffset = self.torque_latAccelOffset
+        controlsState.friction = self.torque_friction
+
+
         lat_tuning = self.CP.lateralTuning.which()
         if self.joystick_mode:
           controlsState.lateralControlState.debugState = lac_log

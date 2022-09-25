@@ -614,6 +614,12 @@ struct ControlsState @0x97ff69c53601abf1 {
 
   following @79 :Bool;
 
+  # Torque Live
+  latAccelFactor @80 :Float32;
+  latAccelOffset @81 :Float32;
+  friction @82 :Float32;
+
+
 
   enum OpenpilotState @0xdbe58b96d2d1ac61 {
     disabled @0;

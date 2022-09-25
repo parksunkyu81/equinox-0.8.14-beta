@@ -684,6 +684,12 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                               "../assets/offroad/icon_shell.png",
                                               this));
 
+  toggles.append(new ParamControl("IsLowSpeedFactor",
+                                          "Enable Low Speed Factor",
+                                          "",
+                                          "../assets/offroad/icon_shell.png",
+                                          this));
+
   for(ParamControl *toggle : toggles) {
     if(main_layout->count() != 0) {
       toggleLayout->addWidget(horizontal_line());
