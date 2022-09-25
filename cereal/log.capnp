@@ -892,6 +892,13 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
   dynamicTRMode @37 :UInt8;
   dynamicTRValue @38 :Float32;
 
+  e2eX @39 :List(Float64) = [0.];
+  lead0Obstacle @40 :List(Float64) = [0.];
+  lead1Obstacle @41 :List(Float64) = [0.];
+  cruiseTarget @42 :List(Float64) = [0.];
+  stopLine @43 :List(Float64) = [0.];
+  stoplineProb @44 :Float32;
+
   enum LongitudinalPlanSource {
     cruise @0;
     lead0 @1;
