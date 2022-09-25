@@ -886,6 +886,10 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
   solverExecutionTime @35 :Float32;
   following @36 :Bool;
 
+  # Dynamic TR
+  dynamicTRMode @37 :UInt8;
+  dynamicTRValue @38 :Float32;
+
   enum LongitudinalPlanSource {
     cruise @0;
     lead0 @1;

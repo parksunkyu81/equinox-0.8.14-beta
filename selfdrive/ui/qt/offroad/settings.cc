@@ -547,20 +547,21 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   //});
   //main_layout->addWidget(selectCar);
 
-  QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
+  //QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
+  QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
   if(lateral_control.length() == 0)
-    lateral_control = "LQR";
+    lateral_control = "3";
   QPushButton* lateralControlBtn = new QPushButton(lateral_control);
   lateralControlBtn->setObjectName("lateralControlBtn");
-  //lateralControlBtn->setStyleSheet("margin-right: 30px;");
-  //lateralControlBtn->setFixedSize(350, 100);
+
   connect(lateralControlBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(lateralControl); });
   lateralControl = new LateralControl(this);
   connect(lateralControl, &LateralControl::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
   connect(lateralControl, &LateralControl::selected, [=]() {
-     QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
+     //QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
+     QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
      if(lateral_control.length() == 0)
-       lateral_control = "LQR";
+       lateral_control = "3";
      lateralControlBtn->setText(lateral_control);
      main_layout->setCurrentWidget(homeScreen);
   });
@@ -659,7 +660,6 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             this));*/
 
 
-
   toggles.append(new ParamControl("ShowDebugUI",
                                             "Show Debug UI",
                                             "",
@@ -690,6 +690,18 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                           "../assets/offroad/icon_shell.png",
                                           this));
 
+  toggles.append(new ParamControl("E2ELong",
+                                          "Enable E2E Long",
+                                          "Activate E2E Long. It may work unexpectedly. Be careful.",
+                                          "../assets/offroad/icon_shell.png",
+                                          this));
+
+  toggles.append(new ParamControl("CustomTREnabled",
+                                          "Custom TR Enable",
+                                          "to use Custom TR not 1.45(comma default).",
+                                          "../assets/offroad/icon_shell.png",
+                                          this));
+
   for(ParamControl *toggle : toggles) {
     if(main_layout->count() != 0) {
       toggleLayout->addWidget(horizontal_line());
@@ -717,11 +729,13 @@ LateralControl::LateralControl(QWidget* parent): QWidget(parent) {
   QScroller::grabGesture(list->viewport(), QScroller::LeftMouseButtonGesture);
   list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
-  QStringList items = {"TORQUE", "LQR", "INDI"};
+  //QStringList items = {"TORQUE", "LQR", "INDI"};
+  QStringList items = {"1", "2", "3", "4"};
   list->addItems(items);
   list->setCurrentRow(0);
 
-  QString selectedControl = QString::fromStdString(Params().get("LateralControl"));
+  //QString selectedControl = QString::fromStdString(Params().get("LateralControl"));
+  QString selectedControl = QString::fromStdString(Params().get("DynamicTRGap"));
 
   int index = 0;
   for(QString item : items) {
@@ -735,7 +749,8 @@ LateralControl::LateralControl(QWidget* parent): QWidget(parent) {
   QObject::connect(list, QOverload<QListWidgetItem*>::of(&QListWidget::itemClicked),
     [=](QListWidgetItem* item){
 
-    Params().put("LateralControl", list->currentItem()->text().toStdString());
+    //Params().put("LateralControl", list->currentItem()->text().toStdString());
+    Params().put("DynamicTRGap", list->currentItem()->text().toStdString());
     emit selected();
 
     QTimer::singleShot(1000, []() {

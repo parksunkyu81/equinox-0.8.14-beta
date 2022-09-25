@@ -544,7 +544,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
   auto car_control = sm["carControl"].getCarControl();
-  //auto controls_state = sm["controlsState"].getControlsState();
+  auto controls_state = sm["controlsState"].getControlsState();
 
   // 1. 핸들 토크 각도
   int x = 140;
@@ -653,24 +653,25 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     p.setOpacity(1.0);
   }
 
-  // 5.long state
-  /*x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
-  int longControlState = (int)controls_state.getLongControlState();
-  const char* long_state[] = {"off", "pid", "stopping", "starting"};
+  // 5.TR Mode
+  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
+  int tr_mode = (int)controls_state.getDynamicTRMode();
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
-  textColor = QColor(255, 255, 255, 200);
-  str = long_state[longControlState];
+  str.sprintf("%d", tr_mode);
 
-  configFont(p, "Open Sans", 45, "Bold");
-  drawText(p, x, y1-20, "LONG", 200);
+  configFont(p, "Open Sans", textSize, "Bold");
+  textColor = QColor(255, 255, 255, 200);
+
+  configFont(p, "Open Sans", 30, "Bold");
+  drawText(p, x, y1-20, "TR Mode", 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y1+50, str, textColor);
-  p.setOpacity(1.0);*/
+  p.setOpacity(1.0);
 
   // ================================================================================================================ //
 
@@ -768,6 +769,26 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   img_alpha = brake_valid ? 1.0f : 0.15f;
   bg_alpha = brake_valid ? 0.3f : 0.1f;
   drawIcon(p, x, y2, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
+  p.setOpacity(1.0);
+
+  // 5.TR Value
+  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
+  float tr_value = controls_state.getDynamicTRValue();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(200));
+  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
+
+  str.sprintf("%.2f", tr_value);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  textColor = QColor(255, 255, 255, 200);
+
+  configFont(p, "Open Sans", 30, "Bold");
+  drawText(p, x, y1-20, "TR Value", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y1+50, str, textColor);
   p.setOpacity(1.0);
 
 }

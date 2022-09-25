@@ -37,7 +37,6 @@ from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, CONTROL_N
 from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
 from common.params import Params
-from decimal import Decimal
 
 MIN_SET_SPEED_KPH = V_CRUISE_MIN
 MAX_SET_SPEED_KPH = V_CRUISE_MAX
@@ -1002,6 +1001,10 @@ class Controls:
         controlsState.latAccelFactor = self.torque_latAccelFactor
         controlsState.latAccelOffset = self.torque_latAccelOffset
         controlsState.friction = self.torque_friction
+
+        # Dynamic TR
+        controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
+        controlsState.dynamicTRValue = float(self.sm['longitudinalPlan'].dynamicTRValue)
 
 
         lat_tuning = self.CP.lateralTuning.which()

@@ -4,6 +4,17 @@ from selfdrive.car import dbc_dict
 Ecu = car.CarParams.Ecu
 from common.conversions import Conversions as CV
 
+#===============================================#
+CustomTREnabled = "0"
+CruiseGap1 = "11"
+CruiseGap2 = "13"
+CruiseGap3 = "15"
+CruiseGap4 = "17"
+DynamicTRGap = "3"   # DynamicTR을 사용하여 해당 간격에 할당하고 아래의 속도로 TR을 조정합니다.
+DynamicTRSpd = "0,20,40,60,110"
+DynamicTRSet = "1.3,1.4,1.5,1.6,1.7"
+#===============================================#
+
 SLOW_ON_CURVES = 1  # 슬로우 커브 사용 유무 (0,1)
 MIN_CURVE_SPEED = 40. * CV.KPH_TO_MS  # 커브 속도 설정
 
