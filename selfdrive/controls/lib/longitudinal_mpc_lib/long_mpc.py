@@ -362,19 +362,18 @@ class LongitudinalMpc:
     lead_xv_1 = self.process_lead(radarstate.leadTwo)
 
     if self.custom_tr_enabled:
-      #cruise_gap = int(clip(carstate.cruiseGapSet, 1., 4.))
-      #cruise_gap = 4
+      cruise_gap = int(clip(int(Params().get("cruiseGap", encoding="utf8")), 1., 4.))
       self.dynamic_TR = interp(self.v_ego*self.ms_to_spd, self.dynamic_tr_spd, self.dynamic_tr_set)
       if self.dynamic_TR_mode == 1:
-        self.TR = interp(float(1), [1., 2., 3., 4.], [self.dynamic_TR, self.cruise_gap2, self.cruise_gap3, self.cruise_gap4])
+        self.TR = interp(float(cruise_gap), [1., 2., 3., 4.], [self.dynamic_TR, self.cruise_gap2, self.cruise_gap3, self.cruise_gap4])
       elif self.dynamic_TR_mode == 2:
-        self.TR = interp(float(2), [1., 2., 3., 4.], [self.cruise_gap1, self.dynamic_TR, self.cruise_gap3, self.cruise_gap4])
+        self.TR = interp(float(cruise_gap), [1., 2., 3., 4.], [self.cruise_gap1, self.dynamic_TR, self.cruise_gap3, self.cruise_gap4])
       elif self.dynamic_TR_mode == 3:
-        self.TR = interp(float(3), [1., 2., 3., 4.], [self.cruise_gap1, self.cruise_gap2, self.dynamic_TR, self.cruise_gap4])
+        self.TR = interp(float(cruise_gap), [1., 2., 3., 4.], [self.cruise_gap1, self.cruise_gap2, self.dynamic_TR, self.cruise_gap4])
       elif self.dynamic_TR_mode == 4:
-        self.TR = interp(float(4), [1., 2., 3., 4.], [self.cruise_gap1, self.cruise_gap2, self.cruise_gap3, self.dynamic_TR])
-      elif self.dynamic_TR_mode == 0:
-        self.TR = interp(float(0), [1., 2., 3., 4.], [self.cruise_gap1, self.cruise_gap2, self.cruise_gap3, self.cruise_gap4])
+        self.TR = interp(float(cruise_gap), [1., 2., 3., 4.], [self.cruise_gap1, self.cruise_gap2, self.cruise_gap3, self.dynamic_TR])
+      else:
+        self.TR = interp(float(cruise_gap), [1., 2., 3., 4.], [self.cruise_gap1, self.cruise_gap2, self.cruise_gap3, self.cruise_gap4])
     else:
       self.TR = 1.45
 
