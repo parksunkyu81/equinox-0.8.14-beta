@@ -119,6 +119,19 @@ signals:
 
 };
 
+class CruiseGap : public QWidget {
+  Q_OBJECT
+public:
+  explicit CruiseGap(QWidget* parent = 0);
+
+private:
+
+signals:
+  void backPress();
+  void selected();
+
+};
+
 class CommunityPanel : public QWidget {
   Q_OBJECT
 
