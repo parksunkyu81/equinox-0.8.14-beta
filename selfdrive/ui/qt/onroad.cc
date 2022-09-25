@@ -762,12 +762,12 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
   str.sprintf("%.2f", tr_value);
-  str2.sprintf("TR mode: %d", tr_mode);
+  str2.sprintf("TR %d", tr_mode);
 
   configFont(p, "Open Sans", textSize, "Bold");
   textColor = QColor(255, 255, 255, 200);
 
-  configFont(p, "Open Sans", 30, "Bold");
+  configFont(p, "Open Sans", 38, "Bold");
   drawText(p, x, y1-20, str2, 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
