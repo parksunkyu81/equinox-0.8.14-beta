@@ -577,7 +577,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   QPushButton* cruiseGapBtn = new QPushButton("Cruise Gap : " + cruise_gap);
   cruiseGapBtn->setObjectName("cruiseGapBtn");
 
-  connect(cruiseGapBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(lateralControl); });
+  connect(cruiseGapBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(cruiseGap); });
   cruiseGap = new CruiseGap(this);
   connect(cruiseGap, &CruiseGap::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
   connect(cruiseGap, &CruiseGap::selected, [=]() {
