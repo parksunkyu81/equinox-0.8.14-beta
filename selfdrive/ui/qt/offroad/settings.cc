@@ -584,7 +584,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
      QString cruise_gap = QString::fromStdString(Params().get("cruiseGap"));
      if(cruise_gap.length() == 0)
        cruise_gap = "4";
-     lateralControlBtn->setText("Cruise Gap : " + cruise_gap);
+     cruiseGapBtn->setText("Cruise Gap : " + cruise_gap);
      main_layout->setCurrentWidget(homeScreen);
   });
   main_layout->addWidget(lateralControl);
