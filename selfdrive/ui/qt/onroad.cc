@@ -655,7 +655,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   // 5.TR Mode
   x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
-  int tr_mode = (int)controls_state.getDynamicTRMode();
+  int tr_mode = controls_state.getDynamicTRMode();
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(200));
