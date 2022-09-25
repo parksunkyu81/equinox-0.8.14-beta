@@ -567,11 +567,37 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   QHBoxLayout* layoutBtn = new QHBoxLayout(homeWidget);
   layoutBtn->addWidget(lateralControlBtn);
   layoutBtn->addSpacing(10);
+
   //layoutBtn->addWidget(selectCarBtn);
-  //vlayout->addSpacing(10);
-  //vlayout->addLayout(layoutBtn, 0);
-  //vlayout->addSpacing(10);
-  //vlayout->addWidget(scroller, 1);
+
+  // =============================================================================================================== //
+  QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
+  if(lateral_control.length() == 0)
+    lateral_control = "4";
+  QPushButton* lateralControlBtn = new QPushButton("Dynamic TR Gap : " + lateral_control);
+  lateralControlBtn->setObjectName("lateralControlBtn");
+
+  connect(lateralControlBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(lateralControl); });
+  lateralControl = new LateralControl(this);
+  connect(lateralControl, &LateralControl::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
+  connect(lateralControl, &LateralControl::selected, [=]() {
+     QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
+     if(lateral_control.length() == 0)
+       lateral_control = "4";
+     lateralControlBtn->setText("Dynamic TR Gap : " + lateral_control);
+     main_layout->setCurrentWidget(homeScreen);
+  });
+  main_layout->addWidget(lateralControl);
+  QHBoxLayout* layoutBtn = new QHBoxLayout(homeWidget);
+  layoutBtn->addWidget(lateralControlBtn);
+  layoutBtn->addSpacing(10);
+  // =============================================================================================================== //
+
+  vlayout->addSpacing(10);
+  vlayout->addLayout(layoutBtn, 0);
+  vlayout->addSpacing(10);
+  vlayout->addWidget(scroller, 1);
+
   QPalette pal = palette();
   pal.setColor(QPalette::Background, QColor(0x29, 0x29, 0x29));
   setAutoFillBackground(true);
