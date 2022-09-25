@@ -537,21 +537,22 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
 
   main_layout->addWidget(homeScreen);
 
-  //selectCar = new SelectCar(this);
-  //connect(selectCar, &SelectCar::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
-  //connect(selectCar, &SelectCar::selectedCar, [=]() {
+  /*selectCar = new SelectCar(this);
+  connect(selectCar, &SelectCar::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
+  connect(selectCar, &SelectCar::selectedCar, [=]() {
 
-  //   QString selected = QString::fromStdString(Params().get("SelectedCar"));
-  //   selectCarBtn->setText(selected.length() ? selected : "Select your car");
-  //   main_layout->setCurrentWidget(homeScreen);
-  //});
-  //main_layout->addWidget(selectCar);
+     QString selected = QString::fromStdString(Params().get("SelectedCar"));
+     selectCarBtn->setText(selected.length() ? selected : "Select your car");
+     main_layout->setCurrentWidget(homeScreen);
+  });
+  main_layout->addWidget(selectCar);*/
 
   //QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
   QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
   if(lateral_control.length() == 0)
     lateral_control = "3";
-  QPushButton* lateralControlBtn = new QPushButton(lateral_control);
+  //QPushButton* lateralControlBtn = new QPushButton(lateral_control);
+  QPushButton* lateralControlBtn = new QPushButton("Dynamic TR Gap");
   lateralControlBtn->setObjectName("lateralControlBtn");
 
   connect(lateralControlBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(lateralControl); });
