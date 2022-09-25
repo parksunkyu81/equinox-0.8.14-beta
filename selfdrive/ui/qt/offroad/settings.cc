@@ -547,11 +547,9 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   });
   main_layout->addWidget(selectCar);*/
 
-  //QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
   QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
   if(lateral_control.length() == 0)
-    lateral_control = "0";
-  //QPushButton* lateralControlBtn = new QPushButton(lateral_control);
+    lateral_control = "4";
   QPushButton* lateralControlBtn = new QPushButton("Dynamic TR Gap : " + lateral_control);
   lateralControlBtn->setObjectName("lateralControlBtn");
 
@@ -559,10 +557,9 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   lateralControl = new LateralControl(this);
   connect(lateralControl, &LateralControl::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
   connect(lateralControl, &LateralControl::selected, [=]() {
-     //QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
      QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
      if(lateral_control.length() == 0)
-       lateral_control = "0";
+       lateral_control = "4";
      lateralControlBtn->setText("Dynamic TR Gap : " + lateral_control);
      main_layout->setCurrentWidget(homeScreen);
   });
@@ -571,10 +568,10 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   layoutBtn->addWidget(lateralControlBtn);
   layoutBtn->addSpacing(10);
   //layoutBtn->addWidget(selectCarBtn);
-  vlayout->addSpacing(10);
-  vlayout->addLayout(layoutBtn, 0);
-  vlayout->addSpacing(10);
-  vlayout->addWidget(scroller, 1);
+  //vlayout->addSpacing(10);
+  //vlayout->addLayout(layoutBtn, 0);
+  //vlayout->addSpacing(10);
+  //vlayout->addWidget(scroller, 1);
   QPalette pal = palette();
   pal.setColor(QPalette::Background, QColor(0x29, 0x29, 0x29));
   setAutoFillBackground(true);
@@ -727,16 +724,14 @@ LateralControl::LateralControl(QWidget* parent): QWidget(parent) {
 
   QListWidget* list = new QListWidget(this);
   list->setStyleSheet("QListView {padding: 40px; background-color: #393939; border-radius: 15px; height: 140px;} QListView::item{height: 100px}");
-  //list->setAttribute(Qt::WA_AcceptTouchEvents, true);
   QScroller::grabGesture(list->viewport(), QScroller::LeftMouseButtonGesture);
   list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
   //QStringList items = {"TORQUE", "LQR", "INDI"};
-  QStringList items = {"0", "1", "2", "3", "4"};
+  QStringList items = {"1", "2", "3", "4"};
   list->addItems(items);
   list->setCurrentRow(0);
 
-  //QString selectedControl = QString::fromStdString(Params().get("LateralControl"));
   QString selectedControl = QString::fromStdString(Params().get("DynamicTRGap"));
 
   int index = 0;
