@@ -1003,6 +1003,7 @@ class Controls:
         controlsState.friction = self.torque_friction
 
         # Dynamic TR
+        controlsState.cruiseGap = int(Params().get("cruiseGap", encoding="utf8"))
         controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
         controlsState.dynamicTRValue = float(self.sm['longitudinalPlan'].dynamicTRValue)
 

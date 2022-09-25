@@ -590,6 +590,9 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   auto lead_vision = sm["modelV2"].getModelV2().getLeadsV3()[0];
   float vision_dist = lead_vision.getProb() > .5 ? (lead_vision.getX()[0] - 1.5) : 0;
+  float vision_second = vision_dist / 12
+
+  textSize = 38.f;
 
   // Orange Color if less than 15ｍ / Red Color if less than 5ｍ
   if (lead_vision.getProb()) {
@@ -600,7 +603,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     } else {
       textColor = QColor(120, 255, 120, 200);
     }
-    str.sprintf("%.1f", vision_dist);
+    str.sprintf("%.1f/%.1f", vision_dist, vision_second);
   } else {
     str = "──";
   }
@@ -615,6 +618,8 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   // 3. LKAS
   x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 2);
   bool lkas_bool = car_state.getLkasEnable();
+
+  textSize = 48.f;
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(200));
@@ -756,22 +761,23 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
   float tr_value = controls_state.getDynamicTRValue();
   int tr_mode = controls_state.getDynamicTRMode();
+  int cruise_gap = controls_state.getCruiseGap();
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
 
-  str.sprintf("%.2f", tr_value);
-  str2.sprintf("TR %d", tr_mode);
+  str.sprintf("GAP %d", cruise_gap);
+  str2.sprintf("%d, %.2f", tr_mode, tr_value);
 
   configFont(p, "Open Sans", textSize, "Bold");
   textColor = QColor(255, 255, 255, 200);
 
   configFont(p, "Open Sans", 38, "Bold");
-  drawText(p, x, y1-20, str2, 200);
+  drawText(p, x, y1-20, str, 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1+50, str, textColor);
+  drawTextWithColor(p, x, y1+50, str2, textColor);
   p.setOpacity(1.0);
 
 }

@@ -622,6 +622,7 @@ struct ControlsState @0x97ff69c53601abf1 {
   # Dynamic TR
   dynamicTRMode @83 :UInt8;
   dynamicTRValue @84 :Float32;
+  cruiseGap @85 :UInt8;
 
   enum OpenpilotState @0xdbe58b96d2d1ac61 {
     disabled @0;
