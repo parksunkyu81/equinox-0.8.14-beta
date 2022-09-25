@@ -571,25 +571,25 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   //layoutBtn->addWidget(selectCarBtn);
 
   // =============================================================================================================== //
-  QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
-  if(lateral_control.length() == 0)
-    lateral_control = "4";
-  QPushButton* lateralControlBtn = new QPushButton("Dynamic TR Gap : " + lateral_control);
-  lateralControlBtn->setObjectName("lateralControlBtn");
+  QString cruise_gap = QString::fromStdString(Params().get("cruiseGap"));
+  if(cruise_gap.length() == 0)
+    cruise_gap = "4";
+  QPushButton* cruiseGapBtn = new QPushButton("Cruise Gap : " + cruise_gap);
+  cruiseGapBtn->setObjectName("cruiseGapBtn");
 
   connect(lateralControlBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(lateralControl); });
   lateralControl = new LateralControl(this);
   connect(lateralControl, &LateralControl::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
   connect(lateralControl, &LateralControl::selected, [=]() {
-     QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
+     QString lateral_control = QString::fromStdString(Params().get("cruiseGap"));
      if(lateral_control.length() == 0)
        lateral_control = "4";
-     lateralControlBtn->setText("Dynamic TR Gap : " + lateral_control);
+     lateralControlBtn->setText("Cruise Gap : " + lateral_control);
      main_layout->setCurrentWidget(homeScreen);
   });
   main_layout->addWidget(lateralControl);
-  QHBoxLayout* layoutBtn = new QHBoxLayout(homeWidget);
-  layoutBtn->addWidget(lateralControlBtn);
+  QHBoxLayout* layoutBtn_2 = new QHBoxLayout(homeWidget);
+  layoutBtn->addWidget(layoutBtn_2);
   layoutBtn->addSpacing(10);
   // =============================================================================================================== //
 
