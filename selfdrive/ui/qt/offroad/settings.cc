@@ -550,7 +550,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   //QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
   QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
   if(lateral_control.length() == 0)
-    lateral_control = "3";
+    lateral_control = "0";
   //QPushButton* lateralControlBtn = new QPushButton(lateral_control);
   QPushButton* lateralControlBtn = new QPushButton("Dynamic TR Gap");
   lateralControlBtn->setObjectName("lateralControlBtn");
@@ -562,7 +562,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
      //QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
      QString lateral_control = QString::fromStdString(Params().get("DynamicTRGap"));
      if(lateral_control.length() == 0)
-       lateral_control = "3";
+       lateral_control = "0";
      lateralControlBtn->setText(lateral_control);
      main_layout->setCurrentWidget(homeScreen);
   });
@@ -731,7 +731,7 @@ LateralControl::LateralControl(QWidget* parent): QWidget(parent) {
   list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
   //QStringList items = {"TORQUE", "LQR", "INDI"};
-  QStringList items = {"1", "2", "3", "4"};
+  QStringList items = {"0", "1", "2", "3", "4"};
   list->addItems(items);
   list->setCurrentRow(0);
 

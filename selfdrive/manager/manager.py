@@ -68,7 +68,7 @@ def manager_init() -> None:
     ("E2ELong", "0"),
 
     # Dynamic TR
-    ("CustomTREnabled", "0"),
+    ("CustomTREnabled", "1"),
     ("CruiseGap1", "11"),
     ("CruiseGap2", "13"),
     ("CruiseGap3", "15"),
