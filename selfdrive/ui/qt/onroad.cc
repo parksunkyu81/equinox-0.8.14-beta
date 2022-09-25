@@ -654,22 +654,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   }
 
   // 5.TR Mode
-  int tr_mode = controls_state.getDynamicTRMode();
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
 
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(200));
-  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
-
-  textColor = QColor(255, 255, 255, 200);
-  str.sprintf("%d", tr_mode);
-
-  configFont(p, "Open Sans", 30, "Bold");
-  drawText(p, x, y1-20, "TR mode", 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1+50, str, textColor);
-  p.setOpacity(1.0);
 
 
   // ================================================================================================================ //
