@@ -140,6 +140,7 @@ private:
   QWidget* homeScreen = nullptr;
   SelectCar* selectCar = nullptr;
   LateralControl* lateralControl = nullptr;
+  CruiseGap* cruiseGap = nullptr;
 
   QWidget* homeWidget;
 
