@@ -215,6 +215,10 @@ class TorqueEstimator:
       liveTorqueParameters.latAccelOffsetRaw = float(latAccelOffset)
       liveTorqueParameters.frictionCoefficientRaw = float(friction_coeff)
 
+      print('===========[self.torque_latAccelFactor]=============== : ', float(latAccelFactor))
+      print('===========[self.torque_latAccelOffset]=============== : ', float(latAccelOffset))
+      print('===========[self.torque_friction]=============== : ', float(friction_coeff))
+
       if self.is_sane(latAccelFactor, latAccelOffset, friction_coeff):
         liveTorqueParameters.liveValid = True
         self.update_params({'latAccelFactor': latAccelFactor, 'latAccelOffset': latAccelOffset, 'frictionCoefficient': friction_coeff})
@@ -240,9 +244,9 @@ class TorqueEstimator:
     liveTorqueParameters.decay = self.decay
     liveTorqueParameters.maxResets = self.resets
 
-    print('===========[self.torque_latAccelFactor]=============== : ', liveTorqueParameters.latAccelFactorFiltered)
-    print('===========[self.torque_latAccelOffset]=============== : ', liveTorqueParameters.latAccelOffsetFiltered)
-    print('===========[self.torque_friction]=============== : ', liveTorqueParameters.frictionCoefficientFiltered)
+    #print('===========[self.torque_latAccelFactor]=============== : ', liveTorqueParameters.latAccelFactorFiltered)
+    #print('===========[self.torque_latAccelOffset]=============== : ', liveTorqueParameters.latAccelOffsetFiltered)
+    #print('===========[self.torque_friction]=============== : ', liveTorqueParameters.frictionCoefficientFiltered)
     return msg
 
 
