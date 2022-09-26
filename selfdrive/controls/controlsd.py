@@ -214,6 +214,11 @@ class Controls:
         self.desired_curvature = 0.0
         self.desired_curvature_rate = 0.0
 
+        # Live Torque
+        self.torque_latAccelFactor = 0.
+        self.torque_latAccelOffset = 0.
+        self.torque_friction = 0.
+
         # scc smoother
         self.is_cruise_enabled = False
         self.applyMaxSpeed = 0

@@ -158,7 +158,7 @@ class TorqueEstimator:
 
   def estimate_params(self):
     points = self.filtered_points.get_points(FIT_POINTS_TOTAL)
-    print('===========[Bucket points]=============== : ', points)
+    #print('===========[Bucket points]=============== : ', points)
     # total least square solution as both x and y are noisy observations
     # this is empirically the slope of the hysteresis parallelogram as opposed to the line through the diagonals
     try:
@@ -210,7 +210,7 @@ class TorqueEstimator:
     liveTorqueParameters = msg.liveTorqueParameters
     liveTorqueParameters.version = VERSION
 
-    print('===========[liveTorqueParameters]=============== : ', liveTorqueParameters)
+    #print('===========[liveTorqueParameters]=============== : ', liveTorqueParameters)
 
     if self.filtered_points.is_valid():
       latAccelFactor, latAccelOffset, friction_coeff = self.estimate_params()
