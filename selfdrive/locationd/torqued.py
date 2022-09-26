@@ -210,9 +210,9 @@ class TorqueEstimator:
     liveTorqueParameters = msg.liveTorqueParameters
     liveTorqueParameters.version = VERSION
 
-    print('===========[liveTorqueParameters]=============== : ', liveTorqueParameters)
+    #print('===========[liveTorqueParameters]=============== : ', liveTorqueParameters)
 
-    if self.filtered_points.is_valid():
+    if self.filtered_points.is_valid():   # 버킷 포인트가 true 여야지 된다.
       latAccelFactor, latAccelOffset, friction_coeff = self.estimate_params()
       liveTorqueParameters.latAccelFactorRaw = float(latAccelFactor)
       liveTorqueParameters.latAccelOffsetRaw = float(latAccelOffset)
@@ -247,9 +247,9 @@ class TorqueEstimator:
     liveTorqueParameters.decay = self.decay
     liveTorqueParameters.maxResets = self.resets
 
-    #print('===========[self.torque_latAccelFactor]=============== : ', liveTorqueParameters.latAccelFactorFiltered)
-    #print('===========[self.torque_latAccelOffset]=============== : ', liveTorqueParameters.latAccelOffsetFiltered)
-    #print('===========[self.torque_friction]=============== : ', liveTorqueParameters.frictionCoefficientFiltered)
+    print('===========[self.torque_latAccelFactor]=============== : ', liveTorqueParameters.latAccelFactorFiltered)
+    print('===========[self.torque_latAccelOffset]=============== : ', liveTorqueParameters.latAccelOffsetFiltered)
+    print('===========[self.torque_friction]=============== : ', liveTorqueParameters.frictionCoefficientFiltered)
     return msg
 
 
