@@ -730,14 +730,17 @@ class Controls:
                 # Todo: Figure out why this is needed, and remove it
                 if (torque_params.latAccelFactorFiltered > 0) and (self.sm.valid['liveTorqueParameters']):
 
-                    #print('========================[PSK 1]=================================')
-
+                    #print('========================[Live Torque]=================================')
                     self.torque_latAccelFactor = torque_params.latAccelFactorFiltered
                     self.torque_latAccelOffset = torque_params.latAccelOffsetFiltered
                     self.torque_friction = torque_params.frictionCoefficientFiltered
                     self.LaC.update_live_torque_params(torque_params.latAccelFactorFiltered,
                                                        torque_params.latAccelOffsetFiltered,
                                                        torque_params.frictionCoefficientFiltered)
+
+                    print('===========[self.torque_latAccelFactor]=============== : ' + self.torque_latAccelFactor)
+                    print('===========[self.torque_latAccelOffset]=============== : ' + self.torque_latAccelOffset)
+                    print('===========[self.torque_friction]=============== : ' + self.torque_friction)
                 else:
 
                     #print('========================[PSK 2]=================================')
