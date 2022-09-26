@@ -517,7 +517,7 @@ void NvgWindow::drawHud(QPainter &p) {
   }
 
   QString infoText;
-  infoText.sprintf("%s(%.2f/%.2f/%.2f) SR(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d) CURVE(%d) SAFE_SPEED(%d)",
+  infoText.sprintf("%s(%.2f/%.2f/%.2f) SR(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d) CURV(%d) SAFE_SPEED(%d) LIVE_TORQUE(%d)",
                       s->lat_control.c_str(),
                       controls_state.getLatAccelFactor(),
                       controls_state.getLatAccelOffset(),
@@ -528,11 +528,12 @@ void NvgWindow::drawHud(QPainter &p) {
                       cpuUsage,
                       device_State.getMemoryUsagePercent(),
                       Params().getBool("SccSmootherSlowOnCurves"),
-                      Params().getBool("SafeDistanceSpeed")
+                      Params().getBool("SafeDistanceSpeed"),
+                      Params().getBool("IsLiveTorque")
                       );
 
   // info
-  configFont(p, "Open Sans", 30, "Regular");
+  configFont(p, "Open Sans", 36, "Regular");
   p.setPen(QColor(120, 255, 120, 200));
   p.drawText(rect().left() + 20, rect().height() - 15, infoText);
 

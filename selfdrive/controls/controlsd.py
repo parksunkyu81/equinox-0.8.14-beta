@@ -729,6 +729,9 @@ class Controls:
                 torque_params = self.sm['liveTorqueParameters']
                 # Todo: Figure out why this is needed, and remove it
                 if (torque_params.latAccelFactorFiltered > 0) and (self.sm.valid['liveTorqueParameters']):
+
+                    print('========================[PSK 1]=================================')
+
                     self.torque_latAccelFactor = torque_params.latAccelFactorFiltered
                     self.torque_latAccelOffset = torque_params.latAccelOffsetFiltered
                     self.torque_friction = torque_params.frictionCoefficientFiltered
@@ -736,6 +739,9 @@ class Controls:
                                                        torque_params.latAccelOffsetFiltered,
                                                        torque_params.frictionCoefficientFiltered)
                 else:
+
+                    print('========================[PSK 2]=================================')
+
                     self.torque_latAccelFactor = float(2.5)
                     self.torque_latAccelOffset = 0.
                     self.torque_friction = float(0.15)
