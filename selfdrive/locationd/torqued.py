@@ -239,6 +239,10 @@ class TorqueEstimator:
     liveTorqueParameters.totalBucketPoints = len(self.filtered_points)
     liveTorqueParameters.decay = self.decay
     liveTorqueParameters.maxResets = self.resets
+
+    print('===========[self.torque_latAccelFactor]=============== : ', liveTorqueParameters.latAccelFactorFiltered)
+    print('===========[self.torque_latAccelOffset]=============== : ', liveTorqueParameters.latAccelOffsetFiltered)
+    print('===========[self.torque_friction]=============== : ', liveTorqueParameters.frictionCoefficientFiltered)
     return msg
 
 

@@ -738,9 +738,9 @@ class Controls:
                                                        torque_params.latAccelOffsetFiltered,
                                                        torque_params.frictionCoefficientFiltered)
 
-                    print('===========[self.torque_latAccelFactor]=============== : ', self.torque_latAccelFactor)
-                    print('===========[self.torque_latAccelOffset]=============== : ', self.torque_latAccelOffset)
-                    print('===========[self.torque_friction]=============== : ', self.torque_friction)
+                    #print('===========[self.torque_latAccelFactor]=============== : ', self.torque_latAccelFactor)
+                    #print('===========[self.torque_latAccelOffset]=============== : ', self.torque_latAccelOffset)
+                    #print('===========[self.torque_friction]=============== : ', self.torque_friction)
                 else:
 
                     #print('========================[PSK 2]=================================')
