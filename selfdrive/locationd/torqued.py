@@ -210,15 +210,17 @@ class TorqueEstimator:
     liveTorqueParameters = msg.liveTorqueParameters
     liveTorqueParameters.version = VERSION
 
+    print('===========[liveTorqueParameters]=============== : ', liveTorqueParameters)
+
     if self.filtered_points.is_valid():
       latAccelFactor, latAccelOffset, friction_coeff = self.estimate_params()
       liveTorqueParameters.latAccelFactorRaw = float(latAccelFactor)
       liveTorqueParameters.latAccelOffsetRaw = float(latAccelOffset)
       liveTorqueParameters.frictionCoefficientRaw = float(friction_coeff)
 
-      print('===========[self.torque_latAccelFactor]=============== : ', float(latAccelFactor))
-      print('===========[self.torque_latAccelOffset]=============== : ', float(latAccelOffset))
-      print('===========[self.torque_friction]=============== : ', float(friction_coeff))
+      #print('===========[self.torque_latAccelFactor]=============== : ', float(latAccelFactor))
+      #print('===========[self.torque_latAccelOffset]=============== : ', float(latAccelOffset))
+      #print('===========[self.torque_friction]=============== : ', float(friction_coeff))
 
       if self.is_sane(latAccelFactor, latAccelOffset, friction_coeff):
         liveTorqueParameters.liveValid = True
