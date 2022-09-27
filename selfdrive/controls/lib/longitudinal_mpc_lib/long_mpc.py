@@ -375,7 +375,7 @@ class LongitudinalMpc:
       else:
         self.TR = interp(float(cruise_gap), [1., 2., 3., 4.], [self.cruise_gap1, self.cruise_gap2, self.cruise_gap3, self.cruise_gap4])
     else:
-      self.TR = 1.45
+      self.TR = 1.35
 
     self.set_desired_TR(self.TR)
 
