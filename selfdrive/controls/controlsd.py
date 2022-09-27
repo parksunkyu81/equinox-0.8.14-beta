@@ -37,6 +37,7 @@ from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, CONTROL_N
 from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
 from common.params import Params
+from decimal import Decimal
 
 MIN_SET_SPEED_KPH = V_CRUISE_MIN
 MAX_SET_SPEED_KPH = V_CRUISE_MAX
@@ -212,6 +213,11 @@ class Controls:
         self.steer_limited = False
         self.desired_curvature = 0.0
         self.desired_curvature_rate = 0.0
+
+        # Live Torque
+        self.torque_latAccelFactor = 0.
+        self.torque_latAccelOffset = 0.
+        self.torque_friction = 0.
 
         # scc smoother
         self.is_cruise_enabled = False
@@ -742,12 +748,11 @@ class Controls:
                     #print('===========[self.torque_latAccelOffset]=============== : ', self.torque_latAccelOffset)
                     #print('===========[self.torque_friction]=============== : ', self.torque_friction)
                 else:
-
-                    #print('========================[PSK 2]=================================')
-
-                    self.torque_latAccelFactor = float(2.5)
+                    self.torque_latAccelFactor = float(
+                        Decimal(Params().get("TorqueMaxLatAccel", encoding="utf8")) * Decimal('0.1'))
                     self.torque_latAccelOffset = 0.
-                    self.torque_friction = float(0.15)
+                    self.torque_friction = float(
+                        Decimal(Params().get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))
                     self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset,
                                                        self.torque_friction)
             else:
