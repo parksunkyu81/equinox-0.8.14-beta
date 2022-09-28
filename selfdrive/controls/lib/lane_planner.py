@@ -23,7 +23,6 @@ TRAJECTORY_SIZE = 33
 # 모델은 TICI와 EON의 차이를 알고 있다.
 # 따라서 경로 오프셋이 필요하지 않습니다.
 
-#PATH_OFFSET = 0.00
 PATH_OFFSET = ntune_common_get('pathOffset')  # default 0.0
 if EON:
   #CAMERA_OFFSET = 0.00
@@ -66,8 +65,8 @@ class LanePlanner:
     #opkr
     self.params = Params()
     self.drive_close_to_edge = self.params.get_bool("CloseToRoadEdge")
-    self.left_edge_offset = float(Decimal(self.params.get("LeftEdgeOffset", encoding="utf8")) * Decimal('0.01')) #0.15 move to right
-    self.right_edge_offset = float(Decimal(self.params.get("RightEdgeOffset", encoding="utf8")) * Decimal('0.01')) #-0.15 move to left
+    self.left_edge_offset = float(self.params.get("LeftEdgeOffset", encoding="utf8"))     #0.15 move to right
+    self.right_edge_offset = float(self.params.get("RightEdgeOffset", encoding="utf8"))   #-0.15 move to left
 
     self.road_edge_offset = 0.0
     self.total_camera_offset = self.camera_offset
