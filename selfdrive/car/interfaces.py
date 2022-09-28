@@ -13,6 +13,7 @@ from selfdrive.controls.lib.events import Events
 from selfdrive.controls.lib.vehicle_model import VehicleModel
 from common.numpy_fast import interp
 
+from common.params import Params
 
 GearShifter = car.CarState.GearShifter
 EventName = car.CarEvent.EventName
@@ -127,15 +128,14 @@ class CarInterfaceBase(ABC):
     return ret
 
   @staticmethod
-  def configure_torque_tune(tune, LAT_ACCEL_FACTOR=2.5, FRICTION=0.01, steering_angle_deadzone_deg=0.0,
-                            use_steering_angle=True):
+  def configure_torque_tune(tune, steering_angle_deadzone_deg=0.0, use_steering_angle=True):
     tune.init('torque')
     tune.torque.useSteeringAngle = use_steering_angle
     tune.torque.kp = 1.0
     tune.torque.kf = 1.0
     tune.torque.ki = 0.1
-    tune.torque.friction = FRICTION
-    tune.torque.latAccelFactor = LAT_ACCEL_FACTOR
+    tune.torque.friction = float(Params().get("TorqueFriction", encoding="utf8"))
+    tune.torque.latAccelFactor = float(Params().get("TorqueMaxLatAccel", encoding="utf8"))
     tune.torque.latAccelOffset = 0.0
     tune.torque.steeringAngleDeadzoneDeg = steering_angle_deadzone_deg
 

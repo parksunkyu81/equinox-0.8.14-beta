@@ -7,6 +7,7 @@ from enum import Enum
 import numpy as np
 
 CONF_PATH = '/data/ntune/'
+CONF_LAT_LQR_FILE = '/data/ntune/lat_lqr.json'
 CONF_LAT_INDI_FILE = '/data/ntune/lat_indi.json'
 CONF_LAT_TORQUE_FILE = '/data/ntune/lat_torque_v4.json'
 
@@ -23,6 +24,7 @@ class LatType(Enum):
   NONE = 0
   INDI = 1
   TORQUE = 2
+  LQR = 3
 
 
 class nTune():
@@ -52,6 +54,14 @@ class nTune():
     elif "LatControlINDI" in str(type(ctrl)):
       self.type = LatType.INDI
       self.file = CONF_LAT_INDI_FILE
+    elif "LatControlLQR" in str(type(ctrl)):
+      self.type = LatType.LQR
+      self.file = CONF_LAT_LQR_FILE
+      ctrl.A = np.array([0., 1., -0.22619643, 1.21822268]).reshape((2, 2))
+      ctrl.B = np.array([-1.92006585e-04, 3.95603032e-05]).reshape((2, 1))
+      ctrl.C = np.array([1., 0.]).reshape((1, 2))
+      ctrl.K = np.array([-110., 451.]).reshape((1, 2))
+      ctrl.L = np.array([0.33, 0.318]).reshape((2, 1))
     else:
       self.file = CONF_PATH + group + ".json"
 
@@ -138,9 +148,13 @@ class nTune():
       return self.checkValidIndi()
     elif self.type == LatType.TORQUE:
       return self.checkValidTorque()
+    elif self.type == LatType.LQR:
+      return self.checkValidLqr()
     elif self.group == "common":
       return self.checkValidCommon()
-    else:
+    elif self.group == "option":
+      return self.checkValidOption()
+    elif self.group =="scc":
       return self.checkValidISCC()
 
   def update(self):
@@ -152,11 +166,13 @@ class nTune():
       self.updateIndi()
     elif self.type == LatType.TORQUE:
       self.updateTorque()
+    elif self.type == LatType.LQR:
+      self.updateLqr()
 
   def checkValidCommon(self):
     updated = False
 
-    if self.checkValue("useLiveSteerRatio", 0., 1., 1.):
+    if self.checkValue("useLiveSteerRatio", 0., 1., 0.):
       updated = True
 
     if self.checkValue("steerRatio", 10.0, 20.0, 16.5):
@@ -165,8 +181,21 @@ class nTune():
     if self.checkValue("steerActuatorDelay", 0., 0.8, 0.1):
       updated = True
 
+    if self.checkValue("cameraOffset", -2.0, 2.0, -0.06):
+      updated = True
+
     if self.checkValue("pathOffset", -1.0, 1.0, 0.0):
       updated = True
+
+    if self.checkValue("steerLimitTimer", 0.1, 3.0, 0.4):
+      updated = True
+
+    if self.checkValue("steerRatioScale", 0.0, 0.3, 0.01):
+      updated = True
+
+    if self.checkValue("steerRateCost", 0.1, 1.5, 1.0):
+      updated = True
+
 
     return updated
 
@@ -193,9 +222,11 @@ class nTune():
       updated = True
     if self.checkValue("latAccelFactor", 0.5, 4.5, 3.0):
       updated = True
-    if self.checkValue("friction", 0.0, 0.2, 0.0):
+    if self.checkValue("friction", 0.0, 0.2, 0.1):
       updated = True
     if self.checkValue("angle_deadzone_v2", 0.0, 2.0, 0.0):
+      updated = True
+    if self.checkValue("isLowSpeedFactor", 0., 1., 0.):
       updated = True
 
     return updated
@@ -209,7 +240,47 @@ class nTune():
     if self.checkValue("sccBrakeFactor", 0.5, 1.5, 1.0):
       updated = True
 
-    if self.checkValue("sccCurvatureFactor", 0.5, 1.5, 0.98):
+    if self.checkValue("sccCurvatureFactor", 0.5, 1.5, 0.96):
+      updated = True
+
+    return updated
+
+  def checkValidLQR(self):
+    updated = False
+
+    if self.checkValue("scale", 500.0, 5000.0, 1600.0):
+      updated = True
+
+    if self.checkValue("ki", 0.0, 0.2, 0.01):
+      updated = True
+
+    if self.checkValue("dcGain", 0.002, 0.004, 0.0025):
+      updated = True
+
+    return updated
+
+  def checkValidOption(self):
+    updated = False
+
+    if self.checkValue("autoEnable", 0., 1., 0.):
+      updated = True
+
+    if self.checkValue("autoEnableSpeed", 0., 60., 15.):
+      updated = True
+
+    if self.checkValue("autoCruiseSet", 0., 1., 0.):
+      updated = True
+
+    if self.checkValue("autoCruiseSetDependsOnNda", 0., 1., 0.):
+      updated = True
+
+    if self.checkValue("batteryChargingControl", 0., 1., 0.):
+      updated = True
+
+    if self.checkValue("batteryChargingMin", 0., 100., 70.):
+      updated = True
+
+    if self.checkValue("batteryChargingMax", 0., 100., 80.):
       updated = True
 
     return updated
@@ -233,8 +304,16 @@ class nTune():
         torque.torque_params.latAccelFactor = float(self.config["latAccelFactor"])
         torque.torque_params.friction = float(self.config["friction"])
 
-  def read_cp(self):
+  def updateLqr(self):
+    lqr = self.get_ctrl()
+    if lqr is not None:
+      lqr.scale = float(self.config["scale"])
+      lqr.ki = float(self.config["ki"])
+      lqr.dc_gain = float(self.config["dcGain"])
+      lqr.x_hat = np.array([[0], [0]])
+      lqr.reset()
 
+  def read_cp(self):
     try:
       if self.CP is not None:
 
@@ -249,6 +328,8 @@ class nTune():
           self.config["useLiveSteerRatio"] = 1.
           self.config["steerRatio"] = round(self.CP.steerRatio, 2)
           self.config["steerActuatorDelay"] = round(self.CP.steerActuatorDelay, 2)
+          self.config["steerRateCost"] = round(self.CP.steerRateCost, 2)
+          self.config["steerRatioScale"] = round(self.CP.steerRatioScale, 2)
 
     except:
       pass
@@ -309,3 +390,15 @@ def ntune_common_enabled(key):
 
 def ntune_scc_get(key):
   return ntune_get("scc", key)
+
+def ntune_option_get(key):
+   return ntune_get("option", key)
+
+def ntune_option_enabled(key):
+  return ntune_option_get(key) > 0.5
+
+def ntune_lqr_get(key):
+  return ntune_get("lat_lqr", key)
+
+def ntune_torque_get(key):
+  return ntune_get("lat_torque_v4", key)
