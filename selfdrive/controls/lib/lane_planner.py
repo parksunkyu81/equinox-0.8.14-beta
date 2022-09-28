@@ -65,8 +65,10 @@ class LanePlanner:
     #opkr
     self.params = Params()
     self.drive_close_to_edge = self.params.get_bool("CloseToRoadEdge")
-    self.left_edge_offset = float(self.params.get("LeftEdgeOffset", encoding="utf8"))     #0.15 move to right
-    self.right_edge_offset = float(self.params.get("RightEdgeOffset", encoding="utf8"))   #-0.15 move to left
+    self.left_edge_offset = float(
+      Decimal(self.params.get("LeftEdgeOffset", encoding="utf8")) * Decimal('0.01'))  # 0.15 move to right
+    self.right_edge_offset = float(
+      Decimal(self.params.get("RightEdgeOffset", encoding="utf8")) * Decimal('0.01'))  # -0.15 move to left
 
     self.road_edge_offset = 0.0
     self.total_camera_offset = self.camera_offset
