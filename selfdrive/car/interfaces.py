@@ -12,6 +12,7 @@ from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, apply_deadzone
 from selfdrive.controls.lib.events import Events
 from selfdrive.controls.lib.vehicle_model import VehicleModel
 from common.numpy_fast import interp
+from decimal import Decimal
 
 from common.params import Params
 
