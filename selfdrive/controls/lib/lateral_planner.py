@@ -1,7 +1,6 @@
 import numpy as np
 from common.realtime import sec_since_boot, DT_MDL
 from common.numpy_fast import interp
-from selfdrive.ntune import ntune_common_get
 from selfdrive.swaglog import cloudlog
 from selfdrive.controls.lib.lateral_mpc_lib.lat_mpc import LateralMpc
 from selfdrive.controls.lib.drive_helpers import CONTROL_N, MPC_COST_LAT, LAT_MPC_N
@@ -9,7 +8,8 @@ from selfdrive.controls.lib.lane_planner import LanePlanner, TRAJECTORY_SIZE
 from selfdrive.controls.lib.desire_helper import DesireHelper, AUTO_LCA_START_TIME
 import cereal.messaging as messaging
 from cereal import log
-
+from common.params import Params
+from selfdrive.ntune import ntune_common_get
 
 class LateralPlanner:
   def __init__(self, CP, use_lanelines=True, wide_camera=False):
@@ -17,16 +17,15 @@ class LateralPlanner:
     self.LP = LanePlanner(wide_camera)
     self.DH = DesireHelper()
 
-    # Vehicle model parameters used to calculate lateral movement of car
     self.factor1 = CP.wheelbase - CP.centerToFront
     self.factor2 = (CP.centerToFront * CP.mass) / (CP.wheelbase * CP.tireStiffnessRear)
+
     self.last_cloudlog_t = 0
     self.solution_invalid_cnt = 0
 
     self.path_xyz = np.zeros((TRAJECTORY_SIZE, 3))
     self.path_xyz_stds = np.ones((TRAJECTORY_SIZE, 3))
     self.plan_yaw = np.zeros((TRAJECTORY_SIZE,))
-    self.plan_curv_rate = np.zeros((TRAJECTORY_SIZE,))
     self.t_idxs = np.arange(TRAJECTORY_SIZE)
     self.y_pts = np.zeros(TRAJECTORY_SIZE)
 
@@ -46,8 +45,12 @@ class LateralPlanner:
     self.LP.parse_model(md)
     if len(md.position.x) == TRAJECTORY_SIZE and len(md.orientation.x) == TRAJECTORY_SIZE:
       self.path_xyz = np.column_stack([md.position.x, md.position.y, md.position.z])
+      self.speed_forward = np.linalg.norm(np.column_stack([md.velocity.x, md.velocity.y, md.velocity.z]), axis=1)
       self.t_idxs = np.array(md.position.t)
       self.plan_yaw = np.array(md.orientation.z)
+      self.plan_yaw_rate = np.array(md.orientationRate.z)
+      self.plan_curv = self.plan_yaw_rate / np.maximum(self.speed_forward, np.ones_like(self.speed_forward))
+      self.plan_curv_rate = np.gradient(self.plan_curv, self.t_idxs)
     if len(md.position.xStd) == TRAJECTORY_SIZE:
       self.path_xyz_stds = np.column_stack([md.position.xStd, md.position.yStd, md.position.zStd])
 
@@ -61,16 +64,23 @@ class LateralPlanner:
       self.LP.rll_prob *= self.DH.lane_change_ll_prob
 
     # Calculate final driving path and set MPC costs
+    steer_rate = MPC_COST_LAT.STEER_RATE
+    #if Params().get_bool("UseNpilotManager"):
+    #  steer_rate = max(ntune_common_get('steerRateCost'), 0.3)
+    steer_rate = max(ntune_common_get('steerRateCost'), 0.3)
+
     if self.use_lanelines:
       d_path_xyz = self.LP.get_d_path(v_ego, self.t_idxs, self.path_xyz)
+      #if Params().get_bool("UseNpilotManager"):
       d_path_xyz[:, 1] += ntune_common_get('pathOffset')
-      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, MPC_COST_LAT.HEADING, MPC_COST_LAT.STEER_RATE)
+      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, MPC_COST_LAT.HEADING, steer_rate)
     else:
       d_path_xyz = self.path_xyz
+      #if Params().get_bool("UseNpilotManager"):
       d_path_xyz[:, 1] += ntune_common_get('pathOffset')
       # Heading cost is useful at low speed, otherwise end of plan can be off-heading
       heading_cost = interp(v_ego, [5.0, 10.0], [MPC_COST_LAT.HEADING, 0.15])
-      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, heading_cost, MPC_COST_LAT.STEER_RATE)
+      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, heading_cost, steer_rate)
 
     y_pts = np.interp(v_ego * self.t_idxs[:LAT_MPC_N + 1], np.linalg.norm(d_path_xyz, axis=1), d_path_xyz[:, 1])
     heading_pts = np.interp(v_ego * self.t_idxs[:LAT_MPC_N + 1], np.linalg.norm(self.path_xyz, axis=1), self.plan_yaw)
@@ -80,17 +90,19 @@ class LateralPlanner:
     assert len(y_pts) == LAT_MPC_N + 1
     assert len(heading_pts) == LAT_MPC_N + 1
     assert len(curv_rate_pts) == LAT_MPC_N + 1
+    # self.x0[4] = v_ego
     lateral_factor = max(0, self.factor1 - (self.factor2 * v_ego**2))
     p = np.array([v_ego, lateral_factor])
     self.lat_mpc.run(self.x0,
                      p,
                      y_pts,
                      heading_pts,
-                     curv_rate_pts)
+                     np.zeros_like(curv_rate_pts))
     # init state for next
     # mpc.u_sol is the desired curvature rate given x0 curv state.
     # with x0[3] = measured_curvature, this would be the actual desired rate.
     # instead, interpolate x_sol so that x0[3] is the desired curvature for lat_control.
+    # init state for next
     self.x0[3] = interp(DT_MDL, self.t_idxs[:LAT_MPC_N + 1], self.lat_mpc.x_sol[:, 3])
 
     #  Check for infeasible MPC solution
@@ -134,5 +146,7 @@ class LateralPlanner:
 
     lateralPlan.autoLaneChangeEnabled = self.DH.auto_lane_change_enabled
     lateralPlan.autoLaneChangeTimer = int(AUTO_LCA_START_TIME) - int(self.DH.auto_lane_change_timer)
+
+    lateralPlan.totalCameraOffset = float(self.LP.total_camera_offset)
 
     pm.send('lateralPlan', plan_send)

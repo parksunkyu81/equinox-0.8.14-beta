@@ -24,6 +24,7 @@ from selfdrive.swaglog import cloudlog
 from selfdrive.thermald.power_monitoring import PowerMonitoring
 from selfdrive.thermald.fan_controller import EonFanController, UnoFanController, TiciFanController
 from selfdrive.version import terms_version, training_version
+from selfdrive.ntune import ntune_option_enabled
 
 ThermalStatus = log.DeviceState.ThermalStatus
 NetworkType = log.DeviceState.NetworkType
@@ -204,8 +205,22 @@ def thermald_thread(end_event, hw_queue):
 
   restart_triggered_ts = 0.
   panda_state_ts = 0.
+  is_openpilot_view_enabled = 0
+  opkrAutoShutdown = 0
+  shutdown_trigger = 1
+
+  #OPKR
+  if params.get_bool("UseNpilotManager"):
+    battery_charging_control = ntune_option_enabled('batteryChargingControl')
+    battery_charging_min = int(ntune_option_enabled('batteryChargingMin'))
+    battery_charging_max = int(ntune_option_enabled('batteryChargingMax'))
+  else:
+    battery_charging_control = params.get_bool("OpkrBatteryChargingControl")
+    battery_charging_min = int(params.get("OpkrBatteryChargingMin", encoding="utf8"))
+    battery_charging_max = int(params.get("OpkrBatteryChargingMax", encoding="utf8"))
 
   while not end_event.is_set():
+    ts = sec_since_boot()
     sm.update(PANDA_STATES_TIMEOUT)
 
     pandaStates = sm['pandaStates']
@@ -237,16 +252,23 @@ def thermald_thread(end_event, hw_queue):
       usb_power = peripheralState.usbPowerMode != log.PeripheralState.UsbPowerMode.client
 
       # Setup fan handler on first connect to panda
-      if fan_controller is None and peripheralState.pandaType != log.PandaState.PandaType.unknown:
-        is_uno = peripheralState.pandaType == log.PandaState.PandaType.uno
+      #if fan_controller is None and peripheralState.pandaType != log.PandaState.PandaType.unknown:
+      #  is_uno = peripheralState.pandaType == log.PandaState.PandaType.uno
 
-        #if TICI:
-        #  fan_controller = TiciFanController()
-        #elif is_uno or PC:
-        #  fan_controller = UnoFanController()
-        #else:
-        #  fan_controller = EonFanController()
-    else:
+      #  if TICI:
+      #    fan_controller = TiciFanController()
+      #  elif is_uno or PC:
+      #    fan_controller = UnoFanController()
+      #  else:
+      #    fan_controller = EonFanController()
+    #sunny
+    elif params.get_bool("IsOpenpilotViewEnabled") and is_openpilot_view_enabled == 0:
+      is_openpilot_view_enabled = 1
+      onroad_conditions["ignition"] = True
+    elif not params.get_bool("IsOpenpilotViewEnabled") and is_openpilot_view_enabled == 1:
+      is_openpilot_view_enabled = 0
+      onroad_conditions["ignition"] = False  
+    elif not params.get_bool("IsOpenpilotViewEnabled"):
       if sec_since_boot() - panda_state_ts > 3.:
         if onroad_conditions["ignition"]:
           cloudlog.error("Lost panda connection while onroad")
@@ -430,6 +452,10 @@ def thermald_thread(end_event, hw_queue):
       statlog.gauge(f"modem_temperature{i}", temp)
     statlog.gauge("fan_speed_percent_desired", msg.deviceState.fanSpeedPercentDesired)
     statlog.gauge("screen_brightness_percent", msg.deviceState.screenBrightnessPercent)
+
+    # atom
+    if usb_power and battery_charging_control:
+      power_monitor.charging_ctrl(msg, ts, battery_charging_max, battery_charging_min)
 
     # report to server once every 10 minutes
     if (count % int(600. / DT_TRML)) == 0:

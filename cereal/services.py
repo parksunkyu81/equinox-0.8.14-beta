@@ -38,6 +38,7 @@ services = {
   "logMessage": (True, 0.),
   "errorLogMessage": (True, 0., 1),
   "liveCalibration": (True, 4., 4),
+  "liveTorqueParameters": (True, 4., 1),
   "androidLog": (True, 0.),
   "carState": (True, 100., 10),
   "carControl": (True, 100., 10),
@@ -69,7 +70,6 @@ services = {
   "navRoute": (True, 0.),
   "navThumbnail": (True, 0.),
   "roadLimitSpeed": (False, 0.),
-  "liveTorqueParameters": (True, 4, 1),
 
   # debug
   "testJoystick": (False, 0.),

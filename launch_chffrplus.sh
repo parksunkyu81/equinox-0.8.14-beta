@@ -24,6 +24,13 @@ function two_init {
     fi
   fi
   # mount -o remount,r /system  
+  
+  neos=`cat /VERSION`
+  if [ -f /ONEPLUS ] && [ $neos != 20 ] ; then
+    mount -o remount,rw /system
+    echo -n 20 > /VERSION
+    mount -o remount,r /system
+  fi
 
   # set IO scheduler
   setprop sys.io.scheduler noop
@@ -94,7 +101,29 @@ function two_init {
       rm -f /persist/sensors/sensors_settings /persist/sensors/error_log /persist/sensors/gyro_sensitity_cal &&
       echo "restart" > /sys/kernel/debug/msm_subsys/slpi &&
       sleep 5  # Give Android sensor subsystem a moment to recover
-  fi  
+  fi
+
+  if [ ! -f "/data/ntune/common.json" ]; then
+    mkdir /data/ntune
+  fi
+
+  if [ ! -f "/data/ntune/lat_torque_v4.json" ]; then
+    cp /data/openpilot/ntune/lat_torque_v4.json /data/ntune/lat_torque_v4.json
+  fi
+
+  if [ ! -f "/data/ntune/common.json" ]; then
+    cp /data/openpilot/ntune/common.json /data/ntune/common.json
+  fi
+
+  if [ ! -f "/data/ntune/scc.json" ]; then
+    cp /data/openpilot/ntune/scc.json /data/ntune/scc.json
+  fi
+
+  if [ ! -f "/data/ntune/option.json" ]; then
+    cp /data/openpilot/ntune/option.json /data/ntune/option.json
+  fi
+
+
 }
 
 function launch {
@@ -117,8 +146,13 @@ function launch {
     python /data/openpilot/common/spinner.py &
   fi
 
-  cat /data/openpilot/selfdrive/car/hyundai/values.py | grep ' = "' | awk -F'"' '{print $2}' > /data/params/d/CarList
   python ./selfdrive/car/hyundai/values.py > /data/params/d/SupportedCars
+  
+  dongleid=`cat /data/params/d/DongleId`
+
+  if [[ $dongleid == *"Unregistered"* ]]; then
+    echo -en "000000" > /data/params/d/DongleId
+  fi
 
   # start manager
   cd selfdrive/manager
