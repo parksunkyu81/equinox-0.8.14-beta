@@ -618,6 +618,7 @@ struct ControlsState @0x97ff69c53601abf1 {
   latAccelFactor @80 :Float32;
   latAccelOffset @81 :Float32;
   friction @82 :Float32;
+  totalCameraOffset @86 :Float32;
 
   # Dynamic TR
   dynamicTRMode @83 :UInt8;
