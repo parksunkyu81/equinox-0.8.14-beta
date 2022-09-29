@@ -618,7 +618,6 @@ struct ControlsState @0x97ff69c53601abf1 {
   latAccelFactor @80 :Float32;
   latAccelOffset @81 :Float32;
   friction @82 :Float32;
-  totalCameraOffset @86 :Float32;
 
   # Dynamic TR
   dynamicTRMode @83 :UInt8;
@@ -970,7 +969,6 @@ struct LateralPlan @0xe1e9318e2ae8b51e {
   
   autoLaneChangeEnabled @31 :Bool;
   autoLaneChangeTimer @32 :Int8;
-  totalCameraOffset @33 :Float32;
 
   enum Desire {
     none @0;
