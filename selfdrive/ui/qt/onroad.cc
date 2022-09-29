@@ -517,11 +517,12 @@ void NvgWindow::drawHud(QPainter &p) {
   }
 
   QString infoText;
-  infoText.sprintf("%s(%.2f/%.2f/%.2f) SR(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d) CURV(%d) SAFE_SPEED(%d) LIVE_TORQUE(%d)",
+  infoText.sprintf("%s(%.2f/%.2f/%.2f/%.2f) SR(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d) CURV(%d) SAFE_SPEED(%d) LIVE_T(%d)",
                       s->lat_control.c_str(),
                       controls_state.getLatAccelFactor(),
                       controls_state.getLatAccelOffset(),
                       controls_state.getFriction(),
+                      controls_state.getTotalBucketPoints(),
                       controls_state.getSteerRatio(),
                       device_State.getBatteryPercent(),
                       cpuTemp,
