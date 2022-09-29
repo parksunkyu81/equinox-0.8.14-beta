@@ -23,7 +23,7 @@ MIN_CURVE_SPEED = 40. * CV.KPH_TO_MS  # 커브 속도 설정
 
 class CarControllerParams():
 
-    ACCEL_MAX = 2.
+    ACCEL_MAX = 1.5   # 2.
     ACCEL_MIN = -4.   # 브레이크에 의미가 없다. def : -3.5 (엑셀만 때는 경우 속도)
 
     def __init__(self, CP):
