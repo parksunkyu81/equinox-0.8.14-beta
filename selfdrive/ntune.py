@@ -174,6 +174,9 @@ class nTune():
     if self.checkValue("pathOffset", -1.0, 1.0, 0.0):
       updated = True
 
+    if self.checkValue("cameraOffset", -2.0, 2.0, -0.06):
+      updated = True
+
     return updated
 
   def checkValidIndi(self):
