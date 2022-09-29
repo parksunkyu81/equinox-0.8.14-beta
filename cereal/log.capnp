@@ -596,7 +596,6 @@ struct ControlsState @0x97ff69c53601abf1 {
   aReqValueMax @64 :Float32;
 
   steerRatio @65 :Float32;
-  steerRateCost @66 :Float32;
   steerActuatorDelay @67 :Float32;
   sccGasFactor @68 :Float32;
   sccBrakeFactor @69 :Float32;
@@ -745,6 +744,7 @@ struct ControlsState @0x97ff69c53601abf1 {
   jerkFactorDEPRECATED @12 :Float32;
   steerOverrideDEPRECATED @20 :Bool;
   steeringAngleDesiredDegDEPRECATED @29 :Float32;
+  steerRateCostDEPRECATED @66 :Float32;
 }
 
 struct ModelDataV2 {

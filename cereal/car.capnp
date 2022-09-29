@@ -492,7 +492,6 @@ struct CarParams {
   directAccelControl @30 :Bool; # Does the car have direct accel control or just gas/brake
   stoppingControl @31 :Bool; # Does the car allows full control even at lows speeds when stopping
   stopAccel @60 :Float32; # Required acceleraton to keep vehicle stationary
-  steerRateCost @33 :Float32; # Lateral MPC cost on steering rate
   steerControlType @34 :SteerControlType;
   radarOffCan @35 :Bool; # True when radar objects aren't visible on CAN
   stoppingDecelRate @52 :Float32; # m/s^2/s while trying to stop
@@ -693,4 +692,5 @@ struct CarParams {
   startAccelDEPRECATED @32 :Float32;
   communityFeatureDEPRECATED @46: Bool;
   startingAccelRateDEPRECATED @53 :Float32;
+  steerRateCostDEPRECATED @33 :Float32; # Lateral MPC cost on steering rate
 }
