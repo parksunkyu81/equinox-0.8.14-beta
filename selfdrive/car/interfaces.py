@@ -1,12 +1,9 @@
-import yaml
 import os
 import time
 from abc import abstractmethod, ABC
-from typing import Any, Dict, Optional, Tuple, List
-from common.numpy_fast import interp
+from typing import Dict, Tuple, List
 
 from cereal import car
-from common.basedir import BASEDIR
 from common.kalman.simple_kalman import KF1D
 from common.realtime import DT_CTRL
 from selfdrive.car import gen_empty_fingerprint
@@ -14,7 +11,10 @@ from common.conversions import Conversions as CV
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, apply_deadzone
 from selfdrive.controls.lib.events import Events
 from selfdrive.controls.lib.vehicle_model import VehicleModel
-from selfdrive.ntune import ntune_option_get, ntune_option_enabled
+from common.numpy_fast import interp
+from decimal import Decimal
+
+from common.params import Params
 
 GearShifter = car.CarState.GearShifter
 EventName = car.CarEvent.EventName
@@ -24,7 +24,9 @@ ACCEL_MAX = 2.0
 ACCEL_MIN = -3.5
 FRICTION_THRESHOLD = 0.2
 
+
 # generic car and radar interfaces
+
 
 class CarInterfaceBase(ABC):
   def __init__(self, CP, CarController, CarState):
@@ -35,7 +37,6 @@ class CarInterfaceBase(ABC):
     self.steering_unpressed = 0
     self.low_speed_alert = False
     self.silent_steer_warning = True
-    self.v_ego_cluster_seen = False
 
     self.CS = None
     self.can_parsers = []
@@ -59,7 +60,7 @@ class CarInterfaceBase(ABC):
 
   @staticmethod
   @abstractmethod
-  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None, experimental_long=False):
+  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None, disable_radar=False):
     pass
 
   @staticmethod
@@ -76,7 +77,8 @@ class CarInterfaceBase(ABC):
     return self.get_steer_feedforward_default
 
   @staticmethod
-  def torque_from_lateral_accel_linear(lateral_accel_value, torque_params, lateral_accel_error=None, lateral_accel_deadzone=None, friction_compensation=False):
+  def torque_from_lateral_accel_linear(lateral_accel_value, torque_params, lateral_accel_error=None,
+                                       lateral_accel_deadzone=None, friction_compensation=False):
     # The default is a linear relationship between torque and lateral acceleration (accounting for road roll and steering friction)
     if friction_compensation:
       assert (lateral_accel_error is not None) and (lateral_accel_deadzone is not None)
@@ -92,7 +94,6 @@ class CarInterfaceBase(ABC):
   def torque_from_lateral_accel(self):
     return self.torque_from_lateral_accel_linear
 
-
   # returns a set of default params to avoid repetition in car specific params
   @staticmethod
   def get_std_params(candidate, fingerprint):
@@ -104,6 +105,7 @@ class CarInterfaceBase(ABC):
     ret.minSteerSpeed = 0.
     ret.wheelSpeedFactor = 1.0
     ret.maxLateralAccel = 1.8
+
     ret.pcmCruise = True     # openpilot's state is tied to the PCM's cruise state on most cars
     ret.minEnableSpeed = -1. # enable is done by stock ACC, so ignore this
     ret.steerRatioRear = 0.  # no rear steering, at least on the listed cars aboveA
@@ -127,14 +129,20 @@ class CarInterfaceBase(ABC):
     return ret
 
   @staticmethod
-  def configure_torque_tune(tune, LAT_ACCEL_FACTOR=2.5, FRICTION=0.01, steering_angle_deadzone_deg=0.0, use_steering_angle=True):
+  def configure_torque_tune(tune, steering_angle_deadzone_deg=0.0, use_steering_angle=True):
+
+    torque_lat_accel_factor = float(Decimal(Params().get("TorqueMaxLatAccel", encoding="utf8")) * Decimal(
+      '0.1'))  # 2.544642494803999 #LAT_ACCEL_FACTOR
+    torque_friction = float(
+      Decimal(Params().get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))  # 0.05 #FRICTION
+
     tune.init('torque')
     tune.torque.useSteeringAngle = use_steering_angle
     tune.torque.kp = 1.0
     tune.torque.kf = 1.0
     tune.torque.ki = 0.1
-    tune.torque.friction = FRICTION
-    tune.torque.latAccelFactor = LAT_ACCEL_FACTOR
+    tune.torque.friction = torque_friction
+    tune.torque.latAccelFactor = torque_lat_accel_factor
     tune.torque.latAccelOffset = 0.0
     tune.torque.steeringAngleDeadzoneDeg = steering_angle_deadzone_deg
 
@@ -168,13 +176,10 @@ class CarInterfaceBase(ABC):
   def create_common_events(self, cs_out, extra_gears=None, pcm_enable=True):
     events = Events()
 
-
-    # janpoo6427
-    if cs_out.gearShifter != GearShifter.park:
-      if cs_out.doorOpen:
-        events.add(EventName.doorOpen)
-      if cs_out.seatbeltUnlatched:
-        events.add(EventName.seatbeltNotLatched)
+    if cs_out.doorOpen:
+      events.add(EventName.doorOpen)
+    if cs_out.seatbeltUnlatched:
+      events.add(EventName.seatbeltNotLatched)
     if cs_out.gearShifter != GearShifter.drive and (extra_gears is None or
        cs_out.gearShifter not in extra_gears):
       events.add(EventName.wrongGear)
@@ -184,6 +189,8 @@ class CarInterfaceBase(ABC):
       events.add(EventName.wrongCarMode)
     if cs_out.espDisabled:
       events.add(EventName.espDisabled)
+    #if cs_out.gasPressed:
+    #  events.add(EventName.gasPressed)
     if cs_out.stockFcw:
       events.add(EventName.stockFcw)
     if cs_out.stockAeb:
@@ -194,8 +201,7 @@ class CarInterfaceBase(ABC):
       events.add(EventName.wrongCruiseMode)
     #if cs_out.brakeHoldActive and self.CP.openpilotLongitudinalControl:
     #  events.add(EventName.brakeHold)
-    #if cs_out.parkingBrake:
-    #  events.add(EventName.parkBrake)
+
 
     # Handle permanent and temporary steering faults
     self.steering_unpressed = 0 if cs_out.steeringPressed else self.steering_unpressed + 1
@@ -217,9 +223,6 @@ class CarInterfaceBase(ABC):
         events.add(EventName.pcmEnable)
       elif not cs_out.cruiseState.enabled:
         events.add(EventName.pcmDisable)
-
-    # janpoo6427
-    # move to controlsd
 
     return events
 

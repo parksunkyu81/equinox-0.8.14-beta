@@ -6,8 +6,6 @@ from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
 from selfdrive.controls.lib.pid import PIDController
 from selfdrive.controls.lib.vehicle_model import ACCELERATION_DUE_TO_GRAVITY
 from common.params import Params
-from decimal import Decimal
-from selfdrive.ntune import ntune_torque_get
 
 # At higher speeds (25+mph) we can assume:
 # Lateral acceleration achieved by a specific car correlates to
@@ -61,17 +59,14 @@ class LatControlTorque(LatControl):
       actual_lateral_accel = actual_curvature * CS.vEgo ** 2
       lateral_accel_deadzone = curvature_deadzone * CS.vEgo ** 2
 
-      try:
-        isLowSpeed  = ntune_torque_get('isLowSpeedFactor')
-      except:
-        isLowSpeed  = Params().get_bool('IsLowSpeedFactor')
+      isLowSpeed  = Params().get_bool('IsLowSpeedFactor')
 
       if isLowSpeed:
-        #low_speed_factor = interp(CS.vEgo, [0, 10, 20], [100, 75, 75])
+        low_speed_factor = interp(CS.vEgo, [0, 10, 20], [100, 75, 75])
         #low_speed_factor = interp(CS.vEgo, [0, 15], [500, 0]) # comma 1st
-        low_speed_factor = interp(CS.vEgo, [0, 10, 20], [500, 500, 200]) # comma 2nd
+        #low_speed_factor = interp(CS.vEgo, [0, 10, 20], [500, 500, 200]) # comma 2nd
       else:
-        low_speed_factor =  0
+        low_speed_factor = 0
 
       setpoint = desired_lateral_accel + low_speed_factor * desired_curvature
       measurement = actual_lateral_accel + low_speed_factor * actual_curvature

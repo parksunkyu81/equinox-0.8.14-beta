@@ -27,6 +27,7 @@ PATH_OFFSET = ntune_common_get('pathOffset')  # default 0.0
 if EON:
   #CAMERA_OFFSET = 0.00
   CAMERA_OFFSET = ntune_common_get('cameraOffset')  # m from center car to camera
+  CAMERA_OFFSET_A = CAMERA_OFFSET + 0.15
 elif TICI:
   CAMERA_OFFSET = 0.0
 else:

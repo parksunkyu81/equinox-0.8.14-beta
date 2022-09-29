@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 import time
-from cereal import car, log, messaging
-from common.params import Params
+from cereal import messaging, log
 from selfdrive.hardware import HARDWARE
 from selfdrive.manager.process_config import managed_processes
 
 if __name__ == "__main__":
-  CP = car.CarParams(notCar=True)
-  Params().put("CarParams", CP.to_bytes())
-
   procs = ['camerad', 'ui', 'modeld', 'calibrationd']
 
   HARDWARE.set_power_save(False)

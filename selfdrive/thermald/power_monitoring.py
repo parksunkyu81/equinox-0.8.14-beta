@@ -34,8 +34,6 @@ class PowerMonitoring:
     self.car_voltage_instant_mV = 12e3          # Last value of peripheralState voltage
     self.integration_lock = threading.Lock()
 
-    self.ts_last_charging_ctrl = None
-
     car_battery_capacity_uWh = self.params.get("CarBatteryCapacity")
     if car_battery_capacity_uWh is None:
       car_battery_capacity_uWh = 0
@@ -172,20 +170,6 @@ class PowerMonitoring:
     disable_charging &= in_car
     disable_charging |= self.params.get_bool("ForcePowerDown")
     return disable_charging
-
-  #OPKR
-  def charging_ctrl(self, msg, ts, to_discharge, to_charge ):
-    if self.ts_last_charging_ctrl is None or (ts - self.ts_last_charging_ctrl) >= 30.:
-      battery_changing = HARDWARE.get_battery_charging()
-      print('Battery charging', battery_changing)
-      if self.ts_last_charging_ctrl:
-        if msg.deviceState.batteryPercent >= to_discharge and battery_changing:
-          HARDWARE.set_battery_charging(False)
-          print('charging off')
-        elif msg.deviceState.batteryPercent <= to_charge and not battery_changing:
-          HARDWARE.set_battery_charging(True)
-          print('charging on')
-      self.ts_last_charging_ctrl = ts
 
   # See if we need to shutdown
   def should_shutdown(self, peripheralState, ignition, in_car, offroad_timestamp, started_seen):

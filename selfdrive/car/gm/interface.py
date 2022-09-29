@@ -8,7 +8,8 @@ from selfdrive.car.gm.values import CAR, CruiseButtons, CarControllerParams, NO_
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, \
     get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
-from selfdrive.ntune import ntune_common_get, ntune_torque_get
+from common.params import Params
+from decimal import Decimal
 
 ButtonType = car.CarState.ButtonEvent.Type
 EventName = car.CarEvent.EventName
@@ -61,12 +62,8 @@ class CarInterface(CarInterfaceBase):
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
         # steerratecost를 높이면 핸들링이 부드러워(둔감)해 집니다. 다시 말해 도로의 작은 변화에 기민하게 반응하지 않게 됩니다.
         # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
-
-        #ret.steerActuatorDelay = 0.21  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
-        #ret.steerLimitTimer = 0.4  # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
-
-        ret.steerActuatorDelay = max(ntune_common_get('steerActuatorDelay'), 0.1)
-        ret.steerLimitTimer = max(ntune_common_get('steerLimitTimer'), 3.0)
+        ret.steerActuatorDelay = 0.21  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
+        ret.steerLimitTimer = 0.4  # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
 
         # TODO: get actual value, for now starting with reasonable value for
         # civic and scaling by mass and wheelbase
@@ -94,15 +91,15 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.kpV = [1.17, 0.95, 0.92, 0.91, 0.86, 0.78, 0.5]
         ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kiV = [0.18, 0.10]
-        ret.longitudinalActuatorDelayLowerBound = 0.3
-        ret.longitudinalActuatorDelayUpperBound = 0.3
+        ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.deadzoneV = [0., 0.10]
+        ret.longitudinalActuatorDelayLowerBound = 0.12
+        ret.longitudinalActuatorDelayUpperBound = 0.25
 
         ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
         # 토크
-        torque_lat_accel_factor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
-        torque_friction = ntune_torque_get('friction')  # FRICTION
-        CarInterfaceBase.configure_torque_tune(ret.lateralTuning, torque_lat_accel_factor, torque_friction)
+        CarInterfaceBase.configure_torque_tune(ret.lateralTuning)
 
         return ret
 
