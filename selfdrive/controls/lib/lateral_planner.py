@@ -66,8 +66,6 @@ class LateralPlanner:
     # Calculate final driving path and set MPC costs
     steer_rate = MPC_COST_LAT.STEER_RATE
     #if Params().get_bool("UseNpilotManager"):
-    #  steer_rate = max(ntune_common_get('steerRateCost'), 0.3)
-    steer_rate = max(ntune_common_get('steerRateCost'), 0.3)
 
     if self.use_lanelines:
       d_path_xyz = self.LP.get_d_path(v_ego, self.t_idxs, self.path_xyz)
