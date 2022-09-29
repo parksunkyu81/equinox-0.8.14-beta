@@ -31,7 +31,7 @@ from selfdrive.locationd.calibrationd import Calibration
 from selfdrive.hardware import HARDWARE, TICI, EON
 from selfdrive.manager.process_config import managed_processes
 
-from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_get
+from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_get, ntune_torque_get
 from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_speed_limiter_get_active, \
   get_road_speed_limiter
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, CONTROL_N
@@ -218,6 +218,7 @@ class Controls:
         self.torque_latAccelFactor = 0.
         self.torque_latAccelOffset = 0.
         self.torque_friction = 0.
+        self.torque_totalBucketPoints = 0.
 
         # scc smoother
         self.is_cruise_enabled = False
@@ -730,37 +731,46 @@ class Controls:
         self.VM.update_params(x, sr)
 
         # Update Torque Params
-        if self.CP.lateralTuning.which() == 'torque':
-            if self.is_live_torque:
-                torque_params = self.sm['liveTorqueParameters']
-                # Todo: Figure out why this is needed, and remove it
-                if (torque_params.latAccelFactorFiltered > 0) and (self.sm.valid['liveTorqueParameters']):
+        #if self.CP.lateralTuning.which() == 'torque':
+        if self.is_live_torque:
+           torque_params = self.sm['liveTorqueParameters']
+           # Todo: Figure out why this is needed, and remove it
+           if (torque_params.latAccelFactorFiltered > 0) and (self.sm.valid['liveTorqueParameters']):
 
-                    #print('========================[Live Torque]=================================')
-                    self.torque_latAccelFactor = torque_params.latAccelFactorFiltered
-                    self.torque_latAccelOffset = torque_params.latAccelOffsetFiltered
-                    self.torque_friction = torque_params.frictionCoefficientFiltered
-                    self.LaC.update_live_torque_params(torque_params.latAccelFactorFiltered,
-                                                       torque_params.latAccelOffsetFiltered,
-                                                       torque_params.frictionCoefficientFiltered)
+              #print('========================[Live Torque]=================================')
+              self.torque_latAccelFactor = torque_params.latAccelFactorFiltered
+              self.torque_latAccelOffset = torque_params.latAccelOffsetFiltered
+              self.torque_friction = torque_params.frictionCoefficientFiltered
+              self.torque_totalBucketPoints = torque_params.totalBucketPoints
 
-                    #print('===========[self.torque_latAccelFactor]=============== : ', self.torque_latAccelFactor)
-                    #print('===========[self.torque_latAccelOffset]=============== : ', self.torque_latAccelOffset)
-                    #print('===========[self.torque_friction]=============== : ', self.torque_friction)
-                else:
-                    self.torque_latAccelFactor = float(
-                        Decimal(Params().get("TorqueMaxLatAccel", encoding="utf8")) * Decimal('0.1'))
-                    self.torque_latAccelOffset = 0.
-                    self.torque_friction = float(
-                        Decimal(Params().get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))
-                    self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset,
-                                                       self.torque_friction)
-            else:
-                self.torque_latAccelFactor = float(2.5)
-                self.torque_latAccelOffset = 0.
-                self.torque_friction = float(0.15)
-                self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset,
-                                                   self.torque_friction)
+              self.LaC.update_live_torque_params(torque_params.latAccelFactorFiltered,
+                                                 torque_params.latAccelOffsetFiltered,
+                                                 torque_params.frictionCoefficientFiltered)
+
+              #print('===========[self.torque_latAccelFactor]=============== : ', self.torque_latAccelFactor)
+              #print('===========[self.torque_latAccelOffset]=============== : ', self.torque_latAccelOffset)
+              #print('===========[self.torque_friction]=============== : ', self.torque_friction)
+           else:
+               try:
+                   self.torque_latAccelFactor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
+                   self.torque_friction = ntune_torque_get('friction')  # FRICTION
+               except:
+                   self.torque_latAccelFactor = float(
+                       Decimal(Params().get("TorqueMaxLatAccel", encoding="utf8")) * Decimal('0.1'))
+                   self.torque_friction = float(
+                       Decimal(Params().get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))
+        else:
+            try:
+                self.torque_latAccelFactor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
+                self.torque_friction = ntune_torque_get('friction')  # FRICTION
+            except:
+                self.torque_latAccelFactor = float(
+                    Decimal(Params().get("TorqueMaxLatAccel", encoding="utf8")) * Decimal('0.1'))
+                self.torque_friction = float(
+                    Decimal(Params().get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))
+
+            self.torque_latAccelOffset = 0.
+            self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset, self.torque_friction)
 
         lat_plan = self.sm['lateralPlan']
         long_plan = self.sm['longitudinalPlan']
