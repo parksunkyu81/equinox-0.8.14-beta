@@ -63,12 +63,12 @@ def manager_init() -> None:
     ("RestartForceAccel", "0"),
     ("SafeDistanceSpeed", "0"),
 
-    ("IsLiveTorque", "0"),
-    ("IsLowSpeedFactor", "0"),
+    ("IsLiveTorque", "1"),
+    ("IsLowSpeedFactor", "1"),
     ("E2ELong", "0"),
 
     ("TorqueFriction", "0.05"),
-    ("TorqueMaxLatAccel", "2.54"),
+    ("TorqueMaxLatAccel", "3.0"),
 
     # Dynamic TR
     ("CustomTREnabled", "1"),
@@ -82,7 +82,7 @@ def manager_init() -> None:
     ("cruiseGap", "4"),
 
     # Driving Close to RoadEdge
-    ("CloseToRoadEdge", "0"),
+    ("CloseToRoadEdge", "1"),
     ("LeftEdgeOffset", "0.15"),
     ("RightEdgeOffset", "-0.15"),
 
