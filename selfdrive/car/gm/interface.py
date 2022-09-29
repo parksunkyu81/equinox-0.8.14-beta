@@ -63,10 +63,8 @@ class CarInterface(CarInterfaceBase):
         # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
 
         #ret.steerActuatorDelay = 0.21  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
-        #ret.steerLimitTimer = 0.4  # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
-
         ret.steerActuatorDelay = max(ntune_common_get('steerActuatorDelay'), 0.1)
-        ret.steerLimitTimer = max(ntune_common_get('steerLimitTimer'), 3.0)
+        #ret.steerLimitTimer = 0.4  # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
 
         # TODO: get actual value, for now starting with reasonable value for
         # civic and scaling by mass and wheelbase
