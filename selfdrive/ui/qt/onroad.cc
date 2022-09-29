@@ -735,13 +735,9 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   textColor = QColor(255, 255, 255, 200);
 
-  if(acc_bool == true and cur_speed > 20) {
+  if(acc_bool == true) {
     str = "ON";
     textColor = QColor(120, 255, 120, 200);
-  }
-  else if(acc_bool == true and cur_speed <= 20) {
-    str = "OFF";
-    textColor = QColor(254, 32, 32, 200);
   }
   else {
     str = "OFF";
