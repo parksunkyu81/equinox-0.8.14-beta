@@ -14,7 +14,6 @@ from common.conversions import Conversions as CV
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, apply_deadzone
 from selfdrive.controls.lib.events import Events
 from selfdrive.controls.lib.vehicle_model import VehicleModel
-from selfdrive.ntune import ntune_option_get, ntune_option_enabled
 
 GearShifter = car.CarState.GearShifter
 EventName = car.CarEvent.EventName
