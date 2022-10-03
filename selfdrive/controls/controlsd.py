@@ -732,7 +732,7 @@ class Controls:
 
         # Update Torque Params
         #if self.CP.lateralTuning.which() == 'torque':
-        if self.is_live_torque:
+        if self.CP.lateralTuning.which() == 'torque' and self.is_live_torque:
            torque_params = self.sm['liveTorqueParameters']
            # Todo: Figure out why this is needed, and remove it
            if (torque_params.latAccelFactorFiltered > 0) and (self.sm.valid['liveTorqueParameters']):
@@ -759,7 +759,7 @@ class Controls:
                        Decimal(Params().get("TorqueMaxLatAccel", encoding="utf8")) * Decimal('0.1'))
                    self.torque_friction = float(
                        Decimal(Params().get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))
-        else:
+        elif self.CP.lateralTuning.which() == 'torque':
             try:
                 self.torque_latAccelFactor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
                 self.torque_friction = ntune_torque_get('friction')  # FRICTION
