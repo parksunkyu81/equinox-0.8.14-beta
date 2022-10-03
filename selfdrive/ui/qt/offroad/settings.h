@@ -119,6 +119,19 @@ signals:
 
 };
 
+class DynamicTRGap : public QWidget {
+  Q_OBJECT
+public:
+  explicit DynamicTRGap(QWidget* parent = 0);
+
+private:
+
+signals:
+  void backPress();
+  void selected();
+
+};
+
 class CruiseGap : public QWidget {
   Q_OBJECT
 public:
