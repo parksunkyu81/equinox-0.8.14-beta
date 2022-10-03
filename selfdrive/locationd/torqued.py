@@ -253,7 +253,8 @@ def main(sm=None, pm=None):
 
   params = Params()
   CP = car.CarParams.from_bytes(params.get("CarParams", block=True))
-  estimator = TorqueEstimator(CP)
+  if CP.lateralTuning.which() == 'torque':
+    estimator = TorqueEstimator(CP)
 
   def cache_params(sig, frame):
     signal.signal(sig, signal.SIG_DFL)
