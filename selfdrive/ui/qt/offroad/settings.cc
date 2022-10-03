@@ -548,8 +548,8 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   main_layout->addWidget(selectCar);*/
 
   QString dynamicTR_Gap = QString::fromStdString(Params().get("DynamicTRGap"));
-  if(lateral_control.length() == 0)
-    lateral_control = "4";
+  if(dynamicTR_Gap.length() == 0)
+    dynamicTR_Gap = "4";
   QPushButton* dynamicTRGapBtn = new QPushButton("Dynamic TR Gap : " + dynamicTR_Gap);
   dynamicTRGapBtn->setObjectName("dynamicTRGapBtn");
 
@@ -565,7 +565,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   });
   main_layout->addWidget(dynamicTRGap);
   QHBoxLayout* layoutBtn_1 = new QHBoxLayout(homeWidget);
-  layoutBtn_1->addWidget(lateralControlBtn);
+  layoutBtn_1->addWidget(dynamicTRGapBtn);
   layoutBtn_1->addSpacing(10);
 
   //layoutBtn->addWidget(selectCarBtn);
