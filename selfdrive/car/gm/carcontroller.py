@@ -27,10 +27,10 @@ class CarController():
     self.apply_steer_last = 0
     self.comma_pedal = 0.0
     self.accel = 0
-    self.pedalMaxValue = 0.3310
 
     self.lka_steering_cmd_counter_last = -1
     self.lka_icon_status_last = (False, False)
+    #self.RestartForceAccel = Params().get_bool('RestartForceAccel')
 
     self.params = CarControllerParams(CP)
 
@@ -72,21 +72,28 @@ class CarController():
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
 
-          accelFomula = (actuators.accel / 8.8 if actuators.accel >= 0 else actuators.accel / 9.25)
-          accelFomula = round(accelFomula, 3)
-          pedalValue = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS], [0.1625, 0.2125]) + accelFomula
-          pedalValue = min(pedalValue, interp(CS.out.vEgo, [0., 19.0 * CV.KPH_TO_MS, 30.0 * CV.KPH_TO_MS],
-                                              [0.2550, 0.2750, 0.3150]))
+          PEDAL_SCALE = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 80 * CV.KPH_TO_MS],
+                                            [0.18, 0.20, 0.23, 0.24, 0.25])
+          #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, CREEP_SPEED*2], [-.5, 0.15, 0.2])
 
-          comma_pedal_new = clip(
-            interp(actuators.accel, [-0.725, -0.315, 0.00, 0.20], [0.0, 0.1575, 0.2190, 0.22150]) + accelFomula, 0., 1.)
+          ## =============================================== ##
 
-          gapInterP = interp(CS.out.vEgo, [19 * CV.KPH_TO_MS, 45 * CV.KPH_TO_MS], [1, 0])
-          self.comma_pedal = (gapInterP * pedalValue) + ((1.0 - gapInterP) * comma_pedal_new)
+          if self.RestartForceAccel:
+            start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.20, 0.20, 0.0])
+            is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
+            boost = start_boost * is_accelerating
+            pedal_command = PEDAL_SCALE * (actuators.accel + boost)
+          else:
+            pedal_command = PEDAL_SCALE * actuators.accel
 
-          self.comma_pedal = clip(self.comma_pedal, 0.0,
-                                  interp(actuators.accel, [0.85, 1.5], [0.0000, 0.0200]) + self.pedalMaxValue)  # 급가속 방지
+          ## ================================================ ##
+          #pedal_command = PEDAL_SCALE * actuators.accelf
+          self.comma_pedal = clip(pedal_command, 0., 1.)
 
+          """acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
+                            [0.17, 0.24, 0.265, 0.24])
+          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 1.5*CREEP_SPEED], [-0.4, 0.20, 0.15])
+          self.comma_pedal = clip(acc_mult * (actuators.accel + start_boost), 0., 1.)"""
 
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.0
