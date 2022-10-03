@@ -9,21 +9,54 @@ from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness,
     get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from selfdrive.ntune import ntune_common_get, ntune_torque_get
+from common.params import Params
 
 ButtonType = car.CarState.ButtonEvent.Type
 EventName = car.CarEvent.EventName
 GearShifter = car.CarState.GearShifter
 
 
+def get_steer_feedforward_sigmoid(desired_angle, v_ego, ANGLE, ANGLE_OFFSET, SIGMOID_SPEED, SIGMOID, SPEED):
+    x = ANGLE * (desired_angle + ANGLE_OFFSET)
+    sigmoid = x / (1 + fabs(x))
+    return (SIGMOID_SPEED * sigmoid * v_ego) + (SIGMOID * sigmoid) + (SPEED * v_ego)
+
 class CarInterface(CarInterfaceBase):
 
     @staticmethod
     def get_pid_accel_limits(CP, current_speed, cruise_speed):
-        params = CarControllerParams(CP)
-        return params.ACCEL_MIN, params.ACCEL_MAX
+       params = CarControllerParams(CP)
+       # return params.ACCEL_MIN, params.ACCEL_MAX
+       v_current_kph = current_speed * CV.MS_TO_KPH
+       accel_max_bp = [10., 20., 50.]
+       accel_max_v = [0.7, 1.0, 0.95]
+       return params.ACCEL_MIN, interp(v_current_kph, accel_max_bp, accel_max_v)
+
+    # Determined by iteratively plotting and minimizing error for f(angle, speed) = steer.
+    @staticmethod
+    def get_steer_feedforward_bolt_euv(desired_angle, v_ego):
+        ANGLE = 0.0758345580739845
+        ANGLE_OFFSET = 0.31396926577596984
+        SIGMOID_SPEED = 0.04367532050459129
+        SIGMOID = 0.43144116109994846
+        SPEED = -0.002654134623368279
+        return get_steer_feedforward_sigmoid(desired_angle, v_ego, ANGLE, ANGLE_OFFSET, SIGMOID_SPEED, SIGMOID, SPEED)
+
+    @staticmethod
+    def get_steer_feedforward_bolt(desired_angle, v_ego):
+        ANGLE = 0.06370624896135679
+        ANGLE_OFFSET = 0.32536345911579184
+        SIGMOID_SPEED = 0.06479105208670367
+        SIGMOID = 0.34485246691603205
+        SPEED = -0.0010645479469461995
+        return get_steer_feedforward_sigmoid(desired_angle, v_ego, ANGLE, ANGLE_OFFSET, SIGMOID_SPEED, SIGMOID, SPEED)
 
     def get_steer_feedforward_function(self):
-        return CarInterfaceBase.get_steer_feedforward_default
+        lateral_control = Params().get("LateralControl", encoding='utf-8')
+        if lateral_control == 'PID':
+            return self.get_steer_feedforward_bolt_euv    # bolt EUV
+        else:
+            return CarInterfaceBase.get_steer_feedforward_default
 
     @staticmethod
     def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None, disable_radar=False):
@@ -50,11 +83,58 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatioRear = 0.
         ret.steerControlType = car.CarParams.SteerControlType.torque
 
-        tire_stiffness_factor = 0.444  # 1. 을 기준으로 줄면 민감(오버), 커지면 둔감(언더) DEF : 0.5
+        tire_stiffness_factor = 0.5  # 1. 을 기준으로 줄면 민감(오버), 커지면 둔감(언더) DEF : 0.5
         ret.maxSteeringAngleDeg = 1000.
         #ret.disableLateralLiveTuning = True
 
-        ret.lateralTuning.init('torque')
+        lateral_control = Params().get("LateralControl", encoding='utf-8')
+        if lateral_control == 'INDI':
+            ret.lateralTuning.init('indi')
+            ret.lateralTuning.indi.innerLoopGainBP = [0.]
+            ret.lateralTuning.indi.innerLoopGainV = [3.3]
+            ret.lateralTuning.indi.outerLoopGainBP = [0.]
+            ret.lateralTuning.indi.outerLoopGainV = [2.8]
+            ret.lateralTuning.indi.timeConstantBP = [0.]
+            ret.lateralTuning.indi.timeConstantV = [1.4]
+            ret.lateralTuning.indi.actuatorEffectivenessBP = [0.]
+            ret.lateralTuning.indi.actuatorEffectivenessV = [1.8]
+        elif lateral_control == 'LQR':
+            ret.lateralTuning.init('lqr')
+
+            ret.lateralTuning.lqr.scale = 1955.0
+            ret.lateralTuning.lqr.ki = 0.0315
+            ret.lateralTuning.lqr.dcGain = 0.002237852961363602
+
+            ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+            ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+            ret.lateralTuning.lqr.c = [1., 0.]
+            ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
+            ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
+
+        elif lateral_control == 'PID':
+            ret.lateralTuning.init('pid')
+            ret.minEnableSpeed = -1
+            ret.mass = 1616. + STD_CARGO_KG
+            ret.wheelbase = 2.60096
+            ret.steerRatio = 16.8
+            ret.steerRatioRear = 0.
+            ret.centerToFront = 2.0828  # ret.wheelbase * 0.4 # wild guess
+            tire_stiffness_factor = 1.0
+            # still working on improving lateral
+            # ret.steerRateCost = 0.5
+            ret.steerActuatorDelay = 0.
+            ret.lateralTuning.pid.kpBP, ret.lateralTuning.pid.kiBP = [[10., 41.0], [10., 41.0]]
+            ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.14, 0.24], [0.01, 0.021]]
+            # ret.lateralTuning.pid.kdBP = [0.]
+            # ret.lateralTuning.pid.kdV = [0.5]
+            ret.lateralTuning.pid.kf = 1.  # for get_steer_feedforward_bolt()
+
+        else:
+            ret.lateralTuning.init('torque')
+
+            torque_lat_accel_factor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
+            torque_friction = ntune_torque_get('friction')  # FRICTION
+            CarInterfaceBase.configure_torque_tune(ret.lateralTuning, torque_lat_accel_factor, torque_friction)
 
         ret.steerRatio = 17.0
 
@@ -63,7 +143,6 @@ class CarInterface(CarInterfaceBase):
 
         #ret.steerActuatorDelay = 0.21  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
         ret.steerActuatorDelay = max(ntune_common_get('steerActuatorDelay'), 0.1)
-        #ret.steerLimitTimer = 0.4  # steerLimitAlert 가 발행되기 전의 시간 (핸들 조향을 하는데 100을 하라고 명령을 했는데, 그걸 해내는데 리미트 시간)
 
         # TODO: get actual value, for now starting with reasonable value for
         # civic and scaling by mass and wheelbase
@@ -75,18 +154,8 @@ class CarInterface(CarInterfaceBase):
                                                                              tire_stiffness_factor=tire_stiffness_factor)
 
         # longitudinal
-        """ret.longitudinalTuning.kpBP = [0., 25. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 100. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kpV = [1.35, 1.20, 1.125, 0.65]
-        ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kiV = [0.18, 0.13, 0.10]  # [0.18, 0.13, 0.10]
-        ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.deadzoneV = [0., 0.10]
-        ret.longitudinalActuatorDelayLowerBound = 0.12
-        ret.longitudinalActuatorDelayUpperBound = 0.25"""
-
-        # longitudinal
         # 60키로 속도에서 높은 과속
-        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
+        """ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
                                        50. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kpV = [1.2, 1.0, 0.93, 0.91, 0.86, 0.78, 0.5]
         ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
@@ -94,14 +163,26 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
         ret.longitudinalTuning.deadzoneV = [0., 0.10]
         ret.longitudinalActuatorDelayLowerBound = 0.12
+        ret.longitudinalActuatorDelayUpperBound = 0.25"""
+
+        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.kpV = [1.10, 1.0, 0.6]
+        ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.kiV = [0.145, 0.085]
+
+        ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.deadzoneV = [0., 0.10]
+        ret.longitudinalActuatorDelayLowerBound = 0.12
         ret.longitudinalActuatorDelayUpperBound = 0.25
 
-        ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
+        ret.stopAccel = -2.0
+        ret.stoppingDecelRate = 4.0
+        ret.vEgoStopping = 0.5
+        ret.vEgoStarting = 0.5
+        ret.stoppingControl = True
 
-        # 토크
-        torque_lat_accel_factor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
-        torque_friction = ntune_torque_get('friction')  # FRICTION
-        CarInterfaceBase.configure_torque_tune(ret.lateralTuning, torque_lat_accel_factor, torque_friction)
+        ret.steerLimitTimer = 0.4
+        ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
 
         return ret
 
