@@ -96,9 +96,9 @@ class TorqueEstimator:
     self.offline_latAccelFactor = 0.0
     self.resets = 0.0
 
-    #if CP.lateralTuning.which() == 'torque':
-    self.offline_friction = CP.lateralTuning.torque.friction
-    self.offline_latAccelFactor = CP.lateralTuning.torque.latAccelFactor
+    if CP.lateralTuning.which() == 'torque':
+      self.offline_friction = CP.lateralTuning.torque.friction
+      self.offline_latAccelFactor = CP.lateralTuning.torque.latAccelFactor
 
     self.reset()
 
@@ -144,9 +144,9 @@ class TorqueEstimator:
 
   def get_restore_key(self, CP, version):
     a, b = None, None
-    #if CP.lateralTuning.which() == 'torque':
-    a = CP.lateralTuning.torque.friction
-    b = CP.lateralTuning.torque.latAccelFactor
+    if CP.lateralTuning.which() == 'torque':
+      a = CP.lateralTuning.torque.friction
+      b = CP.lateralTuning.torque.latAccelFactor
     return (CP.carFingerprint, CP.lateralTuning.which(), a, b, version)
 
   def reset(self):
@@ -253,8 +253,7 @@ def main(sm=None, pm=None):
 
   params = Params()
   CP = car.CarParams.from_bytes(params.get("CarParams", block=True))
-  if CP.lateralTuning.which() == 'torque':
-    estimator = TorqueEstimator(CP)
+  estimator = TorqueEstimator(CP)
 
   def cache_params(sig, frame):
     signal.signal(sig, signal.SIG_DFL)
