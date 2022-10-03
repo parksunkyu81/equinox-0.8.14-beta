@@ -31,7 +31,6 @@ class CarController():
 
     self.lka_steering_cmd_counter_last = -1
     self.lka_icon_status_last = (False, False)
-    self.RestartForceAccel = Params().get_bool('RestartForceAccel')
 
     self.params = CarControllerParams(CP)
 
