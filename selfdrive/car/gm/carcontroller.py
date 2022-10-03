@@ -78,13 +78,7 @@ class CarController():
 
           ## =============================================== ##
 
-          if self.RestartForceAccel:
-            start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.20, 0.20, 0.0])
-            is_accelerating = interp(actuators.accel, [0.0, 0.2], [0.0, 1.0])  # DEF : 1.0
-            boost = start_boost * is_accelerating
-            pedal_command = PEDAL_SCALE * (actuators.accel + boost)
-          else:
-            pedal_command = PEDAL_SCALE * actuators.accel
+          pedal_command = PEDAL_SCALE * actuators.accel
 
           ## ================================================ ##
           #pedal_command = PEDAL_SCALE * actuators.accelf
