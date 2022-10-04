@@ -26,11 +26,11 @@ class CarInterface(CarInterfaceBase):
     @staticmethod
     def get_pid_accel_limits(CP, current_speed, cruise_speed):
        params = CarControllerParams(CP)
-       # return params.ACCEL_MIN, params.ACCEL_MAX
-       v_current_kph = current_speed * CV.MS_TO_KPH
-       accel_max_bp = [10., 20., 50.]
-       accel_max_v = [0.7, 1.0, 0.95]
-       return params.ACCEL_MIN, interp(v_current_kph, accel_max_bp, accel_max_v)
+       return params.ACCEL_MIN, params.ACCEL_MAX
+       #v_current_kph = current_speed * CV.MS_TO_KPH
+       #accel_max_bp = [10., 20., 50.]
+       #accel_max_v = [0.7, 1.0, 0.95]
+       #return params.ACCEL_MIN, interp(v_current_kph, accel_max_bp, accel_max_v)
 
     # Determined by iteratively plotting and minimizing error for f(angle, speed) = steer.
     @staticmethod
@@ -155,7 +155,7 @@ class CarInterface(CarInterfaceBase):
 
         # longitudinal
         # 60키로 속도에서 높은 과속
-        """ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
+        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
                                        50. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kpV = [1.2, 1.0, 0.93, 0.91, 0.86, 0.78, 0.5]
         ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
@@ -163,9 +163,9 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
         ret.longitudinalTuning.deadzoneV = [0., 0.10]
         ret.longitudinalActuatorDelayLowerBound = 0.12
-        ret.longitudinalActuatorDelayUpperBound = 0.25"""
+        ret.longitudinalActuatorDelayUpperBound = 0.25
 
-        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+        """ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kpV = [1.10, 1.0, 0.6]
         ret.longitudinalTuning.kiBP = [0., 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kiV = [0.145, 0.085]
@@ -173,7 +173,7 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
         ret.longitudinalTuning.deadzoneV = [0., 0.10]
         ret.longitudinalActuatorDelayLowerBound = 0.12
-        ret.longitudinalActuatorDelayUpperBound = 0.25
+        ret.longitudinalActuatorDelayUpperBound = 0.25"""
 
         ret.stopAccel = -2.0
         ret.stoppingDecelRate = 4.0
