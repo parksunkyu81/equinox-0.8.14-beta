@@ -523,7 +523,7 @@ void NvgWindow::drawHud(QPainter &p) {
                       device_State.getMemoryUsagePercent(),
   */
   QString infoText;
-  infoText.sprintf("%s TS(%.2f/%.2f) LTP(%.2f/%.2f/%.0f) AO(%.2f/%.2f) SR(%.2f) CURVE(%d) SAFE_SPD(%d) LIVE_T(%d)",
+  infoText.sprintf("%s TS(%.2f/%.2f) LTP(%.2f/%.2f/%.0f) AO(%.2f/%.2f) SR(%.2f/%.2f) CURVE(%d) SAFE_SPD(%d) LIVE_T(%d)",
                       s->lat_control.c_str(),
 
                       torque_state.getLatAccelFactor(),
