@@ -1027,12 +1027,6 @@ class Controls:
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
 
-        # Torque Live
-        controlsState.latAccelFactor = self.torque_latAccelFactor
-        controlsState.latAccelOffset = self.torque_latAccelOffset
-        controlsState.friction = self.torque_friction
-        controlsState.totalBucketPoints = self.torque_totalBucketPoints
-
         # Dynamic TR
         controlsState.cruiseGap = int(Params().get("cruiseGap", encoding="utf8"))
         controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
