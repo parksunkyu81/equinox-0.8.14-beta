@@ -121,7 +121,7 @@ class Controls:
 
 
         # read params
-        self.is_live_torque = params.get_bool("IsLiveTorque")
+        #self.is_live_torque = params.get_bool("IsLiveTorque")
         self.is_metric = params.get_bool("IsMetric")
         self.is_ldw_enabled = params.get_bool("IsLdwEnabled")
         openpilot_enabled_toggle = params.get_bool("OpenpilotEnabledToggle")
@@ -731,8 +731,14 @@ class Controls:
         self.VM.update_params(x, sr)
 
         # Update Torque Params
-        #if self.CP.lateralTuning.which() == 'torque':
-        if self.CP.lateralTuning.which() == 'torque' and self.is_live_torque:
+        if self.CP.lateralTuning.which() == 'torque':
+            torque_params = self.sm['liveTorqueParameters']
+            if self.sm.all_checks(['liveTorqueParameters']) and torque_params.useParams:
+                self.LaC.update_live_torque_params(torque_params.latAccelFactorFiltered,
+                                                   torque_params.latAccelOffsetFiltered,
+                                                   torque_params.frictionCoefficientFiltered)
+
+        """if self.CP.lateralTuning.which() == 'torque' and self.is_live_torque:
            torque_params = self.sm['liveTorqueParameters']
            # Todo: Figure out why this is needed, and remove it
            if (torque_params.latAccelFactorFiltered > 0) and (self.sm.valid['liveTorqueParameters']):
@@ -770,7 +776,7 @@ class Controls:
                     Decimal(Params().get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))
 
             self.torque_latAccelOffset = 0.
-            self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset, self.torque_friction)
+            self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset, self.torque_friction)"""
 
         lat_plan = self.sm['lateralPlan']
         long_plan = self.sm['longitudinalPlan']

@@ -489,16 +489,15 @@ void NvgWindow::drawHud(QPainter &p) {
     drawDebugText(p);
 
   const auto controls_state = sm["controlsState"].getControlsState();
-  const auto device_State = sm["deviceState"].getDeviceState();
+  //const auto device_State = sm["deviceState"].getDeviceState();
   //const auto car_control = sm["carControl"].getCarControl();
-  //const auto live_params = sm["liveParameters"].getLiveParameters();
+  const auto live_params = sm["liveParameters"].getLiveParameters();
+  const auto live_torque_params = sm["liveTorqueParameters"].getLiveTorqueParameters();
+  const auto torque_state = controls_state.getLateralControlState().getTorqueState();
 
   QColor orangeColor = QColor(52, 197, 66, 255);
 
-  //int x = 700;
-  //int y = rect().height() - 15;
-
-  float cpuTemp = 0;
+  /*float cpuTemp = 0;
   auto cpuList = device_State.getCpuTempC();
 
   if (cpuList.size() > 0) {
@@ -514,20 +513,32 @@ void NvgWindow::drawHud(QPainter &p) {
      for(int i = 0; i < cpuUsageList.size(); i++)
          cpuUsage += cpuUsageList[i];
      cpuUsage /= cpuUsageList.size();
-  }
+  }*/
 
-  QString infoText;
-  infoText.sprintf("%s(%.2f/%.2f/%.2f/%.2f) SR(%.2f) BAT(%d) HW(CPU %.1f ℃, %d, MEM %d) CURV(%d) SAFE_SPEED(%d) LIVE_T(%d)",
-                      s->lat_control.c_str(),
-                      controls_state.getLatAccelFactor(),
-                      controls_state.getLatAccelOffset(),
-                      controls_state.getFriction(),
-                      controls_state.getTotalBucketPoints(),
-                      controls_state.getSteerRatio(),
-                      device_State.getBatteryPercent(),
+  // BAT(%d) HW(CPU %.1f ℃, %d, MEM %d)
+  /*
+  device_State.getBatteryPercent(),
                       cpuTemp,
                       cpuUsage,
                       device_State.getMemoryUsagePercent(),
+  */
+  QString infoText;
+  infoText.sprintf("%s TS(%.2f/%.2f) LTP(%.2f/%.2f/%.0f) AO(%.2f/%.2f) SR(%.2f) CURVE(%d) SAFE_SPD(%d) LIVE_T(%d)",
+                      s->lat_control.c_str(),
+
+                      torque_state.getLatAccelFactor(),
+                      torque_state.getFriction(),
+
+                      live_torque_params.getLatAccelFactorRaw(),
+                      live_torque_params.getFrictionCoefficientRaw(),
+                      live_torque_params.getTotalBucketPoints(),
+
+                      live_params.getAngleOffsetDeg(),
+                      live_params.getAngleOffsetAverageDeg(),
+
+                      controls_state.getSteerRatio(),
+                      controls_state.getSteerActuatorDelay(),
+
                       Params().getBool("SccSmootherSlowOnCurves"),
                       Params().getBool("SafeDistanceSpeed"),
                       Params().getBool("IsLiveTorque")

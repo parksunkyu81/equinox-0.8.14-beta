@@ -613,16 +613,10 @@ struct ControlsState @0x97ff69c53601abf1 {
 
   following @79 :Bool;
 
-  # Torque Live
-  latAccelFactor @80 :Float32;
-  latAccelOffset @81 :Float32;
-  friction @82 :Float32;
-  totalBucketPoints @86 :Float32;
-
   # Dynamic TR
-  dynamicTRMode @83 :UInt8;
-  dynamicTRValue @84 :Float32;
-  cruiseGap @85 :UInt8;
+  dynamicTRMode @80 :UInt8;
+  dynamicTRValue @81 :Float32;
+  cruiseGap @82 :UInt8;
 
   enum OpenpilotState @0xdbe58b96d2d1ac61 {
     disabled @0;

@@ -69,7 +69,7 @@ services = {
   "navRoute": (True, 0.),
   "navThumbnail": (True, 0.),
   "roadLimitSpeed": (False, 0.),
-  "liveTorqueParameters": (True, 4, 1),
+  "liveTorqueParameters": (True, 4., 1),
 
   # debug
   "testJoystick": (False, 0.),

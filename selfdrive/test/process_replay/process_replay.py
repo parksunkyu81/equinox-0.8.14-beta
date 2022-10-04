@@ -223,6 +223,13 @@ def calibration_rcv_callback(msg, CP, cfg, fsm):
     recv_socks = ["liveCalibration"]
   return recv_socks, fsm.frame == 0 or msg.which() == 'cameraOdometry'
 
+def torqued_rcv_callback(msg, CP, cfg, fsm):
+  # should_recv always true to increment frame
+  recv_socks = []
+  frame = fsm.frame + 1 # incrementing hasn't happened yet in SubMaster
+  if msg.which() == 'liveLocationKalman' and (frame % 5) == 0:
+    recv_socks = ["liveTorqueParameters"]
+  return recv_socks, fsm.frame == 0 or msg.which() == 'liveLocationKalman'
 
 def ublox_rcv_callback(msg):
   msg_class, msg_id = msg.ubloxRaw[2:4]
@@ -240,7 +247,7 @@ CONFIGS = [
     pub_sub={
       "can": ["controlsState", "carState", "carControl", "sendcan", "carEvents", "carParams"],
       "deviceState": [], "pandaStates": [], "peripheralState": [], "liveCalibration": [], "driverMonitoringState": [], "longitudinalPlan": [], "lateralPlan": [], "liveLocationKalman": [], "liveParameters": [], "radarState": [],
-      "modelV2": [], "driverCameraState": [], "roadCameraState": [], "managerState": [],
+      "modelV2": [], "driverCameraState": [], "roadCameraState": [], "managerState": [], "liveTorqueParameters": [],
     },
     ignore=["logMonoTime", "valid", "controlsState.startMonoTime", "controlsState.cumLagMs"],
     init_callback=fingerprint,
@@ -331,6 +338,18 @@ CONFIGS = [
     should_recv_callback=ublox_rcv_callback,
     tolerance=None,
     fake_pubsubmaster=False,
+  ),
+  ProcessConfig(
+    proc_name="torqued",
+    pub_sub={
+      "liveLocationKalman": ["liveTorqueParameters"],
+      "carState": [], "controlsState": [],
+    },
+    ignore=["logMonoTime"],
+    init_callback=get_car_params,
+    should_recv_callback=torqued_rcv_callback,
+    tolerance=NUMPY_TOLERANCE,
+    fake_pubsubmaster=True,
   ),
 ]
 
