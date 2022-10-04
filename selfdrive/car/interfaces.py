@@ -2,7 +2,7 @@ import yaml
 import os
 import time
 from abc import abstractmethod, ABC
-from typing import Any, Dict, Optional, Tuple, List
+from typing import Any, Dict, Optional, Tuple, List, Callable
 from common.numpy_fast import interp
 
 from cereal import car
