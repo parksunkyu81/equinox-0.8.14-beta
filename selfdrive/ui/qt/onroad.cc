@@ -481,6 +481,7 @@ void NvgWindow::drawHud(QPainter &p) {
   //drawMaxSpeed(p);
   drawSpeed(p);
   drawSpeedLimit(p);
+  drawThermal(p);
   drawRestArea(p);
   drawTurnSignals(p);
   //drawGpsStatus(p);
@@ -523,7 +524,7 @@ void NvgWindow::drawHud(QPainter &p) {
                       device_State.getMemoryUsagePercent(),
   */
   QString infoText;
-  infoText.sprintf("%s TS(%.2f/%.2f) LTP(%.2f/%.2f/%.0f) AO(%.2f/%.2f) SR(%.2f/%.2f) CURVE(%d) SAFE_SPD(%d) LIVE_T(%d)",
+  infoText.sprintf("%s TS(%.2f/%.2f) LTP(%.2f/%.2f/%.0f) TCO(%.2f) AO(%.2f/%.2f) SR(%.2f) SAD(%.2f)",
                       s->lat_control.c_str(),
 
                       torque_state.getLatAccelFactor(),
@@ -533,15 +534,14 @@ void NvgWindow::drawHud(QPainter &p) {
                       live_torque_params.getFrictionCoefficientRaw(),
                       live_torque_params.getTotalBucketPoints(),
 
+                      controls_state.getTotalCameraOffset(),
+
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
 
                       controls_state.getSteerRatio(),
-                      controls_state.getSteerActuatorDelay(),
+                      controls_state.getSteerActuatorDelay()
 
-                      Params().getBool("SccSmootherSlowOnCurves"),
-                      Params().getBool("SafeDistanceSpeed"),
-                      Params().getBool("IsLiveTorque")
                       );
 
   // info
@@ -673,12 +673,34 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
 
   // ================================================================================================================ //
-
-  // 1. SPEED
   x = 140;
   const int y2 = rect().bottom() - (footer_h / 2) - (radius + 50) - 10;
 
-  float accel = car_state.getAEgo();
+  // 1.TR Value
+  float tr_value = controls_state.getDynamicTRValue();
+  int tr_mode = controls_state.getDynamicTRMode();
+  int cruise_gap = controls_state.getCruiseGap();
+
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(200));
+  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+
+  str.sprintf("GAP %d", cruise_gap);
+  str2.sprintf("%d, %.2f", tr_mode, tr_value);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  textColor = QColor(255, 255, 255, 200);
+
+  configFont(p, "Open Sans", 38, "Bold");
+  drawText(p, x, y1-20, str, 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y2+50, str, textColor);
+  p.setOpacity(1.0);
+
+  /*
+  // 1. SPEED
+  loat accel = car_state.getAEgo();
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(200));
@@ -705,7 +727,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   str.sprintf("%.0f", cur_speed);
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y2+50, str, textColor);
-  p.setOpacity(1.0);
+  p.setOpacity(1.0);*/
 
   // 2. PEDAL
   x = radius / 2 + (bdr_s * 2) + (radius + 50);
@@ -768,29 +790,6 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   img_alpha = brake_valid ? 1.0f : 0.15f;
   bg_alpha = brake_valid ? 0.3f : 0.1f;
   drawIcon(p, x, y2, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
-  p.setOpacity(1.0);
-
-  // 5.TR Value
-  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
-  float tr_value = controls_state.getDynamicTRValue();
-  int tr_mode = controls_state.getDynamicTRMode();
-  int cruise_gap = controls_state.getCruiseGap();
-
-  p.setPen(Qt::NoPen);
-  p.setBrush(blackColor(200));
-  p.drawEllipse(x - radius / 2, y1 - radius / 2, radius, radius);
-
-  str.sprintf("GAP %d", cruise_gap);
-  str2.sprintf("%d, %.2f", tr_mode, tr_value);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  textColor = QColor(255, 255, 255, 200);
-
-  configFont(p, "Open Sans", 38, "Bold");
-  drawText(p, x, y1-20, str, 200);
-
-  configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y1+50, str2, textColor);
   p.setOpacity(1.0);
 
 }
@@ -1168,6 +1167,90 @@ QPixmap NvgWindow::get_icon_iol_com(const char* key) {
   }
   else
     return item.value();
+}
+
+void NvgWindow::drawThermal(QPainter &p) {
+  p.save();
+
+  const SubMaster &sm = *(uiState()->sm);
+  auto deviceState = sm["deviceState"].getDeviceState();
+
+  const auto cpuTempC = deviceState.getCpuTempC();
+  //const auto gpuTempC = deviceState.getGpuTempC();
+  float ambientTemp = deviceState.getAmbientTempC();
+
+  float cpuTemp = 0.f;
+  //float gpuTemp = 0.f;
+
+  if(std::size(cpuTempC) > 0) {
+    for(int i = 0; i < std::size(cpuTempC); i++) {
+      cpuTemp += cpuTempC[i];
+    }
+    cpuTemp = cpuTemp / (float)std::size(cpuTempC);
+  }
+
+  /*if(std::size(gpuTempC) > 0) {
+    for(int i = 0; i < std::size(gpuTempC); i++) {
+      gpuTemp += gpuTempC[i];
+    }
+    gpuTemp = gpuTemp / (float)std::size(gpuTempC);
+    cpuTemp = (cpuTemp + gpuTemp) / 2.f;
+  }*/
+
+  int w = 192;
+  int x = width() - (30 + w);
+  int y = 330;
+
+  QString str;
+  QRect rect;
+
+  configFont(p, "Open Sans", 50, "Bold");
+  str.sprintf("%d%%", deviceState.getBatteryPercent());
+  rect = QRect(x, y, w, w);
+
+  int r = interp<float>(cpuTemp, {50.f, 90.f}, {200.f, 255.f}, false);
+  int g = interp<float>(cpuTemp, {50.f, 90.f}, {255.f, 200.f}, false);
+  p.setPen(QColor(r, g, 200, 200));
+  p.drawText(rect, Qt::AlignCenter, str);
+
+  y += 55;
+  configFont(p, "Open Sans", 25, "Bold");
+  rect = QRect(x, y, w, w);
+  p.setPen(QColor(255, 255, 255, 200));
+  p.drawText(rect, Qt::AlignCenter, "BAT.L");
+
+  y += 80;
+  configFont(p, "Open Sans", 50, "Bold");
+  str.sprintf("%.0f°C", cpuTemp);
+  rect = QRect(x, y, w, w);
+
+  r = interp<float>(cpuTemp, {50.f, 90.f}, {200.f, 255.f}, false);
+  g = interp<float>(cpuTemp, {50.f, 90.f}, {255.f, 200.f}, false);
+  p.setPen(QColor(r, g, 200, 200));
+  p.drawText(rect, Qt::AlignCenter, str);
+
+  y += 55;
+  configFont(p, "Open Sans", 25, "Bold");
+  rect = QRect(x, y, w, w);
+  p.setPen(QColor(255, 255, 255, 200));
+  p.drawText(rect, Qt::AlignCenter, "CPU");
+
+  y += 80;
+  configFont(p, "Open Sans", 50, "Bold");
+  str.sprintf("%.0f°C", ambientTemp);
+  rect = QRect(x, y, w, w);
+  r = interp<float>(ambientTemp, {35.f, 60.f}, {200.f, 255.f}, false);
+  g = interp<float>(ambientTemp, {35.f, 60.f}, {255.f, 200.f}, false);
+  p.setPen(QColor(r, g, 200, 200));
+  p.drawText(rect, Qt::AlignCenter, str);
+
+  y += 55;
+  configFont(p, "Open Sans", 25, "Bold");
+  rect = QRect(x, y, w, w);
+  p.setPen(QColor(255, 255, 255, 200));
+  p.drawText(rect, Qt::AlignCenter, "AMBIENT");
+
+  p.restore();
 }
 
 void NvgWindow::drawRestArea(QPainter &p) {

@@ -138,4 +138,6 @@ class LateralPlanner:
     lateralPlan.autoLaneChangeEnabled = self.DH.auto_lane_change_enabled
     lateralPlan.autoLaneChangeTimer = int(AUTO_LCA_START_TIME) - int(self.DH.auto_lane_change_timer)
 
+    lateralPlan.totalCameraOffset = float(self.LP.total_camera_offset)
+
     pm.send('lateralPlan', plan_send)

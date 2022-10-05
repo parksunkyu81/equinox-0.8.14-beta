@@ -903,6 +903,8 @@ class Controls:
         right_lane_visible = self.sm['lateralPlan'].rProb > 0.5
         left_lane_visible = self.sm['lateralPlan'].lProb > 0.5
 
+        totalCameraOffset = self.sm['lateralPlan'].totalCameraOffset
+
         if self.sm.frame % 100 == 0:
             self.right_lane_visible = right_lane_visible
             self.left_lane_visible = left_lane_visible
@@ -1032,6 +1034,7 @@ class Controls:
         controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
         controlsState.dynamicTRValue = float(self.sm['longitudinalPlan'].dynamicTRValue)
 
+        controlsState.totalCameraOffset = totalCameraOffset
 
         lat_tuning = self.CP.lateralTuning.which()
         if self.joystick_mode:
