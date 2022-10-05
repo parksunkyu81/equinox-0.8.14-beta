@@ -49,10 +49,10 @@ def manager_init() -> None:
     ("LongControlEnabled", "0"),
     ("MadModeEnabled", "1"),
     ("IsLdwsCar", "0"),
-    ("LaneChangeEnabled", "1"),
-    ("AutoLaneChangeEnabled", "1"),
+    ("LaneChangeEnabled", "0"),
+    ("AutoLaneChangeEnabled", "0"),
 
-    ("SccSmootherSlowOnCurves", "1"),
+    ("SccSmootherSlowOnCurves", "0"),
     ("SccSmootherSyncGasPressed", "0"),
     ("StockNaviDecelEnabled", "0"),
     ("KeepSteeringTurnSignals", "0"),
@@ -60,7 +60,7 @@ def manager_init() -> None:
     ("DisableOpFcw", "0"),
     ("ShowDebugUI", "0"),
     ("NewRadarInterface", "0"),
-    ("SafeDistanceSpeed", "1"),
+    ("SafeDistanceSpeed", "0"),
 
     ("IsLiveTorque", "1"),
     ("IsLowSpeedFactor", "1"),
