@@ -326,7 +326,7 @@ struct DeviceState @0xa4d8b5af2aa492eb {
   screenBrightnessPercent @37 :Int8;
 
   wifiIpAddress @42 :Text;
-  
+
   struct ThermalZone {
     name @0 :Text;
     temp @1 :Float32;
@@ -966,7 +966,7 @@ struct LateralPlan @0xe1e9318e2ae8b51e {
 
   autoLaneChangeEnabled @31 :Bool;
   autoLaneChangeTimer @32 :Int8;
-  totalCameraOffset @33 :Float32;
+  #totalCameraOffset @33 :Float32;
 
   enum Desire {
     none @0;
@@ -1931,7 +1931,7 @@ struct Event {
     navInstruction @82 :NavInstruction;
     navRoute @83 :NavRoute;
     navThumbnail @84: Thumbnail;
-    
+
     # neokii
     roadLimitSpeed @86 :RoadLimitSpeed;
 
