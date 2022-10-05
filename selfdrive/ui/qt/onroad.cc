@@ -1192,90 +1192,6 @@ float interp(float x, std::initializer_list<T> x_list, std::initializer_list<T> 
   return yL + dydx * ( x - xL );
 }
 
-void NvgWindow::drawThermal(QPainter &p) {
-  p.save();
-
-  const SubMaster &sm = *(uiState()->sm);
-  auto deviceState = sm["deviceState"].getDeviceState();
-
-  const auto cpuTempC = deviceState.getCpuTempC();
-  //const auto gpuTempC = deviceState.getGpuTempC();
-  float ambientTemp = deviceState.getAmbientTempC();
-
-  float cpuTemp = 0.f;
-  //float gpuTemp = 0.f;
-
-  if(std::size(cpuTempC) > 0) {
-    for(int i = 0; i < std::size(cpuTempC); i++) {
-      cpuTemp += cpuTempC[i];
-    }
-    cpuTemp = cpuTemp / (float)std::size(cpuTempC);
-  }
-
-  /*if(std::size(gpuTempC) > 0) {
-    for(int i = 0; i < std::size(gpuTempC); i++) {
-      gpuTemp += gpuTempC[i];
-    }
-    gpuTemp = gpuTemp / (float)std::size(gpuTempC);
-    cpuTemp = (cpuTemp + gpuTemp) / 2.f;
-  }*/
-
-  int w = 192;
-  int x = width() - (30 + w);
-  int y = 330;
-
-  QString str;
-  QRect rect;
-
-  configFont(p, "Open Sans", 50, "Bold");
-  str.sprintf("%d%%", deviceState.getBatteryPercent());
-  rect = QRect(x, y, w, w);
-
-  int r = interp<float>(cpuTemp, {50.f, 90.f}, {200.f, 255.f}, false);
-  int g = interp<float>(cpuTemp, {50.f, 90.f}, {255.f, 200.f}, false);
-  p.setPen(QColor(r, g, 200, 200));
-  p.drawText(rect, Qt::AlignCenter, str);
-
-  y += 55;
-  configFont(p, "Open Sans", 25, "Bold");
-  rect = QRect(x, y, w, w);
-  p.setPen(QColor(255, 255, 255, 200));
-  p.drawText(rect, Qt::AlignCenter, "BAT.L");
-
-  y += 80;
-  configFont(p, "Open Sans", 50, "Bold");
-  str.sprintf("%.0f°C", cpuTemp);
-  rect = QRect(x, y, w, w);
-
-  r = interp<float>(cpuTemp, {50.f, 90.f}, {200.f, 255.f}, false);
-  g = interp<float>(cpuTemp, {50.f, 90.f}, {255.f, 200.f}, false);
-  p.setPen(QColor(r, g, 200, 200));
-  p.drawText(rect, Qt::AlignCenter, str);
-
-  y += 55;
-  configFont(p, "Open Sans", 25, "Bold");
-  rect = QRect(x, y, w, w);
-  p.setPen(QColor(255, 255, 255, 200));
-  p.drawText(rect, Qt::AlignCenter, "CPU");
-
-  y += 80;
-  configFont(p, "Open Sans", 50, "Bold");
-  str.sprintf("%.0f°C", ambientTemp);
-  rect = QRect(x, y, w, w);
-  r = interp<float>(ambientTemp, {35.f, 60.f}, {200.f, 255.f}, false);
-  g = interp<float>(ambientTemp, {35.f, 60.f}, {255.f, 200.f}, false);
-  p.setPen(QColor(r, g, 200, 200));
-  p.drawText(rect, Qt::AlignCenter, str);
-
-  y += 55;
-  configFont(p, "Open Sans", 25, "Bold");
-  rect = QRect(x, y, w, w);
-  p.setPen(QColor(255, 255, 255, 200));
-  p.drawText(rect, Qt::AlignCenter, "AMBIENT");
-
-  p.restore();
-}
-
 void NvgWindow::drawRestArea(QPainter &p) {
   if(width() < 1850)
     return;
@@ -1448,6 +1364,90 @@ void NvgWindow::drawGpsStatus(QPainter &p) {
   p.drawText(rect, Qt::AlignHCenter, str);
   p.setOpacity(1.);
 }*/
+
+void NvgWindow::drawThermal(QPainter &p) {
+  p.save();
+
+  const SubMaster &sm = *(uiState()->sm);
+  auto deviceState = sm["deviceState"].getDeviceState();
+
+  const auto cpuTempC = deviceState.getCpuTempC();
+  //const auto gpuTempC = deviceState.getGpuTempC();
+  float ambientTemp = deviceState.getAmbientTempC();
+
+  float cpuTemp = 0.f;
+  //float gpuTemp = 0.f;
+
+  if(std::size(cpuTempC) > 0) {
+    for(int i = 0; i < std::size(cpuTempC); i++) {
+      cpuTemp += cpuTempC[i];
+    }
+    cpuTemp = cpuTemp / (float)std::size(cpuTempC);
+  }
+
+  /*if(std::size(gpuTempC) > 0) {
+    for(int i = 0; i < std::size(gpuTempC); i++) {
+      gpuTemp += gpuTempC[i];
+    }
+    gpuTemp = gpuTemp / (float)std::size(gpuTempC);
+    cpuTemp = (cpuTemp + gpuTemp) / 2.f;
+  }*/
+
+  int w = 192;
+  int x = width() - (30 + w);
+  int y = 330;
+
+  QString str;
+  QRect rect;
+
+  configFont(p, "Open Sans", 50, "Bold");
+  str.sprintf("%d%%", deviceState.getBatteryPercent());
+  rect = QRect(x, y, w, w);
+
+  int r = interp<float>(cpuTemp, {50.f, 90.f}, {200.f, 255.f}, false);
+  int g = interp<float>(cpuTemp, {50.f, 90.f}, {255.f, 200.f}, false);
+  p.setPen(QColor(r, g, 200, 200));
+  p.drawText(rect, Qt::AlignCenter, str);
+
+  y += 55;
+  configFont(p, "Open Sans", 25, "Bold");
+  rect = QRect(x, y, w, w);
+  p.setPen(QColor(255, 255, 255, 200));
+  p.drawText(rect, Qt::AlignCenter, "BAT.L");
+
+  y += 80;
+  configFont(p, "Open Sans", 50, "Bold");
+  str.sprintf("%.0f°C", cpuTemp);
+  rect = QRect(x, y, w, w);
+
+  r = interp<float>(cpuTemp, {50.f, 90.f}, {200.f, 255.f}, false);
+  g = interp<float>(cpuTemp, {50.f, 90.f}, {255.f, 200.f}, false);
+  p.setPen(QColor(r, g, 200, 200));
+  p.drawText(rect, Qt::AlignCenter, str);
+
+  y += 55;
+  configFont(p, "Open Sans", 25, "Bold");
+  rect = QRect(x, y, w, w);
+  p.setPen(QColor(255, 255, 255, 200));
+  p.drawText(rect, Qt::AlignCenter, "CPU");
+
+  y += 80;
+  configFont(p, "Open Sans", 50, "Bold");
+  str.sprintf("%.0f°C", ambientTemp);
+  rect = QRect(x, y, w, w);
+  r = interp<float>(ambientTemp, {35.f, 60.f}, {200.f, 255.f}, false);
+  g = interp<float>(ambientTemp, {35.f, 60.f}, {255.f, 200.f}, false);
+  p.setPen(QColor(r, g, 200, 200));
+  p.drawText(rect, Qt::AlignCenter, str);
+
+  y += 55;
+  configFont(p, "Open Sans", 25, "Bold");
+  rect = QRect(x, y, w, w);
+  p.setPen(QColor(255, 255, 255, 200));
+  p.drawText(rect, Qt::AlignCenter, "AMBIENT");
+
+  p.restore();
+}
 
 void NvgWindow::drawDebugText(QPainter &p) {
   const SubMaster &sm = *(uiState()->sm);
