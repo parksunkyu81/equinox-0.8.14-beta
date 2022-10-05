@@ -618,6 +618,8 @@ struct ControlsState @0x97ff69c53601abf1 {
   dynamicTRValue @81 :Float32;
   cruiseGap @82 :UInt8;
 
+  totalCameraOffset @83 :Float32;
+
   enum OpenpilotState @0xdbe58b96d2d1ac61 {
     disabled @0;
     preEnabled @1;
@@ -961,9 +963,10 @@ struct LateralPlan @0xe1e9318e2ae8b51e {
   curvatureRates @28 :List(Float32);
 
   solverExecutionTime @30 :Float32;
-  
+
   autoLaneChangeEnabled @31 :Bool;
   autoLaneChangeTimer @32 :Int8;
+  totalCameraOffset @33 :Float32;
 
   enum Desire {
     none @0;
