@@ -545,7 +545,7 @@ void NvgWindow::drawHud(QPainter &p) {
                       );
 
   // info
-  configFont(p, "Open Sans", 33, "Regular");
+  configFont(p, "Open Sans", 40, "Regular");
   p.setPen(QColor(120, 255, 120, 200));
   p.drawText(rect().left() + 20, rect().height() - 15, infoText);
 
@@ -692,10 +692,10 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   textColor = QColor(255, 255, 255, 200);
 
   configFont(p, "Open Sans", 38, "Bold");
-  drawText(p, x, y1-20, str, 200);
+  drawText(p, x, y2-20, str, 200);
 
   configFont(p, "Open Sans", textSize, "Bold");
-  drawTextWithColor(p, x, y2+50, str, textColor);
+  drawTextWithColor(p, x, y2+50, str2, textColor);
   p.setOpacity(1.0);
 
   /*
