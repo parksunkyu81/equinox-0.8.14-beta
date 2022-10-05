@@ -87,6 +87,7 @@ protected:
   void drawTurnSignals(QPainter &p);
   void drawGpsStatus(QPainter &p);
   void drawDebugText(QPainter &p);
+  void drawThermal(QPainter &p);
   void drawHud(QPainter &p);
 
 private:
