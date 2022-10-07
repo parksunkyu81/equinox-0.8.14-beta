@@ -82,8 +82,8 @@ def manager_init() -> None:
 
     # Driving Close to RoadEdge
     ("CloseToRoadEdge", "1"),
-    ("LeftEdgeOffset", "0.15"),
-    ("RightEdgeOffset", "-0.15"),
+    ("LeftEdgeOffset", "15"),
+    ("RightEdgeOffset", "-15"),
 
   ]
   if not PC:
