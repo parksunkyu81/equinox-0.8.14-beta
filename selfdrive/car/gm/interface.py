@@ -76,14 +76,14 @@ class CarInterface(CarInterfaceBase):
 
         ret.minSteerSpeed = 11 * CV.KPH_TO_MS
         ret.minEnableSpeed = -1
-        ret.mass = 1645. + STD_CARGO_KG
-        ret.wheelbase = 2.725
-        ret.centerToFront = ret.wheelbase * 0.49  # wild guess
+        ret.mass = 3500. * CV.LB_TO_KG + STD_CARGO_KG
+        ret.wheelbase = 2.72
+        ret.centerToFront = ret.wheelbase * 0.4
         # no rear steering, at least on the listed cars above
         ret.steerRatioRear = 0.
         ret.steerControlType = car.CarParams.SteerControlType.torque
 
-        tire_stiffness_factor = 0.5  # 1. 을 기준으로 줄면 민감(오버), 커지면 둔감(언더) DEF : 0.5
+        tire_stiffness_factor = 0.444  # 1. 을 기준으로 줄면 민감(오버), 커지면 둔감(언더) DEF : 0.5
         ret.maxSteeringAngleDeg = 1000.
         #ret.disableLateralLiveTuning = True
 
@@ -136,7 +136,7 @@ class CarInterface(CarInterfaceBase):
             torque_friction = ntune_torque_get('friction')  # FRICTION
             CarInterfaceBase.configure_torque_tune(ret.lateralTuning, torque_lat_accel_factor, torque_friction)
 
-        ret.steerRatio = 17.0
+        ret.steerRatio = 14.4
 
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
         # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
