@@ -293,7 +293,7 @@ class Controls:
                         target_speed = max(target_speed, self.kph_to_clu(10))
                         return target_speed
 
-                elif 0. < d < -lead.vRel * 40.:
+                """elif 0. < d < -lead.vRel * 30.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -303,7 +303,7 @@ class Controls:
                         target_speed = max(target_speed, self.kph_to_clu(20))
                         return target_speed
 
-                elif 0. < d < -lead.vRel * 50.:
+                elif 0. < d < -lead.vRel * 40.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -311,7 +311,7 @@ class Controls:
                     if accel < 0.:
                         target_speed = vEgo + accel
                         target_speed = max(target_speed, self.kph_to_clu(30))
-                        return target_speed
+                        return target_speed"""
 
         return 0
 
