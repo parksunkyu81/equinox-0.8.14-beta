@@ -136,7 +136,7 @@ class CarInterface(CarInterfaceBase):
             torque_friction = ntune_torque_get('friction')  # FRICTION
             CarInterfaceBase.configure_torque_tune(ret.lateralTuning, torque_lat_accel_factor, torque_friction)
 
-        ret.steerRatio = 14.4
+        ret.steerRatio = 16.5
 
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
         # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
