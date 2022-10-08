@@ -24,7 +24,7 @@ TRAJECTORY_SIZE = 33
 # 따라서 경로 오프셋이 필요하지 않습니다.
 
 PATH_OFFSET = ntune_common_get('pathOffset')  # default 0.0
-CAMERA_OFFSET = ntune_common_get('cameraOffset')  # m from center car to camera
+# = ntune_common_get('cameraOffset')  # m from center car to camera
 
 class LanePlanner:
   def __init__(self, wide_camera=False):
@@ -46,7 +46,8 @@ class LanePlanner:
     self.l_lane_change_prob = 0.
     self.r_lane_change_prob = 0.
 
-    self.camera_offset = CAMERA_OFFSET
+    #self.camera_offset = CAMERA_OFFSET
+    self.camera_offset = PATH_OFFSET
     self.path_offset = PATH_OFFSET
 
     self.readings = []
@@ -74,7 +75,8 @@ class LanePlanner:
     self.lp_timer += DT_MDL
     if self.lp_timer > 1.0:
       self.lp_timer = 0.0
-      self.camera_offset = ntune_common_get('cameraOffset')  # m from center car to camera
+      self.camera_offset = ntune_common_get('pathOffset')  # m from center car to camera
+      #self.camera_offset = ntune_common_get('cameraOffset')  # m from center car to camera
 
     #opkr
     if self.drive_close_to_edge:

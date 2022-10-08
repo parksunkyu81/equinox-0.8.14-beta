@@ -669,6 +669,12 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_openpilot.png",
                                             this));*/
 
+  toggles.append(new ParamControl("EndToEndToggle",
+                                            "Disable use of lanelines (Alpha)",
+                                            "In this mode openpilot will ignore lanelines and just drive how it thinks a human would.",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+
   toggles.append(new ParamControl("LaneChangeEnabled",
                                             "Enable Lane Change Assist",
                                             "Perform assisted lane changes with openpilot by checking your surroundings for safety, activating the turn signal and gently nudging the steering wheel towards your desired lane. openpilot is not capable of checking if a lane change is safe. You must continuously observe your surroundings to use this feature.",

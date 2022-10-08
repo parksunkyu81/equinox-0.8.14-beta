@@ -12,7 +12,6 @@ from cereal import log
 from common.params import Params
 
 TRAJECTORY_SIZE = 33
-CAMERA_OFFSET = 0.04
 
 class LateralPlanner:
   def __init__(self, CP):
