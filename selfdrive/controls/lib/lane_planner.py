@@ -23,13 +23,8 @@ TRAJECTORY_SIZE = 33
 # 모델은 TICI와 EON의 차이를 알고 있다.
 # 따라서 경로 오프셋이 필요하지 않습니다.
 
-PATH_OFFSET = 0.00
-if EON:
-  CAMERA_OFFSET = -0.06
-elif TICI:
-  CAMERA_OFFSET = 0.04
-else:
-  CAMERA_OFFSET = 0.0
+PATH_OFFSET = ntune_common_get('pathOffset')
+CAMERA_OFFSET = ntune_common_get('cameraOffset')
 
 class LanePlanner:
   def __init__(self, wide_camera=False):
@@ -51,8 +46,8 @@ class LanePlanner:
     self.l_lane_change_prob = 0.
     self.r_lane_change_prob = 0.
 
-    self.camera_offset = -CAMERA_OFFSET if wide_camera else CAMERA_OFFSET
-    self.path_offset = -PATH_OFFSET if wide_camera else PATH_OFFSET
+    self.camera_offset = CAMERA_OFFSET
+    self.path_offset = PATH_OFFSET
 
     self.readings = []
     self.frame = 0
