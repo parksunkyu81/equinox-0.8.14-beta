@@ -121,7 +121,7 @@ class Controls:
 
 
         # read params
-        #self.is_live_torque = params.get_bool("IsLiveTorque")
+        self.is_live_torque = params.get_bool('IsLiveTorque')
         self.is_metric = params.get_bool("IsMetric")
         self.is_ldw_enabled = params.get_bool("IsLdwEnabled")
         openpilot_enabled_toggle = params.get_bool("OpenpilotEnabledToggle")
@@ -214,12 +214,6 @@ class Controls:
         self.desired_curvature = 0.0
         self.desired_curvature_rate = 0.0
 
-        # Live Torque
-        self.torque_latAccelFactor = 0.
-        self.torque_latAccelOffset = 0.
-        self.torque_friction = 0.
-        self.torque_totalBucketPoints = 0.
-
         # scc smoother
         self.is_cruise_enabled = False
         self.applyMaxSpeed = 0
@@ -236,6 +230,12 @@ class Controls:
 
         # TODO: no longer necessary, aside from process replay
         self.sm['liveParameters'].valid = True
+
+        # Live torque
+        self.torque_latAccelFactor = 0.
+        self.torque_latAccelOffset = 0.
+        self.torque_friction = 0.
+        self.totalBucketPoints = 0.
 
         self.startup_event = get_startup_event(car_recognized, controller_available, len(self.CP.carFw) > 0)
 
@@ -732,51 +732,25 @@ class Controls:
 
         # Update Torque Params
         if self.CP.lateralTuning.which() == 'torque':
-            torque_params = self.sm['liveTorqueParameters']
-            if self.sm.all_checks(['liveTorqueParameters']) and torque_params.useParams:
-                self.LaC.update_live_torque_params(torque_params.latAccelFactorFiltered,
-                                                   torque_params.latAccelOffsetFiltered,
-                                                   torque_params.frictionCoefficientFiltered)
+            if self.is_live_torque:
+                torque_params = self.sm['liveTorqueParameters']
 
-        """if self.CP.lateralTuning.which() == 'torque' and self.is_live_torque:
-           torque_params = self.sm['liveTorqueParameters']
-           # Todo: Figure out why this is needed, and remove it
-           if (torque_params.latAccelFactorFiltered > 0) and (self.sm.valid['liveTorqueParameters']):
+                if (torque_params.latAccelFactorFiltered > 0) and (self.sm.valid['liveTorqueParameters']):
+                    self.torque_latAccelFactor = torque_params.latAccelFactorFiltered
+                    self.torque_latAccelOffset = torque_params.latAccelOffsetFiltered
+                    self.torque_friction = torque_params.frictionCoefficientFiltered
+                    self.totalBucketPoints = torque_params.totalBucketPoints
 
-              #print('========================[Live Torque]=================================')
-              self.torque_latAccelFactor = torque_params.latAccelFactorFiltered
-              self.torque_latAccelOffset = torque_params.latAccelOffsetFiltered
-              self.torque_friction = torque_params.frictionCoefficientFiltered
-              self.torque_totalBucketPoints = torque_params.totalBucketPoints
+                    self.LaC.update_live_torque_params(torque_params.latAccelFactorFiltered,
+                                                       torque_params.latAccelOffsetFiltered,
+                                                       torque_params.frictionCoefficientFiltered)
 
-              self.LaC.update_live_torque_params(torque_params.latAccelFactorFiltered,
-                                                 torque_params.latAccelOffsetFiltered,
-                                                 torque_params.frictionCoefficientFiltered)
-
-              #print('===========[self.torque_latAccelFactor]=============== : ', self.torque_latAccelFactor)
-              #print('===========[self.torque_latAccelOffset]=============== : ', self.torque_latAccelOffset)
-              #print('===========[self.torque_friction]=============== : ', self.torque_friction)
-           else:
-               try:
-                   self.torque_latAccelFactor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
-                   self.torque_friction = ntune_torque_get('friction')  # FRICTION
-               except:
-                   self.torque_latAccelFactor = float(
-                       Decimal(Params().get("TorqueMaxLatAccel", encoding="utf8")) * Decimal('0.1'))
-                   self.torque_friction = float(
-                       Decimal(Params().get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))
-        elif self.CP.lateralTuning.which() == 'torque':
-            try:
+            else:
                 self.torque_latAccelFactor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
                 self.torque_friction = ntune_torque_get('friction')  # FRICTION
-            except:
-                self.torque_latAccelFactor = float(
-                    Decimal(Params().get("TorqueMaxLatAccel", encoding="utf8")) * Decimal('0.1'))
-                self.torque_friction = float(
-                    Decimal(Params().get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))
-
-            self.torque_latAccelOffset = 0.
-            self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset, self.torque_friction)"""
+                self.torque_latAccelOffset = 0.
+                self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset,
+                                                   self.torque_friction)
 
         lat_plan = self.sm['lateralPlan']
         long_plan = self.sm['longitudinalPlan']
@@ -1028,6 +1002,12 @@ class Controls:
         controlsState.sccGasFactor = ntune_scc_get('sccGasFactor')
         controlsState.sccBrakeFactor = ntune_scc_get('sccBrakeFactor')
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
+
+        # Live Torque
+        controlsState.latAccelFactor = self.torque_latAccelFactor
+        controlsState.latAccelOffset = self.torque_latAccelOffset
+        controlsState.friction = self.torque_friction
+        controlsState.totalBucketPoints = self.totalBucketPoints
 
         # Dynamic TR
         controlsState.cruiseGap = int(Params().get("cruiseGap", encoding="utf8"))

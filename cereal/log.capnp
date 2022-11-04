@@ -620,6 +620,13 @@ struct ControlsState @0x97ff69c53601abf1 {
 
   totalCameraOffset @83 :Float32;
 
+  # Live Torque
+  latAccelFactor @84 :Float32;
+  latAccelOffset @85 :Float32;
+  friction @86 :Float32;
+  totalBucketPoints @87 :Float32;
+
+
   enum OpenpilotState @0xdbe58b96d2d1ac61 {
     disabled @0;
     preEnabled @1;

@@ -492,9 +492,9 @@ void NvgWindow::drawHud(QPainter &p) {
   const auto controls_state = sm["controlsState"].getControlsState();
   //const auto device_State = sm["deviceState"].getDeviceState();
   //const auto car_control = sm["carControl"].getCarControl();
-  const auto live_params = sm["liveParameters"].getLiveParameters();
-  const auto live_torque_params = sm["liveTorqueParameters"].getLiveTorqueParameters();
-  const auto torque_state = controls_state.getLateralControlState().getTorqueState();
+  //const auto live_params = sm["liveParameters"].getLiveParameters();
+  //const auto live_torque_params = sm["liveTorqueParameters"].getLiveTorqueParameters();
+  //const auto torque_state = controls_state.getLateralControlState().getTorqueState();
 
   QColor orangeColor = QColor(52, 197, 66, 255);
 
@@ -524,25 +524,31 @@ void NvgWindow::drawHud(QPainter &p) {
                       device_State.getMemoryUsagePercent(),
   */
   QString infoText;
-  infoText.sprintf("%s TS(%.2f/%.2f) LTP(%.2f/%.2f/%.0f) TCO(%.2f) AO(%.2f/%.2f) SR(%.2f) SAD(%.2f)",
+  /*infoText.sprintf("%s TS(%.2f/%.2f) LTP(%.2f/%.2f/%.0f) TCO(%.2f) AO(%.2f/%.2f) SR(%.2f) SAD(%.2f)",
                       s->lat_control.c_str(),
-
                       torque_state.getLatAccelFactor(),
                       torque_state.getFriction(),
-
                       live_torque_params.getLatAccelFactorRaw(),
                       live_torque_params.getFrictionCoefficientRaw(),
                       live_torque_params.getTotalBucketPoints(),
-
                       controls_state.getTotalCameraOffset(),
-
                       live_params.getAngleOffsetDeg(),
                       live_params.getAngleOffsetAverageDeg(),
-
                       controls_state.getSteerRatio(),
                       controls_state.getSteerActuatorDelay()
-
+                      );*/
+  infoText.sprintf("%s (FACT:%.2f, OFF:%.2f, FRI:%.2f, PNT:%.0f) TCO(%.2f) SR(%.2f) SAD(%.2f) CURVE(%.2f)",
+                      s->lat_control.c_str(),
+                      controls_state.getLatAccelFactor(),
+                      controls_state.getLatAccelOffset(),
+                      controls_state.getFriction(),
+                      controls_state.getTotalBucketPoints(),
+                      controls_state.getTotalCameraOffset(),
+                      controls_state.getSteerRatio(),
+                      controls_state.getSteerActuatorDelay(),
+                      controls_state.getSccCurvatureFactor()
                       );
+
 
   // info
   configFont(p, "Open Sans", 40, "Regular");
