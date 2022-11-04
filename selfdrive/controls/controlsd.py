@@ -982,14 +982,7 @@ class Controls:
         controlsState.startMonoTime = int(start_time * 1e9)
         controlsState.forceDecel = bool(force_decel)
         controlsState.canErrorCounter = self.can_rcv_error_counter
-
         controlsState.angleSteers = steer_angle_without_offset * CV.RAD_TO_DEG
-        #controlsState.applyAccel = self.apply_accel
-        #controlsState.aReqValue = self.aReqValue
-        #controlsState.aReqValueMin = self.aReqValueMin
-        #controlsState.aReqValueMax = self.aReqValueMax
-        #controlsState.sccStockCamAct = self.sccStockCamAct
-        #controlsState.sccStockCamStatus = self.sccStockCamStatus
 
         # NDA
         controlsState.roadLimitSpeedActive = road_speed_limiter_get_active()
