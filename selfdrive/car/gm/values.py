@@ -29,7 +29,7 @@ class CarControllerParams():
     def __init__(self, CP):
         self.STEER_MAX = 300  # Safety limit, not LKA max. Trucks use 600.
         self.STEER_STEP = 4  # control frames per command
-        self.STEER_DELTA_UP = 7     # DEF : 8 (낮을수록 헨들을 빠르게 돌린다.)
+        self.STEER_DELTA_UP = 8     # DEF : 8 (낮을수록 헨들을 빠르게 돌린다.)
         self.STEER_DELTA_DOWN = 17
         self.MIN_STEER_SPEED = 3.  # m/s
         self.STEER_DRIVER_ALLOWANCE = 50
@@ -56,13 +56,13 @@ class CarControllerParams():
             pass
             # self.STEER_DELTA_UP = 3          # ~0.75s time to peak torque (255/50hz/0.75s)
             # self.STEER_DELTA_DOWN = 7       # ~0.3s from peak torque to zero
-        elif CP.carFingerprint in HIGH_TORQUE:
-            self.STEER_MAX = 600  # Safety limit, not LKA max. Trucks use 600.
-            self.STEER_DELTA_UP = 14
-            self.STEER_DELTA_DOWN = 34
-            self.STEER_DRIVER_ALLOWANCE = 100
-            self.STEER_DRIVER_MULTIPLIER = 4
-            self.STEER_DRIVER_FACTOR = 100
+        #elif CP.carFingerprint in HIGH_TORQUE:
+        #    self.STEER_MAX = 600  # Safety limit, not LKA max. Trucks use 600.
+        #    self.STEER_DELTA_UP = 14
+        #    self.STEER_DELTA_DOWN = 34
+        #    self.STEER_DRIVER_ALLOWANCE = 100
+        #    self.STEER_DRIVER_MULTIPLIER = 4
+        #    self.STEER_DRIVER_FACTOR = 100
 
         # if CP.enableGasInterceptor:
         # TODO: Pedal may need different accel_max and min?
