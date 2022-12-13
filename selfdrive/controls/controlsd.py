@@ -283,7 +283,7 @@ class Controls:
             if lead is not None:
                 # d : 비전 거리
                 d = lead.dRel
-                if 0. < d < -lead.vRel * 30.:
+                if 0. < d < -lead.vRel * 35.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
