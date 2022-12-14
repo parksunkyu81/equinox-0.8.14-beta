@@ -27,9 +27,9 @@ class CarControllerParams():
     ACCEL_MIN = -4.   # 브레이크에 의미가 없다. def : -3.5 (엑셀만 때는 경우 속도)
 
     def __init__(self, CP):
-        self.STEER_MAX = 300  # Safety limit, not LKA max. Trucks use 600.
+        self.STEER_MAX = 400  # DEF : 300, Safety limit, not LKA max. Trucks use 600.
         self.STEER_STEP = 4  # control frames per command
-        self.STEER_DELTA_UP = 8     # DEF : 8 (낮을수록 헨들을 빠르게 돌린다.)
+        self.STEER_DELTA_UP = 9     # DEF : 7
         self.STEER_DELTA_DOWN = 17
         self.MIN_STEER_SPEED = 3.  # m/s
         self.STEER_DRIVER_ALLOWANCE = 50
