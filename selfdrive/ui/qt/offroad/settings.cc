@@ -550,7 +550,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   QString dynamicTR_Gap = QString::fromStdString(Params().get("DynamicTRGap"));
   if(dynamicTR_Gap.length() == 0)
     dynamicTR_Gap = "4";
-  QPushButton* dynamicTRGapBtn = new QPushButton("Dynamic TR Gap : " + dynamicTR_Gap);
+  QPushButton* dynamicTRGapBtn = new QPushButton("Dynamic TR Gap (0:AUTO) : " + dynamicTR_Gap);
   dynamicTRGapBtn->setObjectName("dynamicTRGapBtn");
 
   connect(dynamicTRGapBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(dynamicTRGap); });
@@ -560,7 +560,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
      QString dynamicTR_gap = QString::fromStdString(Params().get("DynamicTRGap"));
      if(dynamicTR_gap.length() == 0)
        dynamicTR_gap = "4";
-     dynamicTRGapBtn->setText("Dynamic TR Gap : " + dynamicTR_gap);
+     dynamicTRGapBtn->setText("Dynamic TR Gap (0:AUTO) : " + dynamicTR_gap);
      main_layout->setCurrentWidget(homeScreen);
   });
   main_layout->addWidget(dynamicTRGap);
