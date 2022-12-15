@@ -4,16 +4,6 @@ from selfdrive.car import dbc_dict
 Ecu = car.CarParams.Ecu
 from common.conversions import Conversions as CV
 
-#===============================================#
-CustomTREnabled = "0"
-CruiseGap1 = "11"
-CruiseGap2 = "13"
-CruiseGap3 = "15"
-CruiseGap4 = "17"
-DynamicTRGap = "3"   # DynamicTR을 사용하여 해당 간격에 할당하고 아래의 속도로 TR을 조정합니다.
-DynamicTRSpd = "0,20,40,60,110"
-DynamicTRSet = "1.3,1.4,1.5,1.6,1.7"
-#===============================================#
 
 SLOW_ON_CURVES = 1  # 슬로우 커브 사용 유무 (0,1)
 MIN_CURVE_SPEED = 40. * CV.KPH_TO_MS  # 커브 속도 설정
@@ -27,10 +17,10 @@ class CarControllerParams():
     ACCEL_MIN = -4.   # 브레이크에 의미가 없다. def : -3.5 (엑셀만 때는 경우 속도)
 
     def __init__(self, CP):
-        self.STEER_MAX = 400  # DEF : 300, Safety limit, not LKA max. Trucks use 600.
+        self.STEER_MAX = 300  # DEF : 300, Safety limit, not LKA max. Trucks use 600.
         self.STEER_STEP = 4  # control frames per command
-        self.STEER_DELTA_UP = 9     # DEF : 7
-        self.STEER_DELTA_DOWN = 17
+        self.STEER_DELTA_UP = 8     # DEF : 7
+        self.STEER_DELTA_DOWN = 12
         self.MIN_STEER_SPEED = 3.  # m/s
         self.STEER_DRIVER_ALLOWANCE = 50
         self.STEER_DRIVER_MULTIPLIER = 4
