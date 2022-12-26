@@ -10,6 +10,7 @@ from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness,
 from selfdrive.car.interfaces import CarInterfaceBase
 from selfdrive.ntune import ntune_common_get, ntune_torque_get
 from common.params import Params
+from decimal import Decimal
 
 ButtonType = car.CarState.ButtonEvent.Type
 EventName = car.CarEvent.EventName
@@ -130,10 +131,16 @@ class CarInterface(CarInterfaceBase):
             ret.lateralTuning.pid.kf = 1.  # for get_steer_feedforward_bolt()
 
         else:
+            params = Params()
             ret.lateralTuning.init('torque')
-
-            torque_lat_accel_factor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
-            torque_friction = ntune_torque_get('friction')  # FRICTION
+            try:
+              torque_lat_accel_factor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
+              torque_friction = ntune_torque_get('friction')  # FRICTION
+            except:
+              torque_lat_accel_factor = float(
+                    Decimal(params.get("TorqueMaxLatAccel", encoding="utf8")) * Decimal('0.1'))  # LAT_ACCEL_FACTOR
+              torque_friction = float(
+                    Decimal(params.get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))  # FRICTION
             CarInterfaceBase.configure_torque_tune(ret.lateralTuning, torque_lat_accel_factor, torque_friction)
 
         ret.steerRatio = 16.5

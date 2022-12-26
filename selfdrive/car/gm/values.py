@@ -3,6 +3,7 @@ from selfdrive.car import dbc_dict
 
 Ecu = car.CarParams.Ecu
 from common.conversions import Conversions as CV
+from common.numpy_fast import interp
 
 
 SLOW_ON_CURVES = 1  # 슬로우 커브 사용 유무 (0,1)
@@ -18,9 +19,14 @@ class CarControllerParams():
 
     def __init__(self, CP):
         self.STEER_MAX = 300  # DEF : 300, Safety limit, not LKA max. Trucks use 600.
-        self.STEER_STEP = 4  # control frames per command
-        self.STEER_DELTA_UP = 8     # DEF : 7
-        self.STEER_DELTA_DOWN = 17
+        #self.STEER_STEP = 4  # control frames per command
+        self.STEER_STEP = 2
+        #self.STEER_DELTA_UP = 10     # DEF : 7
+        #self.STEER_DELTA_DOWN = 17
+        self.STEER_DELTA_UP_BP = [10., 20.]  # [m/s]
+        self.STEER_DELTA_UP_V = [20., 7.]  # [steer command]
+        self.STEER_DELTA_DOWN_BP = [10., 20.]  # [m/s]
+        self.STEER_DELTA_DOWN_V = [32., 17.]  # [steer command]
         self.MIN_STEER_SPEED = 3.  # m/s
         self.STEER_DRIVER_ALLOWANCE = 50
         self.STEER_DRIVER_MULTIPLIER = 4
@@ -35,6 +41,13 @@ class CarControllerParams():
         #self.MAX_GAS = 3072  # Safety limit, not ACC max. Stock ACC >4096 from standstill.
         #self.ZERO_GAS = 2048  # Coasting
         #self.MAX_BRAKE = 350  # ~ -3.5 m/s^2 with regen
+
+        self.v_ego = 100.
+        self.future_curvature = 0.
+        self.MIN_STEER_DELTA_UP = min(self.STEER_DELTA_UP_V)
+        self.MIN_STEER_DELTA_DOWN = min(self.STEER_DELTA_DOWN_V)
+        self.CURVATURE_STEER_DELTA_FACTOR_BP = [0.001, 0.015]  # [rad/meter]
+        self.CURVATURE_STEER_DELTA_FACTOR_V = [0., 1.]  # factor of higher torque rate limit used. when it's 1, the higher limit is used, or the stock value when 0
 
         # Allow small margin below -3.5 m/s^2 from ISO 15622:2018 since we
         # perform the closed loop control, and might need some
@@ -63,6 +76,17 @@ class CarControllerParams():
         #self.BRAKE_LOOKUP_BP = [self.ACCEL_MIN, -1.]
         #self.BRAKE_LOOKUP_V = [self.MAX_BRAKE, 0.]
 
+    @property
+    def STEER_DELTA_UP(self):
+        limit = interp(self.v_ego, self.STEER_DELTA_UP_BP, self.STEER_DELTA_UP_V)
+        k = interp(self.future_curvature, self.CURVATURE_STEER_DELTA_FACTOR_BP, self.CURVATURE_STEER_DELTA_FACTOR_V)
+        return int(round(k * limit + (1 - k) * self.MIN_STEER_DELTA_UP))
+
+    @property
+    def STEER_DELTA_DOWN(self):
+        limit = interp(self.v_ego, self.STEER_DELTA_DOWN_BP, self.STEER_DELTA_DOWN_V)
+        k = interp(self.future_curvature, self.CURVATURE_STEER_DELTA_FACTOR_BP, self.CURVATURE_STEER_DELTA_FACTOR_V)
+        return int(round(k * limit + (1 - k) * self.MIN_STEER_DELTA_DOWN))
 
 STEER_THRESHOLD = 1.0
 
