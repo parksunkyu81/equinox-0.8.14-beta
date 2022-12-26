@@ -67,8 +67,8 @@ def manager_init() -> None:
     ("IsLowSpeedFactor", "1"),
     ("E2ELong", "0"),
 
-    ("TorqueFriction", "0.05"),
-    ("TorqueMaxLatAccel", "3.0"),
+    ("TorqueFriction", "120"),
+    ("TorqueMaxLatAccel", "30"),
 
     # Dynamic TR
     ("CustomTREnabled", "1"),
