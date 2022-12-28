@@ -14,9 +14,9 @@ from common.params import Params
 TRAJECTORY_SIZE = 33
 
 class LateralPlanner:
-  def __init__(self, CP, use_lanelines=True, wide_camera=False):
-    self.use_lanelines = use_lanelines
-    self.LP = LanePlanner(wide_camera)
+  def __init__(self, CP):
+    self.use_lanelines = not Params().get_bool('EndToEndToggle')
+    self.LP = LanePlanner()
     self.DH = DesireHelper()
 
     # Vehicle model parameters used to calculate lateral movement of car
@@ -66,16 +66,16 @@ class LateralPlanner:
       self.LP.rll_prob *= self.DH.lane_change_ll_prob
 
     # Calculate final driving path and set MPC costs
-    steer_rate = MPC_COST_LAT.STEER_RATE
-
     if self.use_lanelines:
       d_path_xyz = self.LP.get_d_path(v_ego, self.t_idxs, self.path_xyz)
-      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, MPC_COST_LAT.HEADING, steer_rate)
+      d_path_xyz[:, 1] += ntune_common_get('pathOffset')
+      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, MPC_COST_LAT.HEADING, MPC_COST_LAT.STEER_RATE)
     else:
       d_path_xyz = self.path_xyz
+      d_path_xyz[:, 1] += ntune_common_get('pathOffset')
       # Heading cost is useful at low speed, otherwise end of plan can be off-heading
       heading_cost = interp(v_ego, [5.0, 10.0], [MPC_COST_LAT.HEADING, 0.15])
-      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, heading_cost, steer_rate)
+      self.lat_mpc.set_weights(MPC_COST_LAT.PATH, heading_cost, MPC_COST_LAT.STEER_RATE)
 
     y_pts = np.interp(v_ego * self.t_idxs[:LAT_MPC_N + 1], np.linalg.norm(d_path_xyz, axis=1), d_path_xyz[:, 1])
     heading_pts = np.interp(v_ego * self.t_idxs[:LAT_MPC_N + 1], np.linalg.norm(self.path_xyz, axis=1), self.plan_yaw)
@@ -85,7 +85,6 @@ class LateralPlanner:
     assert len(y_pts) == LAT_MPC_N + 1
     assert len(heading_pts) == LAT_MPC_N + 1
     assert len(curv_rate_pts) == LAT_MPC_N + 1
-    # self.x0[4] = v_ego
     lateral_factor = max(0, self.factor1 - (self.factor2 * v_ego**2))
     p = np.array([v_ego, lateral_factor])
     self.lat_mpc.run(self.x0,
@@ -97,7 +96,6 @@ class LateralPlanner:
     # mpc.u_sol is the desired curvature rate given x0 curv state.
     # with x0[3] = measured_curvature, this would be the actual desired rate.
     # instead, interpolate x_sol so that x0[3] is the desired curvature for lat_control.
-    # init state for next
     self.x0[3] = interp(DT_MDL, self.t_idxs[:LAT_MPC_N + 1], self.lat_mpc.x_sol[:, 3])
 
     #  Check for infeasible MPC solution

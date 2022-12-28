@@ -5,11 +5,8 @@ Ecu = car.CarParams.Ecu
 from common.conversions import Conversions as CV
 
 
-SLOW_ON_CURVES = 0  # 슬로우 커브 사용 유무 (0,1)
-
-MIN_CURVE_SPEED = 19. * CV.MPH_TO_MS     # 30 KPH
-MAX_HIGHWAY_SPEED = 65 * CV.MPH_TO_MS    # 105 KPH
-MAX_CITY_SPEED = 45 * CV.MPH_TO_MS       # 72 KPH
+SLOW_ON_CURVES = 1  # 슬로우 커브 사용 유무 (0,1)
+MIN_CURVE_SPEED = 40. * CV.KPH_TO_MS  # 커브 속도 설정
 
 # m/s 속도로 1초당 1미터 -> 3초면 3미터를 이동
 # 2 m/s^2는 가속도 1초당 2m/s 속도 증가 -> 1초면 2미터 이동 -> <1초면 4미터 이동>

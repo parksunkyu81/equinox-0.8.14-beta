@@ -35,7 +35,7 @@ from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_ge
 from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_speed_limiter_get_active, \
   get_road_speed_limiter
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, CONTROL_N
-from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED, MAX_HIGHWAY_SPEED
+from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
 from common.params import Params
 from decimal import Decimal
 
@@ -179,8 +179,7 @@ class Controls:
         self.roadLimitSpeed = 0
         self.roadLimitSpeedLeftDist = 0
 
-        #self.slow_on_curves = Params().get_bool('SccSmootherSlowOnCurves')
-        self.slow_on_curves = False if Params().get_bool("TurnVisionControl") else Params().get_bool('SccSmootherSlowOnCurves')
+        self.slow_on_curves = Params().get_bool('SccSmootherSlowOnCurves')
         self.safe_distance_speed = Params().get_bool('SafeDistanceSpeed')
 
         self.min_set_speed_clu = self.kph_to_clu(MIN_SET_SPEED_KPH)
@@ -640,30 +639,6 @@ class Controls:
         self.v_cruise_kph_last = self.v_cruise_kph
 
         self.CP.pcmCruise = self.CI.CP.pcmCruise
-
-        ################################################################################################
-        vtcState = self.sm['longitudinalPlan'].visionTurnControllerState
-        vtc_speed = self.sm['longitudinalPlan'].visionTurnSpeed
-        max_speed_limit = MAX_HIGHWAY_SPEED
-
-        # visionTurnControl
-        if vtcState == 1:
-            self.events.add(EventName.visionEntering)
-        elif vtcState == 2:
-            self.events.add(EventName.visionTurning)
-        elif vtcState == 3:
-            self.events.add(EventName.visionleaving)
-
-        if vtcState > 0 and vtcState < 4 and int(vtc_speed) >= int(MIN_CURVE_SPEED) and int(vtc_speed) <= int(
-                max_speed_limit):  # MIN_CURVE_SPEED = 19mph, MAX_HIGHWAY_SPEED = 65mph
-            if vtc_speed < CS.vEgo:
-                vtc_speed = float(max(vtc_speed, MIN_CURVE_SPEED))
-                vtc_speed = float(min(vtc_speed, max_speed_limit))
-                self.v_cruise_kph = vtc_speed * CV.MS_TO_KPH
-                self.events.add(EventName.curvespeedValueChange)
-
-        self.v_cruise_kph_last = self.v_cruise_kph
-        ################################################################################################
 
         # if stock cruise is completely disabled, then we can use our own set speed logic
         # if CS.adaptiveCruise:

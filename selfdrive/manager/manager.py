@@ -86,14 +86,6 @@ def manager_init() -> None:
     ("LeftEdgeOffset", "15"),
     ("RightEdgeOffset", "-15"),
 
-    # sunny Speed Control
-    ("SpeedLimitControl", "0"),
-    ("SpeedLimitPercOffset", "0"),
-    ("TurnSpeedControl", "0"),
-    ("TurnVisionControl", "0"),
-
-    ("ShowTrafficSignal", "0"),
-
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

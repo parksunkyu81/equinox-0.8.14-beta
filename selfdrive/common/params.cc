@@ -229,14 +229,6 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"LeftEdgeOffset", PERSISTENT},
     {"RightEdgeOffset", PERSISTENT},
 
-    //sunny Speed Control
-    {"SpeedLimitControl", PERSISTENT},
-    {"SpeedLimitPercOffset", PERSISTENT},
-    {"TurnSpeedControl", PERSISTENT},
-    {"TurnVisionControl", PERSISTENT},
-
-    {"ShowTrafficSignal", PERSISTENT},
-
 };
 
 } // namespace

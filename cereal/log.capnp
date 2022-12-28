@@ -900,28 +900,12 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
   dynamicTRMode @37 :UInt8;
   dynamicTRValue @38 :Float32;
 
-   # sunny
-  visionTurnControllerState @39 :VisionTurnControllerState;
-  visionTurnSpeed @40 :Float32;
-
-  speedLimitControlState @41 :SpeedLimitControlState;
-  speedLimit @42 :Float32;
-  speedLimitOffset @43 :Float32;
-  distToSpeedLimit @44 :Float32;
-  isMapSpeedLimit @45 :Bool;
-
-  distToTurn @46 :Float32;
-  turnSpeed @47 :Float32;
-  turnSpeedControlState @48 :SpeedLimitControlState;
-  turnSign @49 :Int16;
-  stopLine @50 :List(Float64) = [0.];
-  stoplineProb @51 :Float32;
-  trafficState @52 : Int32;
-  e2eX @53 :List(Float64) = [0.];
-  lead0Obstacle @54 :List(Float64) = [0.];
-  lead1Obstacle @55 :List(Float64) = [0.];
-  cruiseTarget @56 :List(Float64) = [0.];
-  onStop @57 : Bool;
+  e2eX @39 :List(Float64) = [0.];
+  lead0Obstacle @40 :List(Float64) = [0.];
+  lead1Obstacle @41 :List(Float64) = [0.];
+  cruiseTarget @42 :List(Float64) = [0.];
+  stopLine @43 :List(Float64) = [0.];
+  stoplineProb @44 :Float32;
 
   enum LongitudinalPlanSource {
     cruise @0;
@@ -929,11 +913,6 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
     lead1 @2;
     lead2 @3;
     e2e @4;
-    # sunny
-    turn @5;
-    limit @6;
-    turnlimit @7;
-    stop @8;
   }
 
   # deprecated
@@ -968,20 +947,6 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
   struct GpsTrajectory {
     x @0 :List(Float32);
     y @1 :List(Float32);
-  }
-
-  enum SpeedLimitControlState {
-    inactive @0; # No speed limit set or not enabled by parameter.
-    tempInactive @1; # User wants to ignore speed limit until it changes.
-    adapting @2; # Reducing speed to match new speed limit.
-    active @3; # Cruising at speed limit.
-  }
-
-  enum VisionTurnControllerState {
-    disabled @0; # No predicted substancial turn on vision range or feature disabled.
-    entering @1; # A subsantial turn is predicted ahead, adapting speed to turn confort levels.
-    turning @2; # Actively turning. Managing acceleration to provide a roll on turn feeling.
-    leaving @3; # Road ahead straightens. Start to allow positive acceleration.
   }
 }
 
