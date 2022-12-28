@@ -263,6 +263,8 @@ void NvgWindow::initializeGL() {
   ic_turn_signal_l = QPixmap("../assets/images/turn_signal_l.png");
   ic_turn_signal_r = QPixmap("../assets/images/turn_signal_r.png");
   ic_satellite = QPixmap("../assets/images/satellite.png");
+  ic_trafficLight_green = QPixmap("../assets/images/img_trafficLight_green.png");
+  ic_trafficLight_red = QPixmap("../assets/images/img_trafficLight_red.png");
 
 }
 
@@ -377,6 +379,17 @@ void NvgWindow::drawLead(QPainter &painter, const cereal::ModelDataV2::LeadDataV
   painter.drawPolygon(chevron, std::size(chevron));
 }
 
+void NvgWindow::drawStopLine(QPainter& painter, const UIState* s, const cereal::ModelDataV2::StopLineData::Reader &stop_line_data, const QPolygonF &vd) {
+    painter.save();
+
+    float prob = stop_line_data.getProb();
+    if (prob < 0.6) prob = 0.6;
+    painter.setBrush(QColor::fromRgbF(1.0, 0.0, 0.0, std::clamp<float>(prob, 0.0, 1.0)));
+    painter.drawPolygon(vd);
+
+    painter.restore();
+}
+
 void NvgWindow::paintGL() {
 }
 
@@ -486,6 +499,9 @@ void NvgWindow::drawHud(QPainter &p) {
   drawTurnSignals(p);
   //drawGpsStatus(p);
 
+  if(s->show_signal)
+    drawStoplineSignal(p);
+
   if(s->show_debug && width() > 1200)
     drawDebugText(p);
 
@@ -557,6 +573,44 @@ void NvgWindow::drawHud(QPainter &p) {
 
 
   drawBottomIcons(p);
+}
+
+void NvgWindow::drawStoplineSignal(QPainter &p) {
+  UIState *s = uiState();
+  const SubMaster &sm = *(s->sm);
+
+  auto stop_line = (*s->sm)["modelV2"].getModelV2().getStopLine();
+  if (stop_line.getX() > 3.0) {
+      if (stop_line.getProb() > .1) {
+          drawStopLine(p, s, stop_line, s->scene.stop_line_vertices);
+      }
+  }
+
+  const auto lp = sm["longitudinalPlan"].getLongitudinalPlan();
+
+  int trafficLight = 0;
+  int TRsign_w = 250;
+  int TRsign_h = 140;
+  int TRsign_x = 960 + 40 + TRsign_w;
+  int TRsign_y = 50;
+  if (lp.getTrafficState() == 2) {
+      trafficLight = 1;
+      p.setOpacity(0.8);
+      p.drawPixmap(TRsign_x, TRsign_y, TRsign_w, TRsign_h, ic_trafficLight_green);
+  }
+  else if (lp.getTrafficState() == 1) {
+      trafficLight = 2;
+      p.setOpacity(0.8);
+      p.drawPixmap(TRsign_x, TRsign_y, TRsign_w, TRsign_h, ic_trafficLight_red);
+
+      if (stop_line.getX() <= 150) {
+        QString sltext;
+        QColor color = QColor(255, 255, 255, 230);
+        sltext.sprintf( "%d m", (int)(stop_line.getX()));
+        configFont(p, "Open Sans", 66, "Bold");
+        drawTextWithColor(p, TRsign_x + 120, TRsign_y + TRsign_h + 60, sltext, color);
+      }
+  }
 }
 
 void NvgWindow::drawBottomIcons(QPainter &p) {

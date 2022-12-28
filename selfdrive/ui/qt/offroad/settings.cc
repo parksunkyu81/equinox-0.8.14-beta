@@ -724,6 +724,12 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_shell.png",
                                             this));
 
+  toggles.append(new ParamControl("ShowTrafficSignal",
+                                            "Show Traffic Signal",
+                                            "",
+                                            "../assets/offroad/icon_shell.png",
+                                            this));
+
   toggles.append(new ParamControl("SafeDistanceSpeed",
                                             "Activate safe distance speed",
                                             "",

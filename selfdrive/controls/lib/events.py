@@ -585,6 +585,33 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
     # ET.PERMANENT: NormalPermanentAlert("Sensor Malfunction", "Hardware Malfunction"),
   },
 
+  EventName.visionEntering: {
+    ET.WARNING: Alert(
+      "Curve Entering",
+      "",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 2.),
+  },
+
+    EventName.visionTurning: {
+    ET.WARNING: Alert(
+      "Curve Turning",
+      "",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 2.),
+  },
+
+  EventName.visionleaving: {
+    ET.WARNING: Alert(
+      "Curve Leaving",
+      "",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 2.),
+  },
+
+  EventName.curvespeedValueChange: {
+    ET.WARNING: curve_speed_adjust_alert,
+  },
   # ********** events that affect controls state transitions **********
 
   EventName.pcmEnable: {
