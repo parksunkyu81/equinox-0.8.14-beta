@@ -748,7 +748,7 @@ class Controls:
             else:
                 self.torque_latAccelFactor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
                 self.torque_friction = ntune_torque_get('friction')  # FRICTION
-                self.torque_latAccelOffset = 0.
+                self.torque_latAccelOffset = 1
                 self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset,
                                                    self.torque_friction)
 
