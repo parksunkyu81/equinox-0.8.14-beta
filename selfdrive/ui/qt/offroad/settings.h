@@ -119,7 +119,7 @@ signals:
 
 };
 
-class DynamicTRGap : public QWidget {
+/*class DynamicTRGap : public QWidget {
   Q_OBJECT
 public:
   explicit DynamicTRGap(QWidget* parent = 0);
@@ -130,9 +130,9 @@ signals:
   void backPress();
   void selected();
 
-};
+};*/
 
-class CruiseGap : public QWidget {
+/*class CruiseGap : public QWidget {
   Q_OBJECT
 public:
   explicit CruiseGap(QWidget* parent = 0);
@@ -143,7 +143,7 @@ signals:
   void backPress();
   void selected();
 
-};
+};*/
 
 class CommunityPanel : public QWidget {
   Q_OBJECT
@@ -153,8 +153,8 @@ private:
   QWidget* homeScreen = nullptr;
   SelectCar* selectCar = nullptr;
   LateralControl* lateralControl = nullptr;
-  DynamicTRGap* dynamicTRGap = nullptr;
-  CruiseGap* cruiseGap = nullptr;
+  //DynamicTRGap* dynamicTRGap = nullptr;
+  //CruiseGap* cruiseGap = nullptr;
 
   QWidget* homeWidget;
 

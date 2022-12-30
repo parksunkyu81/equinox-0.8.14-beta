@@ -138,6 +138,15 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     autoLaneChange @109;
     slowingDownSpeed @110;
     slowingDownSpeedSound @111;
+
+    #sunny
+    speedLimitActive @112;
+    speedLimitValueChange @113;
+    visionEntering @114;
+    visionTurning @115;
+    visionleaving @116;
+    curvespeedValueChange @117;
+    chimeAtResume @118;
   }
 }
 

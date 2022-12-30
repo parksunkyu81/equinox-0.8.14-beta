@@ -547,7 +547,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   });
   main_layout->addWidget(selectCar);*/
 
-  QString dynamicTR_Gap = QString::fromStdString(Params().get("DynamicTRGap"));
+  /*QString dynamicTR_Gap = QString::fromStdString(Params().get("DynamicTRGap"));
   if(dynamicTR_Gap.length() == 0)
     dynamicTR_Gap = "4";
   QPushButton* dynamicTRGapBtn = new QPushButton("Dynamic TR Gap (0:AUTO) : " + dynamicTR_Gap);
@@ -566,7 +566,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   main_layout->addWidget(dynamicTRGap);
   QHBoxLayout* layoutBtn_1 = new QHBoxLayout(homeWidget);
   layoutBtn_1->addWidget(dynamicTRGapBtn);
-  layoutBtn_1->addSpacing(10);
+  layoutBtn_1->addSpacing(10);*/
 
   //layoutBtn->addWidget(selectCarBtn);
 
@@ -748,17 +748,23 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                           "../assets/offroad/icon_shell.png",
                                           this));
 
-  toggles.append(new ParamControl("CustomTREnabled",
+  /*toggles.append(new ParamControl("CustomTREnabled",
                                           "Custom TR Enable",
                                           "to use Custom TR not 1.45(comma default).",
                                           "../assets/offroad/icon_shell.png",
-                                          this));
+                                          this));*/
 
   toggles.append(new ParamControl("CloseToRoadEdge",
                                           "Driving Close to RoadEdge",
                                           "This will adjust the camera offset to get close to road edge if the car is on the first or last lane.",
                                           "../assets/offroad/icon_shell.png",
                                           this));
+
+  toggles.append(new ParamControl("TurnVisionControl",
+                                  "Enable vision based turn control",
+                                  "Use vision path predictions to estimate the appropiate speed to drive through turns ahead.",
+                                  "../assets/offroad/icon_road.png",
+                                  this));
 
   for(ParamControl *toggle : toggles) {
     if(main_layout->count() != 0) {
@@ -818,7 +824,7 @@ LateralControl::LateralControl(QWidget* parent): QWidget(parent) {
   main_layout->addWidget(list);
 }
 
-DynamicTRGap::DynamicTRGap(QWidget* parent): QWidget(parent) {
+/*DynamicTRGap::DynamicTRGap(QWidget* parent): QWidget(parent) {
 
   QVBoxLayout* main_layout = new QVBoxLayout(this);
   main_layout->setMargin(20);
@@ -865,9 +871,9 @@ DynamicTRGap::DynamicTRGap(QWidget* parent): QWidget(parent) {
     });
 
   main_layout->addWidget(list);
-}
+}*/
 
-CruiseGap::CruiseGap(QWidget* parent): QWidget(parent) {
+/*CruiseGap::CruiseGap(QWidget* parent): QWidget(parent) {
 
   QVBoxLayout* main_layout = new QVBoxLayout(this);
   main_layout->setMargin(20);
@@ -886,7 +892,7 @@ CruiseGap::CruiseGap(QWidget* parent): QWidget(parent) {
   list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
   //QStringList items = {"TORQUE", "LQR", "INDI"};
-  QStringList items = {"1", "2", "3", "4"};
+  QStringList items = {1", "2", "3", "4"};
   list->addItems(items);
   list->setCurrentRow(0);
 
@@ -915,4 +921,4 @@ CruiseGap::CruiseGap(QWidget* parent): QWidget(parent) {
     });
 
   main_layout->addWidget(list);
-}
+}*/
