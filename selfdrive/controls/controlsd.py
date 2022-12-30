@@ -46,10 +46,6 @@ SOFT_DISABLE_TIME = 3  # seconds
 LDW_MIN_SPEED = 31 * CV.MPH_TO_MS
 LANE_DEPARTURE_THRESHOLD = 0.1
 
-MIN_CURVE_SPEED = 19. * CV.MPH_TO_MS
-MAX_HIGHWAY_SPEED = 65 * CV.MPH_TO_MS
-MAX_CITY_SPEED = 45 * CV.MPH_TO_MS
-
 REPLAY = "REPLAY" in os.environ
 SIMULATION = "SIMULATION" in os.environ
 NOSENSOR = "NOSENSOR" in os.environ
@@ -183,7 +179,7 @@ class Controls:
         self.roadLimitSpeed = 0
         self.roadLimitSpeedLeftDist = 0
 
-        self.slow_on_curves = False if Params().get_bool("TurnVisionControl") else Params().get_bool('SccSmootherSlowOnCurves')
+        self.slow_on_curves = Params().get_bool('SccSmootherSlowOnCurves')
         self.safe_distance_speed = Params().get_bool('SafeDistanceSpeed')
 
         self.min_set_speed_clu = self.kph_to_clu(MIN_SET_SPEED_KPH)
@@ -644,30 +640,6 @@ class Controls:
 
         self.CP.pcmCruise = self.CI.CP.pcmCruise
 
-        ################################################################################################
-        vtcState = self.sm['longitudinalPlan'].visionTurnControllerState
-        vtc_speed = self.sm['longitudinalPlan'].visionTurnSpeed
-        max_speed_limit = MAX_HIGHWAY_SPEED
-
-        # visionTurnControl
-        if vtcState == 1:
-            self.events.add(EventName.visionEntering)
-        elif vtcState == 2:
-            self.events.add(EventName.visionTurning)
-        elif vtcState == 3:
-            self.events.add(EventName.visionleaving)
-
-        if vtcState > 0 and vtcState < 4 and int(vtc_speed) >= int(MIN_CURVE_SPEED) and int(vtc_speed) <= int(
-                max_speed_limit):  # MIN_CURVE_SPEED = 19mph, MAX_HIGHWAY_SPEED = 65mph
-            if vtc_speed < CS.vEgo:
-                vtc_speed = float(max(vtc_speed, MIN_CURVE_SPEED))
-                vtc_speed = float(min(vtc_speed, max_speed_limit))
-                self.v_cruise_kph = vtc_speed * CV.MS_TO_KPH
-                self.events.add(EventName.curvespeedValueChange)
-
-        self.v_cruise_kph_last = self.v_cruise_kph
-        ################################################################################################
-
         # if stock cruise is completely disabled, then we can use our own set speed logic
         # if CS.adaptiveCruise:
         # update_v_cruise(v_cruise_kph, buttonEvents, button_timers, enabled, metric):
@@ -1031,9 +1003,9 @@ class Controls:
         controlsState.totalBucketPoints = self.totalBucketPoints
 
         # Dynamic TR
-        #controlsState.cruiseGap = int(Params().get("cruiseGap", encoding="utf8"))
-        #controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
-        #controlsState.dynamicTRValue = float(self.sm['longitudinalPlan'].dynamicTRValue)
+        controlsState.cruiseGap = int(Params().get("cruiseGap", encoding="utf8"))
+        controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
+        controlsState.dynamicTRValue = float(self.sm['longitudinalPlan'].dynamicTRValue)
 
         controlsState.totalCameraOffset = totalCameraOffset
 

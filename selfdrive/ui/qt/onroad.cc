@@ -683,7 +683,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   const int y2 = rect().bottom() - (footer_h / 2) - (radius + 50) - 10;
 
   // 1.TR Value
-  /*float tr_value = controls_state.getDynamicTRValue();
+  float tr_value = controls_state.getDynamicTRValue();
   int tr_mode = controls_state.getDynamicTRMode();
   int cruise_gap = controls_state.getCruiseGap();
 
@@ -702,7 +702,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   configFont(p, "Open Sans", textSize, "Bold");
   drawTextWithColor(p, x, y2+50, str2, textColor);
-  p.setOpacity(1.0);*/
+  p.setOpacity(1.0);
 
   /*
   // 1. SPEED
