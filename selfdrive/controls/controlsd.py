@@ -542,7 +542,7 @@ class Controls:
             if self.cruise_mismatch_counter > int(3. / DT_CTRL):
                 self.events.add(EventName.cruiseMismatch)
 
-        # Check for FCW
+        # Check for FCW (브레이크! 추돌위험)
         stock_long_is_braking = self.enabled and not self.CP.openpilotLongitudinalControl and CS.aEgo < -1.25
         model_fcw = self.sm['modelV2'].meta.hardBrakePredicted and not CS.brakePressed and not stock_long_is_braking
         planner_fcw = self.sm['longitudinalPlan'].fcw and self.enabled
@@ -789,9 +789,9 @@ class Controls:
             actuators.accel = self.LoC.update(self.active, CS, long_plan, pid_accel_limits, t_since_plan)
 
             # Steering PID loop and lateral MPC
-            lat_active = self.active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and \
-                         CS.vEgo > self.CP.minSteerSpeed and not CS.standstill \
-                         and abs(CS.steeringAngleDeg) < self.CP.maxSteeringAngleDeg
+            # lat_active = self.active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and \
+            #             CS.vEgo > self.CP.minSteerSpeed and not CS.standstill \
+            #             and abs(CS.steeringAngleDeg) < self.CP.maxSteeringAngleDeg
 
             self.desired_curvature, self.desired_curvature_rate = get_lag_adjusted_curvature(self.CP, CS.vEgo,
                                                                                    lat_plan.psis,
@@ -809,7 +809,7 @@ class Controls:
                 actuators.accel = 4.0 * clip(self.sm['testJoystick'].axes[0], -1, 1)
 
                 steer = clip(self.sm['testJoystick'].axes[1], -1, 1)
-                # max angle is 45 for angle-based cars
+                # max angle is 45 for angle-based cars (최대 각도 45도)
                 actuators.steer, actuators.steeringAngleDeg = steer, steer * 45.
 
                 lac_log.active = True
@@ -817,7 +817,7 @@ class Controls:
                 lac_log.output = steer
                 lac_log.saturated = abs(steer) >= 0.9
 
-        # Send a "steering required alert" if saturation count has reached the limit
+        # Send a "steering required alert" if saturation count has reached the limit (조향 제어 초과)
         if lac_log.active and lac_log.saturated and not CS.steeringPressed:
             dpath_points = lat_plan.dPathPoints
             if len(dpath_points):
