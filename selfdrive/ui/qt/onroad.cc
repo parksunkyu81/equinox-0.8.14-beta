@@ -693,7 +693,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  str.sprintf("%d", tr_mode);
+  str.sprintf("%s", tr_mode);
   str2.sprintf("%.2f", tr_value);
 
   configFont(p, "Open Sans", textSize, "Bold");
