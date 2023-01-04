@@ -575,17 +575,17 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   QPushButton* minTrBtn = new QPushButton("Min TR : " + min_tr);
   minTrBtn->setObjectName("minTrBtn");
 
-  connect(minTrBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(minTr); });
-  minTr = new MinTr(this);
-  connect(minTr, &MinTr::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
-  connect(minTr, &MinTr::selected, [=]() {
+  connect(minTrBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(minTR); });
+  minTR = new MinTR(this);
+  connect(minTR, &MinTR::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
+  connect(minTR, &MinTR::selected, [=]() {
      QString min_tr = QString::fromStdString(Params().get("minTR"));
      if(min_tr.length() == 0)
        min_tr = "0.9";
      minTrBtn->setText("Min TR : " + min_tr);
      main_layout->setCurrentWidget(homeScreen);
   });
-  main_layout->addWidget(minTr);
+  main_layout->addWidget(minTR);
   QHBoxLayout* layoutBtn_2 = new QHBoxLayout(homeWidget);
   layoutBtn_2->addWidget(minTrBtn);
   layoutBtn_2->addSpacing(10);
