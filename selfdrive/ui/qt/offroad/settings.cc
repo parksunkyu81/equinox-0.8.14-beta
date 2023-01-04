@@ -857,7 +857,7 @@ DynamicTRGap::DynamicTRGap(QWidget* parent): QWidget(parent) {
     emit selected();
 
     QTimer::singleShot(1000, []() {
-        Params().putBool("SoftRestartTriggered", true);
+        Params().putBool("SoftRestartTriggered", false);
       });
 
     });
