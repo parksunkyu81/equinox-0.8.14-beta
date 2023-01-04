@@ -572,7 +572,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   QString min_tr = QString::fromStdString(Params().get("minTR"));
   if(min_tr.length() == 0)
     min_tr = "0.9";
-  QPushButton* minTrBtn = new QPushButton("Min TR : " + min_tr);
+  QPushButton* minTrBtn = new QPushButton("Dynamic Follow Min TR : " + min_tr);
   minTrBtn->setObjectName("minTrBtn");
 
   connect(minTrBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(minTR); });
@@ -582,7 +582,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
      QString min_tr = QString::fromStdString(Params().get("minTR"));
      if(min_tr.length() == 0)
        min_tr = "0.9";
-     minTrBtn->setText("Min TR : " + min_tr);
+     minTrBtn->setText("Dynamic Follow Min TR : " + min_tr);
      main_layout->setCurrentWidget(homeScreen);
   });
   main_layout->addWidget(minTR);
@@ -630,7 +630,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   setPalette(pal);
 
   setStyleSheet(R"(
-    #back_btn, #selectCarBtn, #lateralControlBtn, #cruiseGapBtn, #dynamicTRGapBtn {
+    #back_btn, #selectCarBtn, #lateralControlBtn, #cruiseGapBtn, #dynamicTRGapBtn, #minTrBtn {
       font-size: 50px;
       margin: 0px;
       padding: 20px;
