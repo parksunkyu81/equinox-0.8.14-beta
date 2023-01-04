@@ -349,7 +349,8 @@ class LongitudinalMpc:
     if self.lo_timer > 200:
       self.lo_timer = 0
       self.e2e = Params().get_bool("E2ELong")
-      self.dynamic_TR_mode = int(Params().get("DynamicTRGap", encoding="utf8"))
+      #self.dynamic_TR_mode = int(Params().get("DynamicTRGap", encoding="utf8"))
+      self.dynamic_TR_mode = 3
       self.custom_tr_enabled = Params().get_bool("CustomTREnabled")
 
     xforward = ((v[1:] + v[:-1]) / 2) * (T_IDXS[1:] - T_IDXS[:-1])
