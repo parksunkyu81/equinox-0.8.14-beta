@@ -1004,11 +1004,10 @@ class Controls:
 
         # Dynamic TR
         #controlsState.cruiseGap = int(Params().get("cruiseGap", encoding="utf8"))
-        print("minTR : ", float(Decimal(params.get("minTR", encoding="utf8"))))
-        controlsState.minTR = float(Decimal(params.get("minTR", encoding="utf8")))
+        controlsState.minTR = float(Decimal(Params().get("minTR", encoding="utf8")))
         #controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
-        controlsState.dynamicTRMode = params.get("DynamicTRGap", encoding="utf8")
-        controlsState.globalDfMod = float(Decimal(params.get("globalDfMod", encoding="utf8")))
+        controlsState.dynamicTRMode = Params().get("DynamicTRGap", encoding="utf8")
+        controlsState.globalDfMod = float(Decimal(Params().get("globalDfMod", encoding="utf8")))
         controlsState.dynamicTRValue = float(self.sm['longitudinalPlan'].dynamicTRValue)
 
         controlsState.totalCameraOffset = totalCameraOffset
