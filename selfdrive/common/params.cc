@@ -219,7 +219,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"minTR", PERSISTENT},
     {"globalDfMod", PERSISTENT},
 
-    //{"CustomTREnabled", PERSISTENT},
+    {"CustomTREnabled", PERSISTENT},
     //{"DynamicTRSpd", PERSISTENT},
     //{"DynamicTRSet", PERSISTENT},
     //{"cruiseGap", PERSISTENT},
