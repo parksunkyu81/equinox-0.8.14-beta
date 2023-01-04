@@ -1004,6 +1004,7 @@ class Controls:
 
         # Dynamic TR
         #controlsState.cruiseGap = int(Params().get("cruiseGap", encoding="utf8"))
+        print("minTR : ", float(Decimal(params.get("minTR", encoding="utf8"))))
         controlsState.minTR = float(Decimal(params.get("minTR", encoding="utf8")))
         #controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
         controlsState.dynamicTRMode = params.get("DynamicTRGap", encoding="utf8")
