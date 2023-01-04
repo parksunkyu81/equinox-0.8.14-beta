@@ -74,7 +74,7 @@ def manager_init() -> None:
     ("CustomTREnabled", "1"),
     ("DynamicTRGap", "auto"),
     ("minTR", "0.9"),
-    ("globalDfMod ", "1.0"),
+    ("globalDfMod", "1.0"),
 
 
     # Driving Close to RoadEdge
