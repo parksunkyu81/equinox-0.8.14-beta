@@ -907,7 +907,7 @@ MinTR::MinTR(QWidget* parent): QWidget(parent) {
   QScroller::grabGesture(list->viewport(), QScroller::LeftMouseButtonGesture);
   list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
-  QStringList items = {"0.8", "0.9", "1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.0", "2.1", "2.2", "2.3", "2.4", "2.5"};
+  QStringList items = {"0.8", "0.9", "1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.0", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7"};
   list->addItems(items);
   list->setCurrentRow(0);
 
@@ -927,6 +927,55 @@ MinTR::MinTR(QWidget* parent): QWidget(parent) {
 
     //Params().put("LateralControl", list->currentItem()->text().toStdString());
     Params().put("minTR", list->currentItem()->text().toStdString());
+    emit selected();
+
+    QTimer::singleShot(1000, []() {
+        Params().putBool("SoftRestartTriggered", false);
+      });
+
+    });
+
+  main_layout->addWidget(list);
+}
+
+GlobalDfMod::GlobalDfMod(QWidget* parent): QWidget(parent) {
+
+  QVBoxLayout* main_layout = new QVBoxLayout(this);
+  main_layout->setMargin(20);
+  main_layout->setSpacing(20);
+
+  // Back button
+  QPushButton* back = new QPushButton("Back");
+  back->setObjectName("back_btn");
+  back->setFixedSize(500, 100);
+  connect(back, &QPushButton::clicked, [=]() { emit backPress(); });
+  main_layout->addWidget(back, 0, Qt::AlignLeft);
+
+  QListWidget* list = new QListWidget(this);
+  list->setStyleSheet("QListView {padding: 40px; background-color: #393939; border-radius: 15px; height: 140px;} QListView::item{height: 100px}");
+  QScroller::grabGesture(list->viewport(), QScroller::LeftMouseButtonGesture);
+  list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+  QStringList items = {"0.8", "0.9", "1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.0", "2.1", "2.2", "2.3", "2.4", "2.5"};
+  list->addItems(items);
+  list->setCurrentRow(0);
+
+  QString selectedControl = QString::fromStdString(Params().get("globalDfMod"));
+
+  int index = 0;
+  for(QString item : items) {
+    if(selectedControl == item) {
+        list->setCurrentRow(index);
+        break;
+    }
+    index++;
+  }
+
+  QObject::connect(list, QOverload<QListWidgetItem*>::of(&QListWidget::itemClicked),
+    [=](QListWidgetItem* item){
+
+    //Params().put("LateralControl", list->currentItem()->text().toStdString());
+    Params().put("globalDfMod", list->currentItem()->text().toStdString());
     emit selected();
 
     QTimer::singleShot(1000, []() {
