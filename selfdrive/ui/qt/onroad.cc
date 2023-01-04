@@ -686,14 +686,14 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   // 1.TR Value
   float tr_value = controls_state.getDynamicTRValue();
-  char* tr_mode = controls_state.getDynamicTRMode();
+  auto tr_mode = controls_state.getDynamicTRMode();
   //int cruise_gap = controls_state.getCruiseGap();
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  str.sprintf("%s", tr_mode);
+  str.sprintf("%s", tr_mode.cStr());
   str2.sprintf("%.2f", tr_value);
 
   configFont(p, "Open Sans", textSize, "Bold");
