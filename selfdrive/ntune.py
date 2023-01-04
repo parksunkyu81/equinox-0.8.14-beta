@@ -210,9 +210,6 @@ class nTune():
   def checkValidSCC(self):
     updated = False
 
-    if self.checkValue("minTR", 0.85, 2.7, 0.9):
-      updated = True
-
     if self.checkValue("sccGasFactor", 0.85, 2.7, 0.9):
       updated = True
 
