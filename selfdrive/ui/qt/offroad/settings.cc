@@ -590,6 +590,28 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   layoutBtn_2->addWidget(minTrBtn);
   layoutBtn_2->addSpacing(10);
   // =============================================================================================================== //
+  QString global_df_mod = QString::fromStdString(Params().get("globalDfMod"));
+  if(global_df_mod.length() == 0)
+    global_df_mod = "1.0";
+  QPushButton* globalDfModBtn = new QPushButton("Dynamic Follow multiplier : " + global_df_mod);
+  globalDfModBtn->setObjectName("globalDfModBtn");
+
+  connect(globalDfModBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(globalDfMod); });
+  globalDfMod = new GlobalDfMod(this);
+  connect(globalDfMod, &GlobalDfMod::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
+  connect(globalDfMod, &GlobalDfMod::selected, [=]() {
+     QString global_df_mod = QString::fromStdString(Params().get("globalDfMod"));
+     if(global_df_mod.length() == 0)
+       global_df_mod = "1.0";
+     globalDfModBtn->setText("Dynamic Follow multiplier : " + global_df_mod);
+     main_layout->setCurrentWidget(homeScreen);
+  });
+  main_layout->addWidget(globalDfMod);
+  QHBoxLayout* layoutBtn_4 = new QHBoxLayout(homeWidget);
+  layoutBtn_4->addWidget(globalDfModBtn);
+  layoutBtn_4->addSpacing(10);
+  // =============================================================================================================== //
+
   QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
   if(lateral_control.length() == 0)
     lateral_control = "TORQUE";
@@ -622,6 +644,8 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   vlayout->addSpacing(10);
   vlayout->addLayout(layoutBtn_2, 1);
   vlayout->addSpacing(10);
+  vlayout->addLayout(layoutBtn_4, 1);
+  vlayout->addSpacing(10);
   vlayout->addWidget(scroller, 1);
 
   QPalette pal = palette();
@@ -630,7 +654,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   setPalette(pal);
 
   setStyleSheet(R"(
-    #back_btn, #selectCarBtn, #lateralControlBtn, #cruiseGapBtn, #dynamicTRGapBtn, #minTrBtn {
+    #back_btn, #selectCarBtn, #lateralControlBtn, #cruiseGapBtn, #dynamicTRGapBtn, #minTrBtn, #globalDfModBtn {
       font-size: 50px;
       margin: 0px;
       padding: 20px;
