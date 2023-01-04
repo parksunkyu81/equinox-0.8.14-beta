@@ -537,16 +537,18 @@ void NvgWindow::drawHud(QPainter &p) {
                       controls_state.getSteerRatio(),
                       controls_state.getSteerActuatorDelay()
                       );*/
-  infoText.sprintf("%s (FACT:%.2f, OFF:%.2f, FRI:%.2f, PNT:%.0f) TCO(%.2f) SR(%.2f) SAD(%.2f) CURVE(%.2f)",
+  infoText.sprintf("%s (FACT:%.2f, FRI:%.2f) TCO(%.2f) SR(%.2f) SAD(%.2f) CURVE(%.2f) TR(%.1f) DF(%.1f)",
                       s->lat_control.c_str(),
                       controls_state.getLatAccelFactor(),
-                      controls_state.getLatAccelOffset(),
+                      //controls_state.getLatAccelOffset(),
                       controls_state.getFriction(),
-                      controls_state.getTotalBucketPoints(),
+                      //controls_state.getTotalBucketPoints(),
                       controls_state.getTotalCameraOffset(),
                       controls_state.getSteerRatio(),
                       controls_state.getSteerActuatorDelay(),
-                      controls_state.getSccCurvatureFactor()
+                      controls_state.getSccCurvatureFactor(),
+                      controls_state.getMinTR(),
+                      controls_state.getGlobalDfMod()
                       );
 
 
@@ -684,15 +686,15 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   // 1.TR Value
   float tr_value = controls_state.getDynamicTRValue();
-  int tr_mode = controls_state.getDynamicTRMode();
-  int cruise_gap = controls_state.getCruiseGap();
+  auto tr_mode = controls_state.getDynamicTRMode();
+  //int cruise_gap = controls_state.getCruiseGap();
 
   p.setPen(Qt::NoPen);
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  str.sprintf("GAP %d", cruise_gap);
-  str2.sprintf("%d, %.2f", tr_mode, tr_value);
+  str.sprintf("%d", tr_mode);
+  str2.sprintf("%.2f", tr_value);
 
   configFont(p, "Open Sans", textSize, "Bold");
   textColor = QColor(255, 255, 255, 200);

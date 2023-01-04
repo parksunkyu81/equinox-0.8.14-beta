@@ -614,9 +614,11 @@ struct ControlsState @0x97ff69c53601abf1 {
   following @79 :Bool;
 
   # Dynamic TR
-  dynamicTRMode @80 :UInt8;
+  dynamicTRMode @80 :Text;
   dynamicTRValue @81 :Float32;
-  cruiseGap @82 :UInt8;
+  #cruiseGap @82 :UInt8;
+  minTR @82 :Float32;
+  globalDfMod @88 :Float32;
 
   totalCameraOffset @83 :Float32;
 

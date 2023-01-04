@@ -215,15 +215,14 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"IsLowSpeedFactor", PERSISTENT},
     {"E2ELong", PERSISTENT},
 
-    {"CruiseGap1", PERSISTENT},
-    {"CruiseGap2", PERSISTENT},
-    {"CruiseGap3", PERSISTENT},
-    {"CruiseGap4", PERSISTENT},
     {"DynamicTRGap", PERSISTENT},
-    {"CustomTREnabled", PERSISTENT},
-    {"DynamicTRSpd", PERSISTENT},
-    {"DynamicTRSet", PERSISTENT},
-    {"cruiseGap", PERSISTENT},
+    {"minTR", PERSISTENT},
+    {"globalDfMod", PERSISTENT},
+
+    //{"CustomTREnabled", PERSISTENT},
+    //{"DynamicTRSpd", PERSISTENT},
+    //{"DynamicTRSet", PERSISTENT},
+    //{"cruiseGap", PERSISTENT},
 
     {"CloseToRoadEdge", PERSISTENT},
     {"LeftEdgeOffset", PERSISTENT},

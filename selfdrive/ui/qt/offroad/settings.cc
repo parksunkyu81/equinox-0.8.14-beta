@@ -569,26 +569,26 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   layoutBtn_1->addSpacing(10);
 
   // =============================================================================================================== //
-  /*QString cruise_gap = QString::fromStdString(Params().get("cruiseGap"));
-  if(cruise_gap.length() == 0)
-    cruise_gap = "4";
-  QPushButton* cruiseGapBtn = new QPushButton("Cruise Gap : " + cruise_gap);
-  cruiseGapBtn->setObjectName("cruiseGapBtn");
+  QString min_tr = QString::fromStdString(Params().get("minTR"));
+  if(min_tr.length() == 0)
+    min_tr = "0.9";
+  QPushButton* minTrBtn = new QPushButton("Min TR : " + min_tr);
+  minTrBtn->setObjectName("minTrBtn");
 
-  connect(cruiseGapBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(cruiseGap); });
-  cruiseGap = new CruiseGap(this);
-  connect(cruiseGap, &CruiseGap::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
-  connect(cruiseGap, &CruiseGap::selected, [=]() {
-     QString cruise_gap = QString::fromStdString(Params().get("cruiseGap"));
-     if(cruise_gap.length() == 0)
-       cruise_gap = "4";
-     cruiseGapBtn->setText("Cruise Gap : " + cruise_gap);
+  connect(minTrBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(minTr); });
+  minTr = new MinTr(this);
+  connect(minTr, &MinTr::backPress, [=]() { main_layout->setCurrentWidget(homeScreen); });
+  connect(minTr, &MinTr::selected, [=]() {
+     QString min_tr = QString::fromStdString(Params().get("minTR"));
+     if(min_tr.length() == 0)
+       min_tr = "0.9";
+     minTrBtn->setText("Min TR : " + min_tr);
      main_layout->setCurrentWidget(homeScreen);
   });
-  main_layout->addWidget(cruiseGap);
+  main_layout->addWidget(minTr);
   QHBoxLayout* layoutBtn_2 = new QHBoxLayout(homeWidget);
-  layoutBtn_2->addWidget(cruiseGapBtn);
-  layoutBtn_2->addSpacing(10);*/
+  layoutBtn_2->addWidget(minTrBtn);
+  layoutBtn_2->addSpacing(10);
   // =============================================================================================================== //
   QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
   if(lateral_control.length() == 0)
@@ -619,8 +619,8 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   vlayout->addLayout(layoutBtn_3, 0);
   vlayout->addSpacing(10);
   vlayout->addLayout(layoutBtn_1, 1);
-  //vlayout->addSpacing(10);
-  //vlayout->addLayout(layoutBtn_2, 1);
+  vlayout->addSpacing(10);
+  vlayout->addLayout(layoutBtn_2, 1);
   vlayout->addSpacing(10);
   vlayout->addWidget(scroller, 1);
 
@@ -865,7 +865,7 @@ DynamicTRGap::DynamicTRGap(QWidget* parent): QWidget(parent) {
   main_layout->addWidget(list);
 }
 
-/*CruiseGap::CruiseGap(QWidget* parent): QWidget(parent) {
+MinTR::MinTR(QWidget* parent): QWidget(parent) {
 
   QVBoxLayout* main_layout = new QVBoxLayout(this);
   main_layout->setMargin(20);
@@ -883,12 +883,11 @@ DynamicTRGap::DynamicTRGap(QWidget* parent): QWidget(parent) {
   QScroller::grabGesture(list->viewport(), QScroller::LeftMouseButtonGesture);
   list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
-  //QStringList items = {"TORQUE", "LQR", "INDI"};
-  QStringList items = {"1", "2", "3", "4"};
+  QStringList items = {"0.8", "0.9", "1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.0", "2.1", "2.2", "2.3", "2.4", "2.5"};
   list->addItems(items);
   list->setCurrentRow(0);
 
-  QString selectedControl = QString::fromStdString(Params().get("cruiseGap"));
+  QString selectedControl = QString::fromStdString(Params().get("minTR"));
 
   int index = 0;
   for(QString item : items) {
@@ -903,14 +902,14 @@ DynamicTRGap::DynamicTRGap(QWidget* parent): QWidget(parent) {
     [=](QListWidgetItem* item){
 
     //Params().put("LateralControl", list->currentItem()->text().toStdString());
-    Params().put("cruiseGap", list->currentItem()->text().toStdString());
+    Params().put("minTR", list->currentItem()->text().toStdString());
     emit selected();
 
     QTimer::singleShot(1000, []() {
-        Params().putBool("SoftRestartTriggered", true);
+        Params().putBool("SoftRestartTriggered", false);
       });
 
     });
 
   main_layout->addWidget(list);
-}*/
+}
