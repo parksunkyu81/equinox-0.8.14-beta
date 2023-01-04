@@ -213,7 +213,8 @@ class LongitudinalMpc:
 
     self.dynamic_tr_spd = list(map(float, Params().get("DynamicTRSpd", encoding="utf8").split(',')))
     self.dynamic_tr_set = list(map(float, Params().get("DynamicTRSet", encoding="utf8").split(',')))
-    self.dynamic_TR_mode = int(Params().get("DynamicTRGap", encoding="utf8"))
+    #self.dynamic_TR_mode = int(Params().get("DynamicTRGap", encoding="utf8"))
+    self.dynamic_TR_mode = 3
     self.custom_tr_enabled = Params().get_bool("CustomTREnabled")
 
     self.ms_to_spd = CV.MS_TO_KPH if Params().get_bool("IsMetric") else CV.MS_TO_MPH
