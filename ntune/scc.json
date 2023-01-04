@@ -1,4 +1,5 @@
 {
+  "minTR": 0.9,
   "sccGasFactor": 0.9,
   "sccBrakeFactor": 1.0,
   "sccCurvatureFactor": 0.96
