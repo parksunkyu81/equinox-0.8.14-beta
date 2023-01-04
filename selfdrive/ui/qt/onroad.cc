@@ -686,7 +686,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   // 1.TR Value
   float tr_value = controls_state.getDynamicTRValue();
-  auto tr_mode = controls_state.getDynamicTRMode();
+  char* tr_mode = controls_state.getDynamicTRMode();
   //int cruise_gap = controls_state.getCruiseGap();
 
   p.setPen(Qt::NoPen);
