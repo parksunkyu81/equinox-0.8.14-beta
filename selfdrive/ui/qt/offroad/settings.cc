@@ -549,8 +549,8 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
 
   QString dynamicTR_Gap = QString::fromStdString(Params().get("DynamicTRGap"));
   if(dynamicTR_Gap.length() == 0)
-    dynamicTR_Gap = "4";
-  QPushButton* dynamicTRGapBtn = new QPushButton("Dynamic TR Gap (0:AUTO) : " + dynamicTR_Gap);
+    dynamicTR_Gap = "auto";
+  QPushButton* dynamicTRGapBtn = new QPushButton("Dynamic Follow Profile : " + dynamicTR_Gap);
   dynamicTRGapBtn->setObjectName("dynamicTRGapBtn");
 
   connect(dynamicTRGapBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(dynamicTRGap); });
@@ -559,8 +559,8 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   connect(dynamicTRGap, &DynamicTRGap::selected, [=]() {
      QString dynamicTR_gap = QString::fromStdString(Params().get("DynamicTRGap"));
      if(dynamicTR_gap.length() == 0)
-       dynamicTR_gap = "4";
-     dynamicTRGapBtn->setText("Dynamic TR Gap (0:AUTO) : " + dynamicTR_gap);
+       dynamicTR_gap = "auto";
+     dynamicTRGapBtn->setText("Dynamic Follow Profile : " + dynamicTR_gap);
      main_layout->setCurrentWidget(homeScreen);
   });
   main_layout->addWidget(dynamicTRGap);
@@ -568,10 +568,8 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   layoutBtn_1->addWidget(dynamicTRGapBtn);
   layoutBtn_1->addSpacing(10);
 
-  //layoutBtn->addWidget(selectCarBtn);
-
   // =============================================================================================================== //
-  QString cruise_gap = QString::fromStdString(Params().get("cruiseGap"));
+  /*QString cruise_gap = QString::fromStdString(Params().get("cruiseGap"));
   if(cruise_gap.length() == 0)
     cruise_gap = "4";
   QPushButton* cruiseGapBtn = new QPushButton("Cruise Gap : " + cruise_gap);
@@ -590,7 +588,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   main_layout->addWidget(cruiseGap);
   QHBoxLayout* layoutBtn_2 = new QHBoxLayout(homeWidget);
   layoutBtn_2->addWidget(cruiseGapBtn);
-  layoutBtn_2->addSpacing(10);
+  layoutBtn_2->addSpacing(10);*/
   // =============================================================================================================== //
   QString lateral_control = QString::fromStdString(Params().get("LateralControl"));
   if(lateral_control.length() == 0)
@@ -742,17 +740,17 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                           "../assets/offroad/icon_shell.png",
                                           this));
 
-  toggles.append(new ParamControl("E2ELong",
+  /*toggles.append(new ParamControl("E2ELong",
                                           "Enable E2E Long",
                                           "Activate E2E Long. It may work unexpectedly. Be careful.",
                                           "../assets/offroad/icon_shell.png",
-                                          this));
+                                          this));*/
 
-  toggles.append(new ParamControl("CustomTREnabled",
+  /*toggles.append(new ParamControl("CustomTREnabled",
                                           "Custom TR Enable",
                                           "to use Custom TR not 1.45(comma default).",
                                           "../assets/offroad/icon_shell.png",
-                                          this));
+                                          this));*/
 
   toggles.append(new ParamControl("CloseToRoadEdge",
                                           "Driving Close to RoadEdge",
@@ -836,7 +834,7 @@ DynamicTRGap::DynamicTRGap(QWidget* parent): QWidget(parent) {
   QScroller::grabGesture(list->viewport(), QScroller::LeftMouseButtonGesture);
   list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
-  QStringList items = {"0", "1", "2", "3", "4"};
+  QStringList items = {"traffic", "stock", "roadtrip", "auto"};
   list->addItems(items);
   list->setCurrentRow(0);
 
@@ -867,7 +865,7 @@ DynamicTRGap::DynamicTRGap(QWidget* parent): QWidget(parent) {
   main_layout->addWidget(list);
 }
 
-CruiseGap::CruiseGap(QWidget* parent): QWidget(parent) {
+/*CruiseGap::CruiseGap(QWidget* parent): QWidget(parent) {
 
   QVBoxLayout* main_layout = new QVBoxLayout(this);
   main_layout->setMargin(20);
@@ -915,4 +913,4 @@ CruiseGap::CruiseGap(QWidget* parent): QWidget(parent) {
     });
 
   main_layout->addWidget(list);
-}
+}*/
