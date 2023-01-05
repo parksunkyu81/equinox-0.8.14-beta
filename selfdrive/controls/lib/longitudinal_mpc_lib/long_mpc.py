@@ -166,9 +166,9 @@ def gen_long_ocp():
   ocp.cost.zu = cost_weights
 
   ocp.constraints.lh = np.zeros(CONSTR_DIM)
-  ocp.constraints.lh_e = np.zeros(CONSTR_DIM)   # add ..
+  #ocp.constraints.lh_e = np.zeros(CONSTR_DIM)   # add ..
   ocp.constraints.uh = 1e4*np.ones(CONSTR_DIM)
-  ocp.constraints.uh_e = 1e4*np.ones(CONSTR_DIM)  # add ..
+  #ocp.constraints.uh_e = 1e4*np.ones(CONSTR_DIM)  # add ..
   ocp.constraints.idxsh = np.arange(CONSTR_DIM)
 
   # The HPIPM solver can give decent solutions even when it is stopped early
