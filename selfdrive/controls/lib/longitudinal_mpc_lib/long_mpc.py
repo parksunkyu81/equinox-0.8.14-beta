@@ -329,6 +329,7 @@ class LongitudinalMpc:
     if not gh_actions:
       self.set_desired_TR(self.dynamic_follow.update(carstate))  # update dynamic follow and get desired TR
 
+    print("set_desired_TR ======================================== : ", self.desired_TR)
     # set accel limits in params
     self.params[:,0] = interp(float(self.status), [0.0, 1.0], [self.cruise_min_a, MIN_ACCEL])
     self.params[:,1] = self.cruise_max_a
