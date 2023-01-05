@@ -81,7 +81,7 @@ def manager_init() -> None:
     ("CruiseGap2", "13"),
     ("CruiseGap3", "15"),
     ("CruiseGap4", "17"),
-    ("DynamicTRGap", "3"),
+    #("DynamicTRGap", "3"),
     ("DynamicTRSpd", "0,20,40,60,110"),
     ("DynamicTRSet", "1.2,1.3,1.4,1.5,1.6"),  # ("DynamicTRSet", "1.3,1.4,1.5,1.6,1.7"),
     ("cruiseGap", "4"),

@@ -36,7 +36,6 @@ from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_
   get_road_speed_limiter
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, CONTROL_N
 from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
-from common.params import Params
 from decimal import Decimal
 
 MIN_SET_SPEED_KPH = V_CRUISE_MIN
@@ -1004,10 +1003,10 @@ class Controls:
 
         # Dynamic TR
         #controlsState.cruiseGap = int(Params().get("cruiseGap", encoding="utf8"))
-        controlsState.minTR = float(Decimal(Params().get("minTR", encoding="utf8")))
+        controlsState.minTR = float(Params().get("minTR", encoding="utf8"))
         #controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
         controlsState.dynamicTRMode = Params().get("DynamicTRGap", encoding="utf8")
-        controlsState.globalDfMod = float(Decimal(Params().get("globalDfMod", encoding="utf8")))
+        controlsState.globalDfMod = float(Params().get("globalDfMod", encoding="utf8"))
         controlsState.dynamicTRValue = float(self.sm['longitudinalPlan'].dynamicTRValue)
 
         controlsState.totalCameraOffset = totalCameraOffset
