@@ -36,7 +36,7 @@ class dfManager:
 
     self.cur_user_profile = self.df_profiles.to_idx[Params().get("DynamicTRGap", encoding="utf8")]  # String to idx
 
-    print("aelf.cur_user_profile : ", elf.cur_user_profile)
+    print("aelf.cur_user_profile : ", self.cur_user_profile)
 
     self.last_user_profile = self.cur_user_profile
 
