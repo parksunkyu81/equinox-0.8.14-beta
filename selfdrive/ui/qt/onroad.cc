@@ -537,8 +537,7 @@ void NvgWindow::drawHud(QPainter &p) {
                       controls_state.getSteerRatio(),
                       controls_state.getSteerActuatorDelay()
                       );*/
-  infoText.sprintf("%s (FACT:%.2f, FRI:%.2f) TCO(%.2f) SR(%.2f) SAD(%.2f) CURVE(%.2f) TR(%.1f) DF(%.1f)",
-                      s->lat_control.c_str(),
+  infoText.sprintf("(FACT:%.2f, FRI:%.2f) TCO(%.2f) SR(%.2f) SAD(%.2f) CURVE(%.2f) MIN_TR(%.1f) DF_MOD(%.1f)",
                       controls_state.getLatAccelFactor(),
                       //controls_state.getLatAccelOffset(),
                       controls_state.getFriction(),
@@ -697,7 +696,9 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   str2.sprintf("%.2f", tr_value);
 
   configFont(p, "Open Sans", textSize, "Bold");
-  textColor = QColor(255, 255, 255, 200);
+  //textColor = QColor(255, 255, 255, 200);  white
+  textColor = QColor(120, 255, 120, 200);   // green
+
 
   configFont(p, "Open Sans", 38, "Bold");
   drawText(p, x, y2-20, str, 200);
