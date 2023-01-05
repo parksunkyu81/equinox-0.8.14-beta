@@ -36,7 +36,8 @@ from selfdrive.road_speed_limiter import road_speed_limiter_get_max_speed, road_
   get_road_speed_limiter
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, V_CRUISE_MIN, CONTROL_N
 from selfdrive.car.gm.values import SLOW_ON_CURVES, MIN_CURVE_SPEED
-from decimal import Decimal
+#from decimal import Decimal
+from selfdrive.controls.lib.dynamic_follow.df_manager import dfManager
 
 MIN_SET_SPEED_KPH = V_CRUISE_MIN
 MAX_SET_SPEED_KPH = V_CRUISE_MAX
@@ -100,6 +101,10 @@ class Controls:
                  'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
                  'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters'] + self.camera_packets + joystick_packet,
                 ignore_alive=ignore, ignore_avg_freq=['radarState', 'longitudinalPlan'])
+
+        self.sm_smiskol = messaging.SubMaster(['dynamicFollowData'])
+
+        self.df_manager = dfManager()
 
         self.can_sock = can_sock
         if can_sock is None:
@@ -1007,7 +1012,7 @@ class Controls:
         #controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
         controlsState.dynamicTRMode = Params().get("DynamicTRGap", encoding="utf8")
         controlsState.globalDfMod = float(Params().get("globalDfMod", encoding="utf8"))
-        controlsState.dynamicTRValue = float(self.sm['longitudinalPlan'].dynamicTRValue)
+        controlsState.dynamicTRValue = float(self.sm_smiskol['dynamicFollowData'].mpcTR)
 
         controlsState.totalCameraOffset = totalCameraOffset
 
