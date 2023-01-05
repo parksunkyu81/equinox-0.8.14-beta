@@ -264,6 +264,8 @@ class DynamicFollow:
       y_dist = [1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
     elif df_profile == self.df_profiles.stock:  # default to stock
       return 1.45
+    elif df_profile == self.df_profiles.auto:
+      return 1.5
     elif df_profile == self.df_profiles.roadtrip:  # previous stock following distance
       return 1.8
     else:
