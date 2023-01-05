@@ -36,6 +36,8 @@ class dfManager:
 
     self.cur_user_profile = self.df_profiles.to_idx[Params().get("DynamicTRGap", encoding="utf8")]  # String to idx
 
+    print("aelf.cur_user_profile : ", elf.cur_user_profile)
+
     self.last_user_profile = self.cur_user_profile
 
     self.cur_model_profile = 0
@@ -69,6 +71,7 @@ class dfManager:
 
     if self.cur_user_profile != self.last_user_profile:
       #self.op_params.put('dynamic_follow', self.df_profiles.to_profile[df_out.user_profile])  # save current profile for next drive
+      print("if self.cur_user_profile != self.last_user_profile:============== ")
       self.change_time = sec_since_boot()
       self.last_is_auto = False
       df_out.changed = True
