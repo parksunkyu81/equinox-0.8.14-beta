@@ -139,10 +139,10 @@ class Planner:
     longitudinalPlan.longitudinalPlanSource = self.mpc.source
     longitudinalPlan.fcw = self.fcw
 
-    longitudinalPlan.solverExecutionTime = self.mpc.solve_time
+    #longitudinalPlan.solverExecutionTime = self.mpc.solve_time
 
-    longitudinalPlan.dynamicTRMode = int(self.mpc.dynamic_TR_mode)
-    longitudinalPlan.dynamicTRValue = float(self.mpc.desired_TR)
+    #longitudinalPlan.dynamicTRMode = int(self.mpc.dynamic_TR_mode)
+    #longitudinalPlan.dynamicTRValue = float(self.mpc.desired_TR)
 
     longitudinalPlan.e2eX = self.mpc.e2e_x.tolist()
     longitudinalPlan.lead0Obstacle = self.mpc.lead_0_obstacle.tolist()
