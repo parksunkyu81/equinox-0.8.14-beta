@@ -593,6 +593,8 @@ class Controls:
         #  and self.CP.openpilotLongitudinalControl and CS.vEgo < 0.3:
         #  self.events.add(EventName.noTarget)
 
+        self.df_manager.update()
+
     def data_sample(self):
         """Receive data from sockets and update carState"""
 
@@ -1014,7 +1016,7 @@ class Controls:
         controlsState.globalDfMod = float(Params().get("globalDfMod", encoding="utf8"))
         controlsState.dynamicTRValue = float(self.sm_smiskol['dynamicFollowData'].mpcTR)
 
-        print("controlsState.dynamicTRValue ======================================== : ", self.sm_smiskol['dynamicFollowData'].mpcTR)
+        #print("controlsState.dynamicTRValue ======================================== : ", self.sm_smiskol['dynamicFollowData'].mpcTR)
 
         controlsState.totalCameraOffset = totalCameraOffset
 
