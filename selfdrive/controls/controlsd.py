@@ -98,11 +98,11 @@ class Controls:
             ignore = ['driverCameraState', 'managerState'] if SIMULATION else None
             self.sm = messaging.SubMaster(
                 ['deviceState', 'pandaStates', 'peripheralState', 'modelV2', 'liveCalibration',
-                 'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
+                 'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman', 'dynamicFollowData',
                  'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters'] + self.camera_packets + joystick_packet,
                 ignore_alive=ignore, ignore_avg_freq=['radarState', 'longitudinalPlan'])
 
-        self.sm_smiskol = messaging.SubMaster(['dynamicFollowData'])
+        #self.sm_smiskol = messaging.SubMaster(['dynamicFollowData'])
 
         self.df_manager = dfManager()
 
@@ -1014,9 +1014,10 @@ class Controls:
         #controlsState.dynamicTRMode = int(self.sm['longitudinalPlan'].dynamicTRMode)
         controlsState.dynamicTRMode = Params().get("DynamicTRGap", encoding="utf8")
         controlsState.globalDfMod = float(Params().get("globalDfMod", encoding="utf8"))
-        controlsState.dynamicTRValue = float(self.sm_smiskol['dynamicFollowData'].mpcTR)
+        # self.sm['liveTorqueParameters']
+        controlsState.dynamicTRValue = float(self.sm['dynamicFollowData'].mpcTR)
 
-        #print("controlsState.dynamicTRValue ======================================== : ", self.sm_smiskol['dynamicFollowData'].mpcTR)
+        print("controlsState.dynamicTRValue ======================================== : ", self.sm['dynamicFollowData'].mpcTR)
 
         controlsState.totalCameraOffset = totalCameraOffset
 
