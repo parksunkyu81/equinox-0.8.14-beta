@@ -131,7 +131,7 @@ class DynamicFollow:
     return self.TR
 
   def _get_profiles(self):
-    """This receives profile change updates from dfManager and runs the auto-df prediction if auto mode"""
+    """이는 dfManager에서 프로필 변경 업데이트를 수신하고 자동 모드인 경우 자동 df 예측을 실행합니다."""
     df_out = self.df_manager.update()
     self.user_profile = df_out.user_profile
     if df_out.is_auto:  # todo: find some way to share prediction between the two mpcs to reduce processing overhead
@@ -283,9 +283,9 @@ class DynamicFollow:
       self.sng = False
 
     if (self.car_data.v_ego >= self.sng_speed or self.df_data.v_egos[0]['v_ego'] >= self.car_data.v_ego) and not self.sng:
-      # if above 15 mph OR we're decelerating to a stop, keep shorter TR. when we reaccelerate, use sng_TR and slowly decrease
+      # 시속 15마일 이상이거나 정지할 때까지 감속 중인 경우 TR을 더 짧게 유지하십시오. 다시 가속할 때 sng_TR을 사용하고 천천히 감소
       TR = interp(self.car_data.v_ego, x_vel, y_dist)
-    else:  # this allows us to get closer to the lead car when stopping, while being able to have smooth stop and go when reaccelerating
+    else:  # 이를 통해 정차 시 선두 차량에 더 가까이 다가갈 수 있으며, 가속 시에는 부드럽게 정지하고 이동할 수 있습니다.
       self.sng = True
       x = [self.sng_speed * 0.7, self.sng_speed]  # decrease TR between 12.6 and 18 mph from 1.8s to defined TR above at 18mph while accelerating
       y = [self.sng_TR, interp(self.sng_speed, x_vel, y_dist)]
