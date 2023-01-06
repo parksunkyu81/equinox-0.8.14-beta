@@ -345,8 +345,8 @@ class DynamicFollow:
 
     self.car_data.left_blinker = CS.leftBlinker
     self.car_data.right_blinker = CS.rightBlinker
-    #self.car_data.cruise_enabled = CS.cruiseState.enabled
-    self.car_data.cruise_enabled = CS.adaptive_Cruise
+    self.car_data.cruise_enabled = CS.cruiseState.enabled
+    #self.car_data.cruise_enabled = CS.adaptive_Cruise
 
   def _get_live_params(self):
     #self.global_df_mod = self.op_params.get('global_df_mod')
