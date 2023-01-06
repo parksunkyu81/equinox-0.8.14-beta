@@ -76,8 +76,8 @@ class DynamicFollow:
     self.v_ego_retention = 2.5
     self.v_rel_retention = 1.75
 
-    self.sng_TR = DEFAULT_TR  # reacceleration stop and go TR
-    self.sng_speed = 18.0 * CV.MPH_TO_MS
+    self.sng_TR = DEFAULT_TR  # 재가속 정지 및 이동 TR
+    self.sng_speed = 6.25 * CV.MPH_TO_MS   # 28.8 kph  (DEF:18.0)
 
     self._setup_collector()
     self._setup_changing_variables()
@@ -171,7 +171,7 @@ class DynamicFollow:
 
   def _store_df_data(self):
     cur_time = sec_since_boot()
-    # Store custom relative accel over time
+    # 시간 경과에 따른 사용자 지정 상대 가속도 저장
     if self.lead_data.status:
       if self.lead_data.new_lead:
         self.df_data.v_rels = []  # reset when new lead
@@ -179,11 +179,11 @@ class DynamicFollow:
         self.df_data.v_rels = self._remove_old_entries(self.df_data.v_rels, cur_time, self.v_rel_retention)
       self.df_data.v_rels.append({'v_ego': self.car_data.v_ego, 'v_lead': self.lead_data.v_lead, 'time': cur_time})
 
-    # Store our velocity for better sng
+    # 더 나은 SNG를 위해 속도를 저장하십시오.
     self.df_data.v_egos = self._remove_old_entries(self.df_data.v_egos, cur_time, self.v_ego_retention)
     self.df_data.v_egos.append({'v_ego': self.car_data.v_ego, 'time': cur_time})
 
-    # Store data for auto-df model
+    # auto-df 모델에 대한 데이터 저장
     self.auto_df_model_data.append([self._norm(self.car_data.v_ego, 'v_ego'),
                                     self._norm(self.lead_data.v_lead, 'v_lead'),
                                     self._norm(self.lead_data.a_lead, 'a_lead'),
@@ -267,7 +267,7 @@ class DynamicFollow:
     elif df_profile == self.df_profiles.stock:  # default to stock
       return 1.45
     elif df_profile == self.df_profiles.auto:
-      return 1.5
+      return 1.45
     elif df_profile == self.df_profiles.roadtrip:  # previous stock following distance
       return 1.8
     else:
@@ -279,7 +279,7 @@ class DynamicFollow:
     v_rel_dist_factor = self.dmc_v_rel.update(self.lead_data.v_lead - self.car_data.v_ego)
     a_lead_dist_factor = self.dmc_a_rel.update(self.lead_data.a_lead - self.car_data.a_ego)
 
-    if self.car_data.v_ego > self.sng_speed:  # keep sng distance until we're above sng speed again
+    if self.car_data.v_ego > self.sng_speed:  # SNG 속도를 다시 초과할 때까지 SNG 거리를 유지합니다.
       self.sng = False
 
     if (self.car_data.v_ego >= self.sng_speed or self.df_data.v_egos[0]['v_ego'] >= self.car_data.v_ego) and not self.sng:
