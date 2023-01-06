@@ -92,11 +92,11 @@ class DynamicFollow:
 
   def _setup_changing_variables(self):
     self.TR = DEFAULT_TR
-    #self.user_profile = self.df_profiles.stock  # just a starting point
-    #self.model_profile = self.df_profiles.stock
+    self.user_profile = self.df_profiles.stock  # just a starting point
+    self.model_profile = self.df_profiles.stock
 
-    self.user_profile = self.df_profiles.to_idx[Params().get("DynamicTRGap", encoding="utf8")]  # String to idx
-    self.model_profile = self.df_profiles.to_idx[Params().get("DynamicTRGap", encoding="utf8")]
+    #self.user_profile = self.df_profiles.to_idx[Params().get("DynamicTRGap", encoding="utf8")]  # String to idx
+    #self.model_profile = self.df_profiles.to_idx[Params().get("DynamicTRGap", encoding="utf8")]
 
     self.last_effective_profile = self.user_profile
     self.profile_change_time = 0
@@ -121,11 +121,11 @@ class DynamicFollow:
 
     if not self.lead_data.status:
       self.TR = DEFAULT_TR
-      print("if not self.lead_data.status: ======================================== : ", self.TR)
+      #print("if not self.lead_data.status: ======================================== : ", self.TR)
     else:
       self._store_df_data()
       self.TR = self._get_TR()
-      print("if self.lead_data.status: ======================================== : ", self.TR)
+      #print("if self.lead_data.status: ======================================== : ", self.TR)
 
     if not travis:
       self._send_cur_state()
