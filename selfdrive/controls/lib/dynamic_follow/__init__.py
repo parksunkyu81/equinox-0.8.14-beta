@@ -121,9 +121,11 @@ class DynamicFollow:
 
     if not self.lead_data.status:
       self.TR = DEFAULT_TR
+      print("if not self.lead_data.status: ======================================== : ", self.TR)
     else:
       self._store_df_data()
       self.TR = self._get_TR()
+      print("if self.lead_data.status: ======================================== : ", self.TR)
 
     if not travis:
       self._send_cur_state()
@@ -165,8 +167,8 @@ class DynamicFollow:
       dat = messaging.new_message('dynamicFollowData')
       dat.dynamicFollowData.mpcTR = self.TR
       dat.dynamicFollowData.profilePred = self.model_profile
-      print("dat.dynamicFollowData.mpcTR ======================================== : ", dat.dynamicFollowData.mpcTR)
-      print("dat.dynamicFollowData.profilePred ======================================== : ", dat.dynamicFollowData.profilePred)
+      #print("dat.dynamicFollowData.mpcTR ======================================== : ", dat.dynamicFollowData.mpcTR)
+      #print("dat.dynamicFollowData.profilePred ======================================== : ", dat.dynamicFollowData.profilePred)
       self.pm.send('dynamicFollowData', dat)
 
   def _store_df_data(self):

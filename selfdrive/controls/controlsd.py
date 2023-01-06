@@ -1017,8 +1017,6 @@ class Controls:
         # self.sm['liveTorqueParameters']
         controlsState.dynamicTRValue = float(self.sm['dynamicFollowData'].mpcTR)
 
-        print("controlsState.dynamicTRValue ======================================== : ", self.sm['dynamicFollowData'].mpcTR)
-
         controlsState.totalCameraOffset = totalCameraOffset
 
         lat_tuning = self.CP.lateralTuning.which()
