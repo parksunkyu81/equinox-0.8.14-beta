@@ -165,6 +165,8 @@ class DynamicFollow:
       dat = messaging.new_message('dynamicFollowData')
       dat.dynamicFollowData.mpcTR = self.TR
       dat.dynamicFollowData.profilePred = self.model_profile
+      print("dat.dynamicFollowData.mpcTR ======================================== : ", self.TR)
+      print("dat.dynamicFollowData.profilePred ======================================== : ", self.model_profile)
       self.pm.send('dynamicFollowData', dat)
 
   def _store_df_data(self):
