@@ -1014,6 +1014,8 @@ class Controls:
         controlsState.globalDfMod = float(Params().get("globalDfMod", encoding="utf8"))
         controlsState.dynamicTRValue = float(self.sm_smiskol['dynamicFollowData'].mpcTR)
 
+        print("controlsState.dynamicTRValue ======================================== : ", self.sm_smiskol['dynamicFollowData'].mpcTR)
+
         controlsState.totalCameraOffset = totalCameraOffset
 
         lat_tuning = self.CP.lateralTuning.which()
