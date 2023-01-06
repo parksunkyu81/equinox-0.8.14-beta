@@ -254,7 +254,7 @@ class DynamicFollow:
     else:
       df_profile = self.user_profile"""
 
-    if self.df_manager.is_auto:  # decide which profile to use, model profile will be updated before this
+    if self.df_manager.is_auto:  # 사용할 프로필을 결정하면 이 전에 모델 프로필이 업데이트됩니다.
       df_profile = self.model_profile
     else:
       df_profile = self.user_profile
@@ -345,7 +345,8 @@ class DynamicFollow:
 
     self.car_data.left_blinker = CS.leftBlinker
     self.car_data.right_blinker = CS.rightBlinker
-    self.car_data.cruise_enabled = CS.cruiseState.enabled
+    #self.car_data.cruise_enabled = CS.cruiseState.enabled
+    self.car_data.cruise_enabled = CS.adaptive_Cruise
 
   def _get_live_params(self):
     #self.global_df_mod = self.op_params.get('global_df_mod')
