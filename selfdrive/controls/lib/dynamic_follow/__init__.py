@@ -77,7 +77,7 @@ class DynamicFollow:
     self.v_rel_retention = 1.75
 
     self.sng_TR = DEFAULT_TR  # 재가속 정지 및 이동 TR
-    self.sng_speed = 6.25 * CV.MPH_TO_MS   # 28.8 kph  (DEF:18.0)
+    self.sng_speed = 20 / CV.MS_TO_KPH   # 28.8 kph  (DEF:18.0)
 
     self._setup_collector()
     self._setup_changing_variables()
@@ -241,9 +241,9 @@ class DynamicFollow:
     global_df_mod = 1 - self.global_df_mod
 
     # Calculate new TRs
-    speeds, mods = [0.], [1.]  # if increasing don't limit
-    if self.global_df_mod < 1:  # if reducing distance
-      speeds = [0, self.sng_speed, 18, x_vel[-1]]  # [0, 18 mph, ~40 mph, highest profile mod speed (~78 mph)]
+    speeds, mods = [0.], [1.]  # 증가하는 경우 제한하지 않습니다
+    if self.global_df_mod < 1:  # 거리를 줄이는 경우
+      speeds = [0, self.sng_speed, 40 / CV.MS_TO_KPH, x_vel[-1]]  # [0, 20 kph, ~40 kph, highest profile mod speed (~125 kph)]
       mods = [0, 0.25, 0.75, 1]  # how much to limit global_df_mod at each speed, 1 is full effect
 
     return [y - (y * global_df_mod * interp(x, speeds, mods)) for x, y in zip(x_vel, y_dist)]
@@ -264,12 +264,13 @@ class DynamicFollow:
     self.last_effective_profile = df_profile
 
     if df_profile == self.df_profiles.traffic:  # 혼잡한 교통 상황에서
-      x_vel = [0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]  # velocities
-      y_dist = [1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
+      # 선행차량의 상대속도가 느려지면 -20km/h 이상인경우, 최대 1.15(115%)를 곱해 t_follow값을 늘려준다.
+      x_vel = [-20 / CV.MS_TO_KPH, 0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]  # velocities
+      y_dist = [1.15, 1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
     elif df_profile == self.df_profiles.stock:  # default to stock
       return 1.45
     elif df_profile == self.df_profiles.auto:
-      return 1.45
+      return 1.3
     elif df_profile == self.df_profiles.roadtrip:  # previous stock following distance
       return 1.8
     else:
@@ -285,7 +286,7 @@ class DynamicFollow:
       self.sng = False
 
     if (self.car_data.v_ego >= self.sng_speed or self.df_data.v_egos[0]['v_ego'] >= self.car_data.v_ego) and not self.sng:
-      # 시속 15마일 이상이거나 정지할 때까지 감속 중인 경우 TR을 더 짧게 유지하십시오. 다시 가속할 때 sng_TR을 사용하고 천천히 감소
+      # 시속 15마일 이상 이거나 정지할 때까지 감속 중인 경우 TR을 더 짧게 유지하십시오. 다시 가속할 때 sng_TR을 사용하고 천천히 감소
       TR = interp(self.car_data.v_ego, x_vel, y_dist)
     else:  # 이를 통해 정차 시 선두 차량에 더 가까이 다가갈 수 있으며, 가속 시에는 부드럽게 정지하고 이동할 수 있습니다.
       self.sng = True

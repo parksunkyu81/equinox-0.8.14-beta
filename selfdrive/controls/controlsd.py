@@ -102,8 +102,6 @@ class Controls:
                  'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters'] + self.camera_packets + joystick_packet,
                 ignore_alive=ignore, ignore_avg_freq=['radarState', 'longitudinalPlan'])
 
-        #self.sm_smiskol = messaging.SubMaster(['dynamicFollowData'])
-
         self.df_manager = dfManager()
 
         self.can_sock = can_sock
