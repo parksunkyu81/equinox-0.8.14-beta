@@ -13,7 +13,7 @@ from selfdrive.controls.lib.dynamic_follow.support import LeadData, CarData, dfD
 from common.data_collector import DataCollector
 
 travis = False
-DEFAULT_TR = 1.45
+DEFAULT_TR = 1.1   #1.45
 
 
 class DistanceModController:
@@ -77,7 +77,7 @@ class DynamicFollow:
     self.v_rel_retention = 1.75
 
     self.sng_TR = DEFAULT_TR  # 재가속 정지 및 이동 TR
-    self.sng_speed = 20 / CV.MS_TO_KPH   # 28.8 kph  (DEF:18.0)
+    self.sng_speed = 1 / CV.MS_TO_KPH   # 28.8 kph  (DEF:18.0)
 
     self._setup_collector()
     self._setup_changing_variables()
@@ -92,11 +92,11 @@ class DynamicFollow:
 
   def _setup_changing_variables(self):
     self.TR = DEFAULT_TR
-    self.user_profile = self.df_profiles.stock  # just a starting point
-    self.model_profile = self.df_profiles.stock
+    #self.user_profile = self.df_profiles.stock  # just a starting point
+    #self.model_profile = self.df_profiles.stock
 
-    #self.user_profile = self.df_profiles.to_idx[Params().get("DynamicTRGap", encoding="utf8")]  # String to idx
-    #self.model_profile = self.df_profiles.to_idx[Params().get("DynamicTRGap", encoding="utf8")]
+    self.user_profile = self.df_profiles.to_idx[Params().get("DynamicTRGap", encoding="utf8")]  # String to idx
+    self.model_profile = self.df_profiles.to_idx[Params().get("DynamicTRGap", encoding="utf8")]
 
     self.last_effective_profile = self.user_profile
     self.profile_change_time = 0
@@ -195,7 +195,8 @@ class DynamicFollow:
 
   def _get_pred(self):
     cur_time = sec_since_boot()
-    if self.car_data.cruise_enabled and self.lead_data.status:
+    #if self.car_data.cruise_enabled and self.lead_data.status:
+    if self.lead_data.status:
       if cur_time - self.last_predict_time > self.predict_rate:
         if len(self.auto_df_model_data) == self.model_input_len:
           pred = predict(np.array(self.auto_df_model_data[::self.skip_every], dtype=np.float32).flatten())
@@ -266,11 +267,12 @@ class DynamicFollow:
     if df_profile == self.df_profiles.traffic:  # 혼잡한 교통 상황에서
       # 선행차량의 상대속도가 느려지면 -20km/h 이상인경우, 최대 1.15(115%)를 곱해 t_follow값을 늘려준다.
       x_vel = [-20 / CV.MS_TO_KPH, 0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]  # velocities
-      y_dist = [1.15, 1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
+      #y_dist = [1.15, 1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
+      y_dist = [1.15, 1.1781, 1.1791, 1.1457, 1.1134, 1.1145, 1.118, 1.1485, 0.957, 0.944, 0.879, 0.8461, 0.8156]
     elif df_profile == self.df_profiles.stock:  # default to stock
       return 1.45
-    elif df_profile == self.df_profiles.auto:
-      return 1.3
+    #elif df_profile == self.df_profiles.auto:
+    #  return 1.2
     elif df_profile == self.df_profiles.roadtrip:  # previous stock following distance
       return 1.8
     else:
