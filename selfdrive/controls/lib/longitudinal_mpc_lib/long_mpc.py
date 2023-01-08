@@ -51,8 +51,8 @@ T_IDXS = np.array(T_IDXS_LST)
 T_DIFFS = np.diff(T_IDXS, prepend=[0.])
 MIN_ACCEL = -4.0
 T_FOLLOW = 1.45
-COMFORT_BRAKE = 2.5
-STOP_DISTANCE = 6.0
+COMFORT_BRAKE = 2.3   # 2.5, 전방차량이 서있거나, 감속하면 좀 더 일찍 속도롤 줄임
+STOP_DISTANCE = 6.2   # 6.0
 
 def get_stopped_equivalence_factor(v_lead):
   return (v_lead**2) / (2 * COMFORT_BRAKE)
