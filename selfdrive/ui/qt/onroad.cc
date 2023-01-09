@@ -800,6 +800,24 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   drawIcon(p, x, y2, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   p.setOpacity(1.0);
 
+  // 5. long control state
+  x = radius / 2 + (bdr_s * 2) + ((radius + 50) * 4);
+  int longControlState = (int)controls_state.getLongControlState();
+  const char* long_state[] = {"off", "pid", "stopping", "starting"};
+  p.setPen(Qt::NoPen);
+  p.setBrush(blackColor(200));
+  p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
+
+  str = long_state[longControlState]);
+  textColor = QColor(120, 255, 120, 200);
+
+  configFont(p, "Open Sans", 38, "Bold");
+  drawText(p, x, y2-20, "LONG", 200);
+
+  configFont(p, "Open Sans", textSize, "Bold");
+  drawTextWithColor(p, x, y2+50, str, textColor);
+  p.setOpacity(1.0);
+
 }
 
 /*
