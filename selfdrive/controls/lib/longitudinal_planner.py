@@ -71,7 +71,7 @@ class Planner:
     long_control_off = sm['controlsState'].longControlState == LongCtrlState.off
     force_slow_decel = sm['controlsState'].forceDecel
 
-    # Reset current state when not engaged, or user is controlling the speed
+    # 참여하지 않거나 사용자가 속도를 제어하는 경우 현재 상태 재설정
     reset_state = long_control_off if self.CP.openpilotLongitudinalControl else not sm['controlsState'].enabled
 
     # 사용자가 속도를 제어하거나 정지할 때 변경 비용 없음
