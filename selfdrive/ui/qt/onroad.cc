@@ -808,7 +808,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   p.setBrush(blackColor(200));
   p.drawEllipse(x - radius / 2, y2 - radius / 2, radius, radius);
 
-  str = long_state[longControlState]);
+  str = long_state[longControlState];
   textColor = QColor(120, 255, 120, 200);
 
   configFont(p, "Open Sans", 38, "Bold");
