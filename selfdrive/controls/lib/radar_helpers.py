@@ -2,9 +2,9 @@ from common.numpy_fast import mean
 from common.kalman.simple_kalman import KF1D
 
 
-# the longer lead decels, the more likely it will keep decelerating
+# 리드 감속이 길수록 감속이 계속될 가능성이 높아집니다.
 # TODO is this a good default?
-_LEAD_ACCEL_TAU = 1.5
+_LEAD_ACCEL_TAU = 1.7  # 1.5
 
 # radar tracks
 SPEED, ACCEL = 0, 1   # Kalman filter states enum
