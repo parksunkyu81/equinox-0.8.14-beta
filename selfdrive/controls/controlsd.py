@@ -280,25 +280,12 @@ class Controls:
         return None
 
     def get_long_lead_safe_speed(self, sm, CS, vEgo):
-        # 비전 거리 설정
-        safe_vision_dist = 100.  # 거리 범위 지정 100m 이하
-        safe_vision_speed = 0.
-        safe_vision_range = 15.
         if CS.adaptiveCruise:
             lead = self.get_lead(sm)
             if lead is not None:
                 # d : 비전 거리
                 d = lead.dRel
-                if 0. < d < -lead.vRel * safe_vision_dist:
-                    # 시속 80km/h 이하 (속도 - 15)
-                    if vEgo * CV.MS_TO_KPH <= 80.:
-                        safe_vision_speed = (vEgo * CV.MS_TO_KPH) - safe_vision_range
-                    elif vEgo * CV.MS_TO_KPH > 80.:
-                        safe_vision_speed = (vEgo * CV.MS_TO_KPH)
-                    return safe_vision_speed
-
-
-                """if 0. < d < -lead.vRel * 20. and lead.vRel < -1.:
+                if 0. < d < -lead.vRel * 20. and lead.vRel < -1.:
                     t = d / lead.vRel
                     accel = -(lead.vRel / t) * self.speed_conv_to_clu
                     accel *= 1.2
@@ -326,7 +313,7 @@ class Controls:
                     if accel < 0.:
                         target_speed = vEgo + accel
                         target_speed = max(target_speed, self.kph_to_clu(30))
-                        return target_speed"""
+                        return target_speed
 
         return 0
 
