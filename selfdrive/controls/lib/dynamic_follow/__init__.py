@@ -209,8 +209,8 @@ class DynamicFollow:
 
   def _relative_accel_mod(self):
     """
-    Returns relative acceleration mod calculated from list of lead and ego velocities over time (longer than 1s)
-    If min_consider_time has not been reached, uses lead accel and ego accel from openpilot (kalman filtered)
+     시간 경과(1초 이상)에 따른 리드 및 자아 속도 목록에서 계산된 상대 가속 모드를 반환합니다.
+     min_consider_time에 도달하지 않은 경우 openpilot의 리드 가속 및 자아 가속을 사용합니다(칼만 필터링).
     """
     a_ego = self.car_data.a_ego
     a_lead = self.lead_data.a_lead
@@ -223,7 +223,7 @@ class DynamicFollow:
 
     mods_x = [-1.5, -.75, 0]
     mods_y = [1, 1.25, 1.3]
-    if a_lead < 0:  # more weight to slight lead decel
+    if a_lead < 0:  # 약간의 리드 감속에 더 많은 무게
       a_lead *= interp(a_lead, mods_x, mods_y)
 
     if a_lead - a_ego > 0:  # return only if adding distance
@@ -275,6 +275,18 @@ class DynamicFollow:
       return DEFAULT_TR
     elif df_profile == self.df_profiles.roadtrip:  # previous stock following distance
       return 1.8
+    elif df_profile == self.df_profiles.gap1:
+      x_vel = [-3., 0, 3., 13.89, 25.0, 41.67]
+      y_dist = [1.34, 1.24, 1.34, 1.36, 1.26, 1.32]
+      return np.interp(self.car_data.v_ego, x_vel, y_dist)
+    elif df_profile == self.df_profiles.gap2:
+      x_vel = [-5.556, 0, 5.556, 13.89, 41.67]
+      y_dist = [1.460, 1.3, 1.460, 1.5000, 1.68]
+      return np.interp(self.car_data.v_ego, x_vel, y_dist)
+    elif df_profile == self.df_profiles.gap3:
+      x_vel = [-5.556, 0, 5.556, 19.7, 41.67]
+      y_dist = [1.54, 1.4, 1.54, 2.0, 2.2]
+      return np.interp(self.car_data.v_ego, x_vel, y_dist)
     else:
       raise Exception('Unknown profile type: {}'.format(df_profile))
 
