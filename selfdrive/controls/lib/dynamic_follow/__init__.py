@@ -276,16 +276,16 @@ class DynamicFollow:
     elif df_profile == self.df_profiles.roadtrip:  # previous stock following distance
       return 1.8
     elif df_profile == self.df_profiles.gap1:
-      x_vel = [-3., 0, 3., 13.89, 25.0, 41.67]
-      y_dist = [1.34, 1.24, 1.34, 1.36, 1.26, 1.32]
+      x_vel = [-13.89, -3., 0, 3., 13.89, 25.0, 41.67]
+      y_dist = [1.36, 1.34, 1.24, 1.34, 1.36, 1.26, 1.32]
       return np.interp(self.car_data.v_ego, x_vel, y_dist)
     elif df_profile == self.df_profiles.gap2:
-      x_vel = [-5.556, 0, 5.556, 13.89, 41.67]
-      y_dist = [1.460, 1.3, 1.460, 1.5000, 1.68]
+      x_vel = [-13.89, -5.556, 0, 5.556, 13.89, 41.67]
+      y_dist = [1.5000, 1.460, 1.3, 1.460, 1.5000, 1.68]
       return np.interp(self.car_data.v_ego, x_vel, y_dist)
     elif df_profile == self.df_profiles.gap3:
-      x_vel = [-5.556, 0, 5.556, 19.7, 41.67]
-      y_dist = [1.54, 1.4, 1.54, 2.0, 2.2]
+      x_vel = [-19.7, -5.556, 0, 5.556, 19.7, 41.67]
+      y_dist = [2.0, 1.54, 1.4, 1.54, 2.0, 2.2]
       return np.interp(self.car_data.v_ego, x_vel, y_dist)
     else:
       raise Exception('Unknown profile type: {}'.format(df_profile))
