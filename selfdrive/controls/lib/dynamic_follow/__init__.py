@@ -77,7 +77,7 @@ class DynamicFollow:
     self.v_rel_retention = 1.75
 
     self.sng_TR = DEFAULT_TR  # 재가속 정지 및 이동 TR
-    self.sng_speed = 1 / CV.MS_TO_KPH   # 28.8 kph  (DEF:18.0)
+    self.sng_speed = 20 / CV.MS_TO_KPH   # 28.8 kph  (DEF:18.0)
 
     self._setup_collector()
     self._setup_changing_variables()
