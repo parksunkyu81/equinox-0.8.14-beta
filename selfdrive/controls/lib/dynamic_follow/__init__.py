@@ -244,7 +244,7 @@ class DynamicFollow:
     # Calculate new TRs
     speeds, mods = [0.], [1.]  # 증가하는 경우 제한하지 않습니다
     if self.global_df_mod < 1:  # 거리를 줄이는 경우
-      speeds = [0, self.sng_speed, 40 / CV.MS_TO_KPH, x_vel[-1]]  # [0, 20 kph, ~40 kph, highest profile mod speed (~125 kph)]
+      speeds = [0, self.sng_speed, 40 / CV.MS_TO_KPH, x_vel[-1]]  # [0, 20 kph, 40 kph, highest profile mod speed (~125 kph)]
       mods = [0, 0.25, 0.75, 1]  # how much to limit global_df_mod at each speed, 1 is full effect
 
     return [y - (y * global_df_mod * interp(x, speeds, mods)) for x, y in zip(x_vel, y_dist)]
@@ -266,13 +266,13 @@ class DynamicFollow:
 
     if df_profile == self.df_profiles.traffic:  # 혼잡한 교통 상황에서
       # 선행차량의 상대속도가 느려지면 -20km/h 이상인경우, 최대 1.15(115%)를 곱해 t_follow값을 늘려준다.
-      x_vel = [-20 / CV.MS_TO_KPH, 0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]  # velocities
+      x_vel = [-30 / CV.MS_TO_KPH, -20 / CV.MS_TO_KPH, -10 / CV.MS_TO_KPH, 0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]  # velocities
       #y_dist = [1.15, 1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
-      y_dist = [1.15, 1.1781, 1.1791, 1.1457, 1.1134, 1.1145, 1.118, 1.1485, 0.957, 0.944, 0.879, 0.8461, 0.8156]
+      y_dist = [1.18, 1.21, 1.23, 1.1781, 1.1791, 1.1457, 1.1134, 1.1145, 1.118, 1.1485, 0.957, 0.944, 0.879, 0.8461, 0.8156]
     elif df_profile == self.df_profiles.stock:  # default to stock
       return 1.45
-    #elif df_profile == self.df_profiles.auto:
-    #  return 1.2
+    elif df_profile == self.df_profiles.auto:
+      return DEFAULT_TR
     elif df_profile == self.df_profiles.roadtrip:  # previous stock following distance
       return 1.8
     else:
