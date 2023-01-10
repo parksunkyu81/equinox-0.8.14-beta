@@ -610,7 +610,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   auto lead_vision = sm["modelV2"].getModelV2().getLeadsV3()[0];
   float vision_dist = lead_vision.getProb() > .5 ? (lead_vision.getX()[0] - 1.5) : 0;
-  float vision_second = vision_dist / 12;
+  float vision_second = vision_dist / cur_speed;    // [거리 / 속력]
 
   textSize = 38.f;
 
