@@ -858,7 +858,7 @@ DynamicTRGap::DynamicTRGap(QWidget* parent): QWidget(parent) {
   QScroller::grabGesture(list->viewport(), QScroller::LeftMouseButtonGesture);
   list->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
-  QStringList items = {"traffic", "stock", "roadtrip", "auto", "gap1", "gap2", "gap3"};
+  QStringList items = {"traffic", "stock", "roadtrip", "auto"};
   list->addItems(items);
   list->setCurrentRow(0);
 

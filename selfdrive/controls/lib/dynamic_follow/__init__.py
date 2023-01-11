@@ -268,25 +268,13 @@ class DynamicFollow:
       # 선행차량의 상대속도가 느려지면 -20km/h 이상인경우, 최대 1.15(115%)를 곱해 t_follow값을 늘려준다.
       x_vel = [-30 / CV.MS_TO_KPH, -20 / CV.MS_TO_KPH, -10 / CV.MS_TO_KPH, 0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]  # velocities
       #y_dist = [1.15, 1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
-      y_dist = [1.18, 1.21, 1.23, 1.1781, 1.1791, 1.1457, 1.1134, 1.1145, 1.118, 1.1485, 0.957, 0.944, 0.879, 0.8461, 0.8156]
+      y_dist = [1.23, 1.21, 1.18, 1.1781, 1.1791, 1.1457, 1.1134, 1.1145, 1.118, 1.1485, 0.957, 0.944, 0.879, 0.8461, 0.8156]
     elif df_profile == self.df_profiles.stock:  # default to stock
       return 1.45
     elif df_profile == self.df_profiles.auto:
       return DEFAULT_TR
     elif df_profile == self.df_profiles.roadtrip:  # previous stock following distance
       return 1.8
-    elif df_profile == self.df_profiles.gap1:
-      x_vel = [-13.89, -3., 0, 3., 13.89, 25.0, 41.67]
-      y_dist = [1.36, 1.34, 1.24, 1.34, 1.36, 1.26, 1.32]
-      return np.interp(self.car_data.v_ego, x_vel, y_dist)
-    elif df_profile == self.df_profiles.gap2:
-      x_vel = [-13.89, -5.556, 0, 5.556, 13.89, 41.67]
-      y_dist = [1.5000, 1.460, 1.3, 1.460, 1.5000, 1.68]
-      return np.interp(self.car_data.v_ego, x_vel, y_dist)
-    elif df_profile == self.df_profiles.gap3:
-      x_vel = [-19.7, -5.556, 0, 5.556, 19.7, 41.67]
-      y_dist = [2.0, 1.54, 1.4, 1.54, 2.0, 2.2]
-      return np.interp(self.car_data.v_ego, x_vel, y_dist)
     else:
       raise Exception('Unknown profile type: {}'.format(df_profile))
 
