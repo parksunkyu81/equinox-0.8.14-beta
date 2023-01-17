@@ -159,9 +159,10 @@ class CarInterface(CarInterfaceBase):
 
         # longitudinal
         # 60키로 속도에서 높은 과속
-        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 30. * CV.KPH_TO_MS,
-                                       50. * CV.KPH_TO_MS, 80. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kpV = [1.17, 0.97, 0.93, 0.91, 0.86, 0.78, 0.5]
+        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS,
+                                       30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
+                                       80. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.kpV = [1.15, 0.96, 0.94, 0.92, 0.91, 0.86, 0.84, 0.78, 0.5]
         ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kiV = [0.18, 0.13, 0.10]  # [0.18, 0.13, 0.10]
         ret.longitudinalActuatorDelayLowerBound = 0.12
