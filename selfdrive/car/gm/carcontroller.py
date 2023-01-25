@@ -73,15 +73,10 @@ class CarController():
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
 
           acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 80 * CV.KPH_TO_MS],
-                                         [0.18, 0.20, 0.23, 0.24, 0.25])
-          #pedal_offset = interp(CS.out.vEgo, [0.0, CREEP_SPEED, CREEP_SPEED*2], [-.5, 0.15, 0.2])
-
-          ## =============================================== ##
+                                         [0.19, 0.21, 0.23, 0.24, 0.25])  # [0.18, 0.20, 0.23, 0.24, 0.25]
 
           pedal_command = acc_mult * actuators.accel
 
-          ## ================================================ ##
-          #pedal_command = PEDAL_SCALE * actuators.accelf
           self.comma_pedal = clip(pedal_command, 0., 1.)
 
           """acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
