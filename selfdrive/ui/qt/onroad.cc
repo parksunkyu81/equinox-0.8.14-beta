@@ -610,9 +610,9 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   auto lead_vision = sm["modelV2"].getModelV2().getLeadsV3()[0];
   float vision_dist = lead_vision.getProb() > .5 ? (lead_vision.getX()[0] - 1.5) : 0;
-  float vision_second = vision_dist / cur_speed;    // [거리 / 속력]
+  //float vision_second = vision_dist / cur_speed;    // [거리 / 속력]
 
-  textSize = 38.f;
+  textSize = 48.f;
 
   // Orange Color if less than 15ｍ / Red Color if less than 5ｍ
   if (lead_vision.getProb()) {
@@ -623,7 +623,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
     } else {
       textColor = QColor(120, 255, 120, 200);
     }
-    str.sprintf("%.1f/%.1f", vision_dist, vision_second);
+    str.sprintf("%.1f", vision_dist);
   } else {
     str = "──";
   }
