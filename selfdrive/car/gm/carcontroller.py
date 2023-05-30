@@ -72,8 +72,8 @@ class CarController():
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
 
-          acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 80 * CV.KPH_TO_MS],
-                                         [0.18, 0.20, 0.23, 0.24, 0.25])
+          acc_mult = interp(CS.out.vEgo, [0., 10.0 * CV.KPH_TO_MS, 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 80 * CV.KPH_TO_MS],
+                                         [0.17, 0.18, 0.20, 0.23, 0.24, 0.25])
 
           pedal_command = acc_mult * actuators.accel
 
@@ -91,17 +91,18 @@ class CarController():
           idx = (frame // 4) % 4
           can_sends.append(create_gas_interceptor_command(self.packer_pt, self.comma_pedal, idx))
 
-    # Show green icon when LKA torque is applied, and
+    # Show green icon when LKA(차로이탈방지보조) torque is applied, and
     # alarming orange icon when approaching torque limit.
     # If not sent again, LKA icon disappears in about 5 seconds.
     # Conveniently, sending camera message periodically also works as a keepalive.
-    lka_active = CS.lkas_status == 1
-    lka_critical = lka_active and abs(actuators.steer) > 0.9
-    lka_icon_status = (lka_active, lka_critical)
-    if frame % P.CAMERA_KEEPALIVE_STEP == 0 or lka_icon_status != self.lka_icon_status_last:
-      steer_alert = hud_alert in (VisualAlert.steerRequired, VisualAlert.ldw)
-      can_sends.append(gmcan.create_lka_icon_command(CanBus.SW_GMLAN, lka_active, lka_critical, steer_alert))
-      self.lka_icon_status_last = lka_icon_status
+
+    #lka_active = CS.lkas_status == 1
+    #lka_critical = lka_active and abs(actuators.steer) > 0.9
+    #lka_icon_status = (lka_active, lka_critical)
+    #if frame % P.CAMERA_KEEPALIVE_STEP == 0 or lka_icon_status != self.lka_icon_status_last:
+    #  steer_alert = hud_alert in (VisualAlert.steerRequired, VisualAlert.ldw)
+    #  can_sends.append(gmcan.create_lka_icon_command(CanBus.SW_GMLAN, lka_active, lka_critical, steer_alert))
+    #  self.lka_icon_status_last = lka_icon_status
 
     new_actuators = actuators.copy()
     new_actuators.steer = self.apply_steer_last / P.STEER_MAX

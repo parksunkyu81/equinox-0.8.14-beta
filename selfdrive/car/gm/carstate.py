@@ -171,10 +171,6 @@ class CarState(CarStateBase):
       signals.append(("INTERCEPTOR_GAS2", "GAS_SENSOR"))
       checks.append(("GAS_SENSOR", 50))
 
-    if CP.carFingerprint in EV_CAR:
-      signals.append(("RegenPaddle", "EBCMRegenPaddle"))
-      checks.append(("EBCMRegenPaddle", 50))
-
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, CanBus.POWERTRAIN)
 
   @staticmethod
