@@ -180,7 +180,7 @@ class CarState(CarStateBase):
     ]
 
     checks = [
-      ("ASCMLKASteeringCmd", 50),
+      ("ASCMLKASteeringCmd", 0),  # DEF : 50
     ]
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, CanBus.LOOPBACK)
