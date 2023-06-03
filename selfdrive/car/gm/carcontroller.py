@@ -73,7 +73,7 @@ class CarController():
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
 
           acc_mult = interp(CS.out.vEgo, [0., 10.0 * CV.KPH_TO_MS, 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 80 * CV.KPH_TO_MS],
-                                         [0.17, 0.18, 0.20, 0.23, 0.24, 0.25])
+                                         [0.175, 0.18, 0.20, 0.23, 0.24, 0.25])
 
           pedal_command = acc_mult * actuators.accel
 
