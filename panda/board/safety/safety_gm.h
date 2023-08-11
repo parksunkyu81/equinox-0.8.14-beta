@@ -12,7 +12,7 @@ const int GM_MAX_RATE_DOWN = 17;           // DEF : 17
 const int GM_DRIVER_TORQUE_ALLOWANCE = 50;
 const int GM_DRIVER_TORQUE_FACTOR = 4;
 const int GM_MAX_GAS = 3072;
-const int GM_MAX_REGEN = 1404;
+//const int GM_MAX_REGEN = 1404;
 const int GM_MAX_BRAKE = 350;
 const int GM_GAS_INTERCEPTOR_THRESHOLD = 458;  // (610 + 306.25) / 2ratio between offset and gain from dbc file
 #define GM_GET_INTERCEPTOR(msg) (((GET_BYTE((msg), 0) << 8) + GET_BYTE((msg), 1) + ((GET_BYTE((msg), 2) << 8) + GET_BYTE((msg), 3)) / 2 ) / 2) // avg between 2 tracks
@@ -30,10 +30,10 @@ const int GM_GAS_INTERCEPTOR_THRESHOLD = 458;  // (610 + 306.25) / 2ratio betwee
 #define MSG_TX_ASCM       0x40A   // TX by OP, for ASCM, To do : We need to check if this message is used for Bolt EV or not.
 #define MSG_TX_ACC        0x370   // TX by OP, for ACC Status, To do : We need to check if this message is used for Bolt EV or not.
 #define MSG_TX_PEDAL      0x200   // TX by OP, for Pedal Interceptor
-#define MSG_REGEN         0x189   // TX/RX for Regen Paddle
+//#define MSG_REGEN         0x189   // TX/RX for Regen Paddle
 
 
-const CanMsg GM_TX_MSGS[] = {{MSG_TX_LKA, 0, 4}, {MSG_TX_ALIVE, 0, 7}, {MSG_TX_ASCM, 0, 7}, {MSG_TX_ACC, 0, 6}, {MSG_TX_PEDAL, 0, 6}, {MSG_REGEN, 0, 7}, // pt bus
+const CanMsg GM_TX_MSGS[] = {{MSG_TX_LKA, 0, 4}, {MSG_TX_ALIVE, 0, 7}, {MSG_TX_ASCM, 0, 7}, {MSG_TX_ACC, 0, 6}, {MSG_TX_PEDAL, 0, 6}, // pt bus
                              {0x104c006c, 3, 3}, {0x10400060, 3, 5}};  // gmlan
 
 // TODO: do checksum and counter checks. Add correct timestep, 0.1s for now.
@@ -119,16 +119,6 @@ static int gm_rx_hook(CANPacket_t *to_push) {
     generic_rx_checks(addr == MSG_TX_LKA);
   }
   return valid;
-/////////////////������ 189�� ���� �����ϰ������� ���� ����ϴ� �Ǵ��߿��� 0x189(393) �� ���� ���� �����Ǿ�����. �׷��� ���� ������ gm_rx_hook ���� �е� �˻� ����
-/////////////////���Ŀ� �����Կ��� Ȯ�� �ʿ�
-    // exit controls on regen paddle
-//    if (addr == 189) {
-//      bool regen = GET_BYTE(to_push, 0) & 0x20U;
-//      if (regen) {
-//        controls_allowed = 1;
-//      }
-//    }
-
 }
 
 // all commands: gas/regen, friction brake and steering
@@ -231,18 +221,21 @@ static int gm_tx_hook(CANPacket_t *to_send, bool longitudinal_allowed) {
 
   // GAS/REGEN: safety check
   if (addr == 715) {
-    int gas_regen = ((GET_BYTE(to_send, 2) & 0x7FU) << 5) + ((GET_BYTE(to_send, 3) & 0xF8U) >> 3);
+    //int gas_regen = ((GET_BYTE(to_send, 2) & 0x7FU) << 5) + ((GET_BYTE(to_send, 3) & 0xF8U) >> 3);
     // Disabled message is !engaged with gas
     // value that corresponds to max regen.
     if (!current_controls_allowed) {
       bool apply = GET_BYTE(to_send, 0) & 1U;
-      if (apply || (gas_regen != GM_MAX_REGEN)) {
+      //if (apply || (gas_regen != GM_MAX_REGEN)) {
+      //  tx = 0;
+      //}
+      if (apply) {
         tx = 0;
       }
     }
-    if (gas_regen > GM_MAX_GAS) {
-      tx = 0;
-    }
+    //if (gas_regen > GM_MAX_GAS) {
+    //  tx = 0;
+    //}
   }
 
   // 1 allows the message through
@@ -251,52 +244,6 @@ static int gm_tx_hook(CANPacket_t *to_send, bool longitudinal_allowed) {
 
 static int gm_fwd_hook(int bus_num, CANPacket_t *to_fwd) {
 
-//  int bus_fwd = -1;
-//
-//  if (gm_allow_fwd && !gm_block_fwd) {
-//    if (bus_num == 0) {
-//      // TODO: Catch message 388 and edit the HandsOffSWlDetectionStatus to 1 (0 is hands off)
-//      // Note: Blocking 388 causes error message when pressing LKAS button
-//      bus_fwd = gm_camera_bus;
-//    }
-//    else if (bus_num == gm_camera_bus) {
-//      int addr = GET_ADDR(to_fwd);
-//      // block stock lkas messages and stock acc messages (if OP is doing ACC)
-//      //TODO: Blocking stock camera ACC will need to be an option
-//      int is_lkas_msg = (addr == 384);
-//      int is_acc_msg = false;
-//      //int is_acc_msg = (addr == 0x343);
-//      int block_msg = is_lkas_msg || is_acc_msg;
-//      if (!block_msg) {
-//        bus_fwd = 0;
-//      }
-//    }
-//  }
-//  else {
-//    // Evaluate traffic to determine if forwarding should be enabled (only camera on bus 2)
-//    if (!gm_allow_fwd && !gm_block_fwd && bus_num == gm_camera_bus) {
-//      int addr = GET_ADDR(to_fwd);
-//      int len = GET_LEN(to_fwd);
-//
-//      if ((addr == 384 && len != 4) //chassis bus has 384 of different size
-//        || (addr == 1120) // F_LRR_Obj_Header from object bus
-//        || (addr == 784) // ASCMHeadlight from object bus
-//        || (addr == 309) // LHT_CameraObjConfirmation_FO from object bus
-//        || (addr == 192) // Unknown id only on chassis bus
-//      ) {
-//        gm_block_fwd = true;
-//      }
-//      else if (addr == 384 && len == 4) {
-//        gm_good_cam_cnt++;
-//      }
-//
-//      if (gm_good_cam_cnt > 10) {
-//        gm_allow_fwd = true;
-//      }
-//    }
-//  }
-//
-//  return bus_fwd;
   int bus_fwd = -1;
   int addr = GET_ADDR(to_fwd);
 
