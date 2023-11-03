@@ -685,7 +685,7 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
 
   // 1.TR Value
   float tr_value = controls_state.getDynamicTRValue();
-  auto tr_mode = controls_state.getDynamicTRMode();
+  //auto tr_mode = controls_state.getDynamicTRMode();
   int cruise_gap = car_state.getCruiseGap();
 
   p.setPen(Qt::NoPen);
