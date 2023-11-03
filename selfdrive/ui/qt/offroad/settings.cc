@@ -572,7 +572,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   QString min_tr = QString::fromStdString(Params().get("minTR"));
   if(min_tr.length() == 0)
     min_tr = "0.9";
-  QPushButton* minTrBtn = new QPushButton("Dynamic Follow Min TR : " + min_tr);
+  QPushButton* minTrBtn = new QPushButton("Dynamic Follow Min TR (0.85 to 1.3, DEF:0.9) : " + min_tr);
   minTrBtn->setObjectName("minTrBtn");
 
   connect(minTrBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(minTR); });
@@ -582,7 +582,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
      QString min_tr = QString::fromStdString(Params().get("minTR"));
      if(min_tr.length() == 0)
        min_tr = "0.9";
-     minTrBtn->setText("Dynamic Follow Min TR : " + min_tr);
+     minTrBtn->setText("Dynamic Follow Min TR (0.85 to 1.3, DEF:0.9) : " + min_tr);
      main_layout->setCurrentWidget(homeScreen);
   });
   main_layout->addWidget(minTR);
@@ -593,7 +593,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
   QString global_df_mod = QString::fromStdString(Params().get("globalDfMod"));
   if(global_df_mod.length() == 0)
     global_df_mod = "1.0";
-  QPushButton* globalDfModBtn = new QPushButton("Dynamic Follow multiplier : " + global_df_mod);
+  QPushButton* globalDfModBtn = new QPushButton("Dynamic Follow multiplier (0.85 to 2.5) : " + global_df_mod);
   globalDfModBtn->setObjectName("globalDfModBtn");
 
   connect(globalDfModBtn, &QPushButton::clicked, [=]() { main_layout->setCurrentWidget(globalDfMod); });
@@ -603,7 +603,7 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
      QString global_df_mod = QString::fromStdString(Params().get("globalDfMod"));
      if(global_df_mod.length() == 0)
        global_df_mod = "1.0";
-     globalDfModBtn->setText("Dynamic Follow multiplier : " + global_df_mod);
+     globalDfModBtn->setText("Dynamic Follow multiplier (0.85 to 2.5) : " + global_df_mod);
      main_layout->setCurrentWidget(homeScreen);
   });
   main_layout->addWidget(globalDfMod);
