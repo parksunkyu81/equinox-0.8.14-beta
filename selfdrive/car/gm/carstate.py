@@ -18,7 +18,6 @@ class CarState(CarStateBase):
     self.enable_lkas = False
     self.main_on = False
 
-
   def update(self, pt_cp, loopback_cp):
     ret = car.CarState.new_message()
 
@@ -75,6 +74,8 @@ class CarState(CarStateBase):
     self.lkas_status = pt_cp.vl["PSCMStatus"]["LKATorqueDeliveredStatus"]
     ret.steerFaultTemporary = self.lkas_status == 2
     ret.steerFaultPermanent = self.lkas_status == 3
+
+    ret.cruiseGap = pt_cp.vl["ASCMSteeringButton"]["DistanceButton"]
 
     # 1 - open, 0 - closed
     ret.doorOpen = (pt_cp.vl["BCMDoorBeltStatus"]["FrontLeftDoor"] == 1 or
@@ -139,6 +140,7 @@ class CarState(CarStateBase):
       ("LKADriverAppldTrq", "PSCMStatus"),
       ("LKATorqueDelivered", "PSCMStatus"),
       ("LKATorqueDeliveredStatus", "PSCMStatus"),
+      ("DistanceButton", "ASCMSteeringButton"),
       ("TractionControlOn", "ESPStatus"),
       ("CruiseMainOn", "ECMEngineStatus"),
       ("Brake_Pressed", "ECMEngineStatus"),
