@@ -17,18 +17,36 @@ from selfdrive.swaglog import cloudlog
 
 LON_MPC_STEP = 0.2  # first step is 0.2s
 AWARENESS_DECEL = -0.2  # car smoothly decel at .2m/s^2 when user is distracted
-A_CRUISE_MIN = -1.2
-A_CRUISE_MAX_VALS = [1.5, 1.2, 0.8, 0.6]
-A_CRUISE_MAX_BP = [0., 15., 25., 40.]
+
+# DEF
+#A_CRUISE_MIN = -1.2
+#A_CRUISE_MAX_VALS = [1.5, 1.2, 0.8, 0.6]
+#A_CRUISE_MAX_BP = [0., 15., 25., 40.]
 
 # Lookup table for turns
-_A_TOTAL_MAX_V = [1.7, 3.2]
-_A_TOTAL_MAX_BP = [20., 40.]
+#_A_TOTAL_MAX_V = [1.7, 3.2]
+#_A_TOTAL_MAX_BP = [20., 40.]
 
+_A_CRUISE_MIN_V_FOLLOWING = [-3.0, -2.5, -2.0, -1.5, -1.0]
+_A_CRUISE_MIN_V = [-1.0, -1.2, -1.0, -0.7, -0.5]
+_A_CRUISE_MIN_BP = [i * CV.MPH_TO_MS for i in [0., 15., 30., 55., 85.]]
 
-def get_max_accel(v_ego):
-  return interp(v_ego, A_CRUISE_MAX_BP, A_CRUISE_MAX_VALS)
+_A_CRUISE_MAX_V = [1.15, 1.25, 1.0, 0.7, 0.65]
+_A_CRUISE_MAX_V_FOLLOWING = [1.5, 1.5, 1.2, 0.7, 0.65]
+_A_CRUISE_MAX_BP = _A_CRUISE_MIN_BP
 
+# Lookup table for turns - fast accel
+_A_TOTAL_MAX_V = [3.5, 4.0, 5.0]
+_A_TOTAL_MAX_BP = [0., 25., 55.]
+
+"""def get_max_accel(v_ego):
+  return interp(v_ego, A_CRUISE_MAX_BP, A_CRUISE_MAX_VALS)"""
+
+def calc_cruise_accel_limits(v_ego):
+  a_cruise_min = interp(v_ego, _A_CRUISE_MIN_BP, _A_CRUISE_MIN_V_FOLLOWING)
+  a_cruise_max = interp(v_ego, _A_CRUISE_MAX_BP, _A_CRUISE_MAX_V_FOLLOWING)
+
+  return [a_cruise_min, a_cruise_max]
 
 def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):
   """
@@ -84,7 +102,8 @@ class Planner:
     # Prevent divergence, smooth in current v_ego
     self.v_desired_filter.x = max(0.0, self.v_desired_filter.update(v_ego))
 
-    accel_limits = [A_CRUISE_MIN, get_max_accel(v_ego)]
+    # accel_limits = [A_CRUISE_MIN, get_max_accel(v_ego)]
+    accel_limits = calc_cruise_accel_limits(v_ego)
     accel_limits_turns = limit_accel_in_turns(v_ego, sm['carState'].steeringAngleDeg, accel_limits, self.CP)
     if force_slow_decel:
       # if required so, force a smooth deceleration
