@@ -75,8 +75,6 @@ class CarState(CarStateBase):
     ret.steerFaultTemporary = self.lkas_status == 2
     ret.steerFaultPermanent = self.lkas_status == 3
 
-    ret.cruiseGap = pt_cp.vl["ASCMSteeringButton"]["DistanceButton"]
-
     # 1 - open, 0 - closed
     ret.doorOpen = (pt_cp.vl["BCMDoorBeltStatus"]["FrontLeftDoor"] == 1 or
                     pt_cp.vl["BCMDoorBeltStatus"]["FrontRightDoor"] == 1 or
