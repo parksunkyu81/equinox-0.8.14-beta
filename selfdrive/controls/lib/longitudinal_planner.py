@@ -27,11 +27,11 @@ AWARENESS_DECEL = -0.2  # car smoothly decel at .2m/s^2 when user is distracted
 #_A_TOTAL_MAX_V = [1.7, 3.2]
 #_A_TOTAL_MAX_BP = [20., 40.]
 
-_A_CRUISE_MIN_V_FOLLOWING = [-3.0, -2.5, -2.0, -1.5, -1.0]
+_A_CRUISE_MIN_V_FOLLOWING = [-2.5, -2.0, -1.8, -1.5, -1.0]
 _A_CRUISE_MIN_V = [-1.0, -1.2, -1.0, -0.7, -0.5]
 _A_CRUISE_MIN_BP = [0., 15., 30., 55., 85.]
 
-_A_CRUISE_MAX_V = [1.0, 1.2, 1.0, 0.7, 0.5]
+_A_CRUISE_MAX_V = [1.1, 1.2, 1.0, 0.7, 0.5]
 _A_CRUISE_MAX_V_FOLLOWING = [1.7, 1.5, 1.2, 0.7, 0.65]
 _A_CRUISE_MAX_BP = _A_CRUISE_MIN_BP
 
