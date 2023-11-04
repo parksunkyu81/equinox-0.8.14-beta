@@ -13,7 +13,7 @@ from selfdrive.controls.lib.dynamic_follow.support import LeadData, CarData, dfD
 from common.data_collector import DataCollector
 
 travis = False
-DEFAULT_TR = 1.38   #1.45
+DEFAULT_TR = 1.3   #1.45
 
 
 class DistanceModController:
