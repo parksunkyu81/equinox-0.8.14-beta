@@ -72,17 +72,23 @@ class CarController():
         # 이것이 없으면 저속에서 너무 공격적입니다.
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
 
-          acc_mult = interp(CS.out.vEgo, [0., 10.0 * CV.KPH_TO_MS, 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 80 * CV.KPH_TO_MS],
-                                         [0.175, 0.18, 0.20, 0.23, 0.24, 0.25])
+          #acc_mult = interp(CS.out.vEgo, [0., 10.0 * CV.KPH_TO_MS, 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 80 * CV.KPH_TO_MS],
+          #                               [0.175, 0.18, 0.20, 0.23, 0.24, 0.25])
+          #pedal_command = acc_mult * actuators.accel
+          #self.comma_pedal = clip(pedal_command, 0., 1.)
 
+          # 가속 멀티플라이어 설정
+          acc_mult = interp(CS.out.vEgo,
+                            [0., 10.0 * CV.KPH_TO_MS, 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS,
+                             80 * CV.KPH_TO_MS],
+                            [0.15, 0.17, 0.19, 0.21, 0.23, 0.25])
+
+          # 원래 가속 명령 계산
           pedal_command = acc_mult * actuators.accel
 
-          self.comma_pedal = clip(pedal_command, 0., 1.)
+          # 연비 향상을 위해 클리핑
+          self.comma_pedal = clip(pedal_command, 0., 0.9)  # 최대 0.8까지만 허용하여 연비 개선
 
-          """acc_mult = interp(CS.out.vEgo, [0., 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 40 * CV.KPH_TO_MS],
-                            [0.17, 0.24, 0.265, 0.24])
-          start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 1.5*CREEP_SPEED], [-0.4, 0.20, 0.15])
-          self.comma_pedal = clip(acc_mult * (actuators.accel + start_boost), 0., 1.)"""
 
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.0
