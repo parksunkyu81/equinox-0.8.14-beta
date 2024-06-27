@@ -173,13 +173,11 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS,
                                        30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
                                        80. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kpV = [0.9, 0.8, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4]  # Reduced kpV values for smoother acceleration
+        ret.longitudinalTuning.kpV = [0.94, 0.85, 0.8, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4]  # Reduced kpV values for smoother acceleration
         ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kiV = [0.1, 0.075, 0.05]  # Reduced kiV values for smoother control
-        ret.longitudinalActuatorDelayLowerBound = 0.15  # Increased delay for smoother response
-        ret.longitudinalActuatorDelayUpperBound = 0.3
-
-
+        ret.longitudinalTuning.kiV = [0.12, 0.075, 0.05]  # 초기 속도 구간(0~25 km/h)에서 적분 이득을 증가시켜 초기 가속 구간의 제어 성능을 향상
+        ret.longitudinalActuatorDelayLowerBound = 0.1     # 액추에이터 지연 시간을 줄여 차량이 초기 제어 신호에 더 빠르게 반응
+        ret.longitudinalActuatorDelayUpperBound = 0.25
 
 
         ret.steerLimitTimer = 0.4

@@ -42,13 +42,13 @@ _A_TOTAL_MAX_BP = [0., 25., 55.]
 """def get_max_accel(v_ego):
   return interp(v_ego, A_CRUISE_MAX_BP, A_CRUISE_MAX_VALS)"""
 
-def calc_cruise_accel_limits(v_ego):
+def calc_cruise_accel_limits(v_ego):  # 감속 값을 부드럽게 설정
   a_cruise_min = interp(v_ego, _A_CRUISE_MIN_BP, _A_CRUISE_MIN_V_FOLLOWING)
   a_cruise_max = interp(v_ego, _A_CRUISE_MAX_BP, _A_CRUISE_MAX_V_FOLLOWING)
 
   return [a_cruise_min, a_cruise_max]
 
-def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):
+def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):  # 가속 제한을 더 부드럽게 설정
   """
   This function returns a limited long acceleration allowed, depending on the existing lateral acceleration
   this should avoid accelerating when losing the target in turns
@@ -61,6 +61,19 @@ def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):
   a_x_allowed = math.sqrt(max(a_total_max ** 2 - a_y ** 2, 0.))
 
   return [a_target[0], min(a_target[1], a_x_allowed)]
+
+"""
+정지할 때 차량의 가속도를 제한하여 부드럽게 정지할 수 있도록 합니다. 
+현재 속도가 매우 낮을 때(예: 0.5 m/s 미만) AWARENESS_DECEL 값을 최소로 설정하여 부드러운 감속을 적용합니다.
+"""
+def limit_stop_acceleration(v_ego, a_target):
+    """
+    Limit the acceleration when the vehicle needs to stop.
+    """
+    if v_ego < 0.5:  # Adjust as needed based on testing or requirements
+      # Apply smooth deceleration when approaching standstill
+      a_target = max(a_target, AWARENESS_DECEL)  # Ensure deceleration is smooth
+    return a_target
 
 
 class Planner:
@@ -112,6 +125,9 @@ class Planner:
     # clip limits, cannot init MPC outside of bounds
     accel_limits_turns[0] = min(accel_limits_turns[0], self.a_desired + 0.05)
     accel_limits_turns[1] = max(accel_limits_turns[1], self.a_desired - 0.05)
+
+    # 멈춰야 할 때는 가속을 제한한다.
+    accel_limits_turns[1] = limit_stop_acceleration(v_ego, accel_limits_turns[1])
 
     #self.mpc.set_weights(prev_accel_constraint)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
