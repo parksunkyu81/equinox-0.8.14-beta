@@ -74,8 +74,8 @@ class LongControl:
     # Interp control trajectory
     speeds = long_plan.speeds
     if len(speeds) == CONTROL_N:
-      smoothed_speeds = self.smooth_target_speeds(speeds)
-      v_target = interp(t_since_plan, T_IDXS[:CONTROL_N], smoothed_speeds)
+      # smoothed_speeds = self.smooth_target_speeds(speeds)
+      v_target = interp(t_since_plan, T_IDXS[:CONTROL_N], speeds)
       a_target = interp(t_since_plan, T_IDXS[:CONTROL_N], long_plan.accels)
 
       v_target_lower = interp(self.CP.longitudinalActuatorDelayLowerBound + t_since_plan, T_IDXS[:CONTROL_N], smoothed_speeds)
