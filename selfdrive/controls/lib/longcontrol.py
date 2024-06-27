@@ -66,7 +66,7 @@ class LongControl:
       self.target_speeds = speeds[:]
     else:
       alpha = 0.1  # Smoothing factor, 0 < alpha <= 1
-      self.target_speeds = [alpha * s + (1 - alpha) * ts for s, ts in zip(speeds, self.target_speeds)]
+      self.target_speeds = [int(alpha * s + (1 - alpha) * ts) for s, ts in zip(speeds, self.target_speeds)]
     return self.target_speeds
 
   def update(self, active, CS, long_plan, accel_limits, t_since_plan):
