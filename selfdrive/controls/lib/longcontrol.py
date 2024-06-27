@@ -49,28 +49,43 @@ class LongControl:
                              k_f=CP.longitudinalTuning.kf, rate=1 / DT_CTRL)
     self.v_pid = 0.0
     self.last_output_accel = 0.0
+    self.target_speeds = []
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
     self.pid.reset()
     self.v_pid = v_pid
 
+  """
+  목표 속도를 부드럽게 전환하기 위해 사용됩니다. 이전 목표 속도와 새로운 목표 속도를 혼합하여 점진적으로 변경합니다. 
+  이는 갑작스러운 가속이나 감속을 방지하는 데 도움이 됩니다.
+  """
+  def smooth_target_speeds(self, speeds):
+    """Smooth the target speeds for more gradual acceleration/deceleration"""
+    if not self.target_speeds:
+      self.target_speeds = speeds[:]
+    else:
+      alpha = 0.1  # Smoothing factor, 0 < alpha <= 1
+      self.target_speeds = [alpha * s + (1 - alpha) * ts for s, ts in zip(speeds, self.target_speeds)]
+    return self.target_speeds
+
   def update(self, active, CS, long_plan, accel_limits, t_since_plan):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Interp control trajectory
     speeds = long_plan.speeds
     if len(speeds) == CONTROL_N:
-      v_target = interp(t_since_plan, T_IDXS[:CONTROL_N], speeds)
+      smoothed_speeds = self.smooth_target_speeds(speeds)
+      v_target = interp(t_since_plan, T_IDXS[:CONTROL_N], smoothed_speeds)
       a_target = interp(t_since_plan, T_IDXS[:CONTROL_N], long_plan.accels)
 
-      v_target_lower = interp(self.CP.longitudinalActuatorDelayLowerBound + t_since_plan, T_IDXS[:CONTROL_N], speeds)
+      v_target_lower = interp(self.CP.longitudinalActuatorDelayLowerBound + t_since_plan, T_IDXS[:CONTROL_N], smoothed_speeds)
       a_target_lower = 2 * (v_target_lower - v_target) / self.CP.longitudinalActuatorDelayLowerBound - a_target
 
-      v_target_upper = interp(self.CP.longitudinalActuatorDelayUpperBound + t_since_plan, T_IDXS[:CONTROL_N], speeds)
+      v_target_upper = interp(self.CP.longitudinalActuatorDelayUpperBound + t_since_plan, T_IDXS[:CONTROL_N], smoothed_speeds)
       a_target_upper = 2 * (v_target_upper - v_target) / self.CP.longitudinalActuatorDelayUpperBound - a_target
       a_target = min(a_target_lower, a_target_upper)
 
-      v_target_future = speeds[-1]
+      v_target_future = smoothed_speeds[-1]
     else:
       v_target = 0.0
       v_target_future = 0.0
