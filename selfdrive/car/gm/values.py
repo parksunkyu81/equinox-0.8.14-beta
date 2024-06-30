@@ -20,12 +20,12 @@ class CarControllerParams():
         self.STEER_MAX = 300  # DEF : 300, Safety limit, not LKA max. Trucks use 600.
         self.STEER_STEP = 4  # control frames per command
         self.STEER_DELTA_UP = 10     # DEF : 7
-        self.STEER_DELTA_DOWN = 17
+        self.STEER_DELTA_DOWN = 15   # DEF : 17
         self.MIN_STEER_SPEED = 3.  # m/s
-        self.STEER_DRIVER_ALLOWANCE = 50
+        self.STEER_DRIVER_ALLOWANCE = 65 #50
         self.STEER_DRIVER_MULTIPLIER = 4
         self.STEER_DRIVER_FACTOR = 100
-        self.NEAR_STOP_BRAKE_PHASE = 0.5  # m/s
+        self.NEAR_STOP_BRAKE_PHASE = 0.25  # m/s, 0.5
 
         # Heartbeat for dash "Service Adaptive Cruise" and "Service Front Camera"
         self.ADAS_KEEPALIVE_STEP = 100
