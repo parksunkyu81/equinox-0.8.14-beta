@@ -158,27 +158,30 @@ class CarInterface(CarInterfaceBase):
                                                                              tire_stiffness_factor=tire_stiffness_factor)
 
         # longitudinal
-        # 60키로 속도에서 높은 과속
-        """ ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS,
-                                       30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
-                                       80. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kpV = [1.15, 0.965, 0.94, 0.92, 0.91, 0.86, 0.84, 0.78, 0.5]
-        ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kiV = [0.18, 0.13, 0.10]  # [0.18, 0.13, 0.10]
-        ret.longitudinalActuatorDelayLowerBound = 0.12
-        ret.longitudinalActuatorDelayUpperBound = 0.25 """
-
-        # longitudinal
         # GPT recommand code
-        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS,
+        """ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS,
                                        30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
                                        80. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kpV = [0.94, 0.85, 0.8, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4]  # Reduced kpV values for smoother acceleration
+        ret.longitudinalTuning.kpV = [0.9, 0.8, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45,
+                                      0.4]  # Reduced kpV values for smoother acceleration
         ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kiV = [0.12, 0.075, 0.05]  # 초기 속도 구간(0~25 km/h)에서 적분 이득을 증가시켜 초기 가속 구간의 제어 성능을 향상
-        ret.longitudinalActuatorDelayLowerBound = 0.1     # 액추에이터 지연 시간을 줄여 차량이 초기 제어 신호에 더 빠르게 반응
-        ret.longitudinalActuatorDelayUpperBound = 0.25
+        ret.longitudinalTuning.kiV = [0.1, 0.075, 0.05]  # Reduced kiV values for smoother control
+        ret.longitudinalActuatorDelayLowerBound = 0.15  # Increased delay for smoother response
+        ret.longitudinalActuatorDelayUpperBound = 0.3"""
 
+        # longitudinal with FrogPilot
+        ret.longitudinalTuning.kpBP = [5., 35.]
+        ret.longitudinalTuning.kpV = [0.35, 0.5]
+        ret.longitudinalTuning.kiBP = [0., 35.0]
+        ret.longitudinalTuning.kiV = [0.1, 0.1]
+        ret.longitudinalTuning.kf = 0.15
+        ret.stoppingDecelRate = 0.8
+
+        ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
+        ret.longitudinalTuning.deadzoneV = [0., 0.10]
+        ret.longitudinalActuatorDelayLowerBound = 0.15
+        ret.longitudinalActuatorDelayUpperBound = 0.15
+        # End
 
         ret.steerLimitTimer = 0.4
         ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
