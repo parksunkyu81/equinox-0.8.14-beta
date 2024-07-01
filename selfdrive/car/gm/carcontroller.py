@@ -73,7 +73,6 @@ class CarController():
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
 
           # 가속 멀티플라이어 설정
-          """
           acc_mult = interp(CS.out.vEgo,
                             [0., 10.0 * CV.KPH_TO_MS, 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS,
                              80 * CV.KPH_TO_MS],
@@ -82,7 +81,6 @@ class CarController():
           pedal_command = acc_mult * actuators.accel
           # 연비 향상을 위해 클리핑
           self.comma_pedal = clip(pedal_command, 0., 0.9)  # 최대 0.8까지만 허용하여 연비 개선
-          """
 
           # longitudinal with FrogPilot
           """zero = 0.15625  # 40/256
@@ -94,13 +92,6 @@ class CarController():
             self.comma_pedal = clip(zero + actuators.accel, 0., zero)  # Make brake the same size as gas, but clip to regen
           """
           # End...
-
-          # longitudinal with geniuth2 (bolt)
-          if actuators.accel > 0.:
-            pedaloffset = interp(CS.out.vEgo, [0., 3, 6, 30], [0.0, 0.180, 0.22, 0.280])
-            self.comma_pedal = clip((pedaloffset + actuators.accel), 0.0, 1.0)
-          else:
-            self.comma_pedal = 0.0
 
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.0

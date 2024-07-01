@@ -87,7 +87,7 @@ class CarInterface(CarInterfaceBase):
         ret.mass = 3500. * CV.LB_TO_KG + STD_CARGO_KG
         ret.wheelbase = 2.72
         ret.centerToFront = ret.wheelbase * 0.4
-        ret.steerRatio = 14.4  # default Equinox 2019
+        ret.steerRatio = 16.8  # default Equinox 2019
         # no rear steering, at least on the listed cars above
         ret.steerRatioRear = 0.
         ret.steerControlType = car.CarParams.SteerControlType.torque
@@ -160,7 +160,7 @@ class CarInterface(CarInterfaceBase):
 
         # longitudinal
         # GPT recommand code
-        """ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS,
+        ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS,
                                        30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
                                        80. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kpV = [0.9, 0.8, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45,
@@ -168,21 +168,7 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kiV = [0.1, 0.075, 0.05]  # Reduced kiV values for smoother control
         ret.longitudinalActuatorDelayLowerBound = 0.15  # Increased delay for smoother response
-        ret.longitudinalActuatorDelayUpperBound = 0.3"""
-
-        # longitudinal with FrogPilot
-        ret.longitudinalTuning.kpBP = [5., 35.]
-        ret.longitudinalTuning.kpV = [0.35, 0.5]
-        ret.longitudinalTuning.kiBP = [0., 35.0]
-        ret.longitudinalTuning.kiV = [0.1, 0.1]
-        ret.longitudinalTuning.kf = 0.15
-        ret.stoppingDecelRate = 0.8
-
-        ret.longitudinalTuning.deadzoneBP = [0., 30. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.deadzoneV = [0., 0.10]
-        ret.longitudinalActuatorDelayLowerBound = 0.15
-        ret.longitudinalActuatorDelayUpperBound = 0.15
-        # End
+        ret.longitudinalActuatorDelayUpperBound = 0.3
 
         ret.steerLimitTimer = 0.4
         ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz
