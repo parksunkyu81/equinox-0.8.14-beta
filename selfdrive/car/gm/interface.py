@@ -87,7 +87,7 @@ class CarInterface(CarInterfaceBase):
         ret.mass = 3500. * CV.LB_TO_KG + STD_CARGO_KG
         ret.wheelbase = 2.72
         ret.centerToFront = ret.wheelbase * 0.4
-        ret.steerRatio = 16.85
+        ret.steerRatio = 14.4  # default Equinox 2019
         # no rear steering, at least on the listed cars above
         ret.steerRatioRear = 0.
         ret.steerControlType = car.CarParams.SteerControlType.torque
@@ -149,11 +149,11 @@ class CarInterface(CarInterfaceBase):
             CarInterfaceBase.configure_torque_tune(ret.lateralTuning, torque_lat_accel_factor, torque_friction)
             """
             ret.lateralTuning.torque.useSteeringAngle = True
-            max_lat_accel = 2.6531724862969748
+            max_lat_accel = 2.5 # Def 2.6531724862969748
             ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
             ret.lateralTuning.torque.kf = 0.1919764879840985 / max_lat_accel
             ret.lateralTuning.torque.ki = 0.009054123646805178 / max_lat_accel
-            ret.lateralTuning.torque.friction = 0.175
+            ret.lateralTuning.torque.friction = 0.05 # Def 0.175
 
             ret.lateralTuning.torque.kd = 1.0
             ret.lateralTuning.torque.deadzone = 0.03
