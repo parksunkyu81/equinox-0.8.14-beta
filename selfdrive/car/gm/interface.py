@@ -76,17 +76,25 @@ class CarInterface(CarInterfaceBase):
         ret.enableGasInterceptor = 0x201 in fingerprint[0]
 
         ret.minSteerSpeed = 11 * CV.KPH_TO_MS
+        ret.steerRateCost = 0.35  # def : 2.0
+
+        # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
+        # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
+        ret.steerActuatorDelay = 0.2  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
+        # ret.steerActuatorDelay = max(ntune_common_get('steerActuatorDelay'), 0.1)
+
         ret.minEnableSpeed = -1
         ret.mass = 3500. * CV.LB_TO_KG + STD_CARGO_KG
         ret.wheelbase = 2.72
         ret.centerToFront = ret.wheelbase * 0.4
+        ret.steerRatio = 16.85
         # no rear steering, at least on the listed cars above
         ret.steerRatioRear = 0.
         ret.steerControlType = car.CarParams.SteerControlType.torque
 
         tire_stiffness_factor = 0.444  # 1. 을 기준으로 줄면 민감(오버), 커지면 둔감(언더) DEF : 0.5
-        ret.maxSteeringAngleDeg = 1000.
-        #ret.disableLateralLiveTuning = True
+        ret.maxSteeringAngleDeg = 1000.  # 최대 조향 각도
+        ret.disableLateralLiveTuning = True
 
         lateral_control = Params().get("LateralControl", encoding='utf-8')
         if lateral_control == 'INDI':
@@ -126,10 +134,10 @@ class CarInterface(CarInterfaceBase):
             # ret.lateralTuning.pid.kdBP = [0.]
             # ret.lateralTuning.pid.kdV = [0.5]
             ret.lateralTuning.pid.kf = 1.  # for get_steer_feedforward_bolt()
-
         else:
             params = Params()
             ret.lateralTuning.init('torque')
+            """
             try:
               torque_lat_accel_factor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
               torque_friction = ntune_torque_get('friction')  # FRICTION
@@ -139,14 +147,16 @@ class CarInterface(CarInterfaceBase):
               torque_friction = float(
                     Decimal(params.get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))  # FRICTION
             CarInterfaceBase.configure_torque_tune(ret.lateralTuning, torque_lat_accel_factor, torque_friction)
+            """
+            ret.lateralTuning.torque.useSteeringAngle = True
+            max_lat_accel = 2.6531724862969748
+            ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
+            ret.lateralTuning.torque.kf = 0.1919764879840985 / max_lat_accel
+            ret.lateralTuning.torque.ki = 0.009054123646805178 / max_lat_accel
+            ret.lateralTuning.torque.friction = 0.175
 
-        ret.steerRatio = 16.5
-
-        # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
-        # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
-
-        #ret.steerActuatorDelay = 0.21  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
-        ret.steerActuatorDelay = max(ntune_common_get('steerActuatorDelay'), 0.1)
+            ret.lateralTuning.torque.kd = 1.0
+            ret.lateralTuning.torque.deadzone = 0.03
 
         # TODO: get actual value, for now starting with reasonable value for
         # civic and scaling by mass and wheelbase
