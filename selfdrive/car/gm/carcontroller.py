@@ -85,14 +85,23 @@ class CarController():
           """
 
           # longitudinal with FrogPilot
-          zero = 0.15625  # 40/256
+          """zero = 0.15625  # 40/256
           if actuators.accel > 0.:
             # Scales the accel from 0-1 to 0.156-1
             self.comma_pedal = clip(((1 - zero) * actuators.accel + zero), 0., 1.)
           else:
             # if accel is negative, -0.1 -> 0.015625
             self.comma_pedal = clip(zero + actuators.accel, 0., zero)  # Make brake the same size as gas, but clip to regen
+          """
           # End...
+
+          # longitudinal with geniuth2 (bolt)
+          if actuators.accel > 0.0:
+            pedaloffset = interp(CS.out.vEgo, [0., 3, 6, 30], [0.0, 0.180, 0.22, 0.280])
+          else:
+            pedaloffset = interp(CS.out.vEgo, [0., 3, 6, 30], [0.08, 0.180, 0.22, 0.280])
+
+          self.comma_pedal = clip((pedaloffset + actuators.accel), 0.0, 1.0)
 
         elif not c.active or not CS.adaptive_Cruise or CS.out.vEgo <= V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
           self.comma_pedal = 0.0
