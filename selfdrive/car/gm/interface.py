@@ -94,7 +94,7 @@ class CarInterface(CarInterfaceBase):
 
         tire_stiffness_factor = 0.444  # 1. 을 기준으로 줄면 민감(오버), 커지면 둔감(언더) DEF : 0.5
         ret.maxSteeringAngleDeg = 1000.  # 최대 조향 각도
-        ret.disableLateralLiveTuning = True
+        #ret.disableLateralLiveTuning = True
 
         lateral_control = Params().get("LateralControl", encoding='utf-8')
         if lateral_control == 'INDI':
@@ -137,7 +137,7 @@ class CarInterface(CarInterfaceBase):
         else:
             params = Params()
             ret.lateralTuning.init('torque')
-            """
+
             try:
               torque_lat_accel_factor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
               torque_friction = ntune_torque_get('friction')  # FRICTION
@@ -147,16 +147,7 @@ class CarInterface(CarInterfaceBase):
               torque_friction = float(
                     Decimal(params.get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))  # FRICTION
             CarInterfaceBase.configure_torque_tune(ret.lateralTuning, torque_lat_accel_factor, torque_friction)
-            """
-            ret.lateralTuning.torque.useSteeringAngle = True
-            max_lat_accel = 2.5 # Def 2.6531724862969748
-            ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
-            ret.lateralTuning.torque.kf = 0.1919764879840985 / max_lat_accel
-            ret.lateralTuning.torque.ki = 0.009054123646805178 / max_lat_accel
-            ret.lateralTuning.torque.friction = 0.05 # Def 0.175
 
-            #ret.lateralTuning.torque.kd = 1.0
-            #ret.lateralTuning.torque.deadzone = 0.03
 
         # TODO: get actual value, for now starting with reasonable value for
         # civic and scaling by mass and wheelbase
