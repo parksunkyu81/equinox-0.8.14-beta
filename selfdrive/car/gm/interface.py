@@ -155,8 +155,8 @@ class CarInterface(CarInterfaceBase):
             ret.lateralTuning.torque.ki = 0.009054123646805178 / max_lat_accel
             ret.lateralTuning.torque.friction = 0.05 # Def 0.175
 
-            ret.lateralTuning.torque.kd = 1.0
-            ret.lateralTuning.torque.deadzone = 0.03
+            #ret.lateralTuning.torque.kd = 1.0
+            #ret.lateralTuning.torque.deadzone = 0.03
 
         # TODO: get actual value, for now starting with reasonable value for
         # civic and scaling by mass and wheelbase
