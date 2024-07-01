@@ -76,7 +76,7 @@ class CarInterface(CarInterfaceBase):
         ret.enableGasInterceptor = 0x201 in fingerprint[0]
 
         ret.minSteerSpeed = 11 * CV.KPH_TO_MS
-        ret.steerRateCost = 0.35  # def : 2.0
+        #ret.steerRateCost = 0.35  # def : 2.0
 
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
         # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
