@@ -73,14 +73,14 @@ class CarController():
         if c.active and CS.adaptive_Cruise and CS.out.vEgo > V_CRUISE_ENABLE_MIN / CV.MS_TO_KPH:
 
           # 가속 멀티플라이어 설정
-          #acc_mult = interp(CS.out.vEgo,
-          #                  [0., 10.0 * CV.KPH_TO_MS, 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 80 * CV.KPH_TO_MS],
-          #                  [0.155, 0.167, 0.182, 0.21, 0.23, 0.25]
-          #                  )
+          acc_mult = interp(CS.out.vEgo,
+                            [0., 10.0 * CV.KPH_TO_MS, 18.0 * CV.KPH_TO_MS, 30 * CV.KPH_TO_MS, 60 * CV.KPH_TO_MS, 80 * CV.KPH_TO_MS],
+                            [0.155, 0.167, 0.182, 0.21, 0.23, 0.25]
+                            )
           # 원래 가속 명령 계산
-          #pedal_command = acc_mult * actuators.accel
+          pedal_command = acc_mult * actuators.accel
           # 연비 향상을 위해 클리핑
-          self.comma_pedal = clip(actuators.accel, 0., 1.)  # 최대 0.8까지만 허용하여 연비 개선
+          self.comma_pedal = clip(pedal_command, 0., 0.9)  # 최대 0.8까지만 허용하여 연비 개선
 
           # longitudinal with FrogPilot
           """zero = 0.15625  # 40/256
