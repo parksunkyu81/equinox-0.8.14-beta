@@ -74,16 +74,15 @@ class CarInterface(CarInterfaceBase):
 
         # Start with a baseline lateral tuning for all GM vehicles. Override tuning as needed in each model section below.
         ret.enableGasInterceptor = 0x201 in fingerprint[0]
-
+        ret.minEnableSpeed = 18 * CV.MPH_TO_MS
         ret.minSteerSpeed = 11 * CV.KPH_TO_MS
+        #ret.minEnableSpeed = -1
         #ret.steerRateCost = 0.35  # def : 2.0
 
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
         # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
-        ret.steerActuatorDelay = 0.2  # DEF : 0.1  너무 늦게 선회하면 steerActuatorDelay를 늘립니다.
-        # ret.steerActuatorDelay = max(ntune_common_get('steerActuatorDelay'), 0.1)
+        ret.steerActuatorDelay = max(ntune_common_get('steerActuatorDelay'), 0.1)
 
-        ret.minEnableSpeed = -1
         ret.mass = 3500. * CV.LB_TO_KG + STD_CARGO_KG
         ret.wheelbase = 2.72
         ret.centerToFront = ret.wheelbase * 0.4
@@ -215,16 +214,16 @@ class CarInterface(CarInterfaceBase):
         EXTRA_GEARS = [GearShifter.sport, GearShifter.low, GearShifter.eco, GearShifter.manumatic]
         events = self.create_common_events(ret, extra_gears=EXTRA_GEARS, pcm_enable=self.CS.CP.pcmCruise)
 
-        # if ret.vEgo < self.CP.minEnableSpeed:
-        #  events.add(EventName.belowEngageSpeed)
+        if ret.vEgo < self.CP.minEnableSpeed:
+          events.add(EventName.belowEngageSpeed)
         # if self.CS.park_brake:
         #  events.add(EventName.parkBrake)
         # if ret.cruiseState.standstill:
         #  events.add(EventName.resumeRequired)
         # if (self.CS.CP.carFingerprint not in NO_ASCM) and self.CS.pcm_acc_status == AccState.FAULTED:
         #  events.add(EventName.accFaulted)
-        # if ret.vEgo < self.CP.minSteerSpeed:
-        #  events.add(car.CarEvent.EventName.belowSteerSpeed)
+        if ret.vEgo < self.CP.minSteerSpeed:
+          events.add(car.CarEvent.EventName.belowSteerSpeed)
 
         # handle button presses
         # for b in ret.buttonEvents:

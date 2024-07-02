@@ -12,10 +12,10 @@ from selfdrive.ntune import ntune_common_get
 
 # kph
 V_CRUISE_MAX = 145
-V_CRUISE_MIN = 20
-V_CRUISE_DELTA_MI = 5 * CV.MPH_TO_KPH
-V_CRUISE_DELTA_KM = 20
-V_CRUISE_ENABLE_MIN = 1
+V_CRUISE_MIN = 30   # DEF 20
+V_CRUISE_DELTA_MI = 10 * CV.MPH_TO_KPH   # DEF 5
+V_CRUISE_DELTA_KM = 30  # DEF 20
+V_CRUISE_ENABLE_MIN = 18   # DEF 1
 
 LAT_MPC_N = 16
 LON_MPC_N = 32
@@ -32,8 +32,8 @@ CRUISE_NEAREST_FUNC = {
   ButtonType.decelCruise: math.floor,
 }
 CRUISE_INTERVAL_SIGN = {
-  ButtonType.accelCruise: +1,
-  ButtonType.decelCruise: -1,
+  ButtonType.accelCruise: +2,  # DEF 1
+  ButtonType.decelCruise: -2,  # DEF 1
 }
 
 
