@@ -736,7 +736,6 @@ class Controls:
 
         # Update Torque Params
         if self.CP.lateralTuning.which() == 'torque':
-            """
             if self.is_live_torque:
                 torque_params = self.sm['liveTorqueParameters']
 
@@ -756,12 +755,7 @@ class Controls:
                 self.torque_latAccelOffset = 1
                 self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset,
                                                    self.torque_friction)
-            """
-            self.torque_latAccelFactor = 2.5  # LAT_ACCEL_FACTOR
-            self.torque_friction = 0.05       # FRICTION
-            self.torque_latAccelOffset = 1
-            self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset,
-                                               self.torque_friction)
+
 
         lat_plan = self.sm['lateralPlan']
         long_plan = self.sm['longitudinalPlan']
