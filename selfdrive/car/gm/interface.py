@@ -162,8 +162,7 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS,
                                        30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
                                        80. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kpV = [0.9, 0.8, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45,
-                                      0.4]  # Reduced kpV values for smoother acceleration
+        ret.longitudinalTuning.kpV = [0.87, 0.8, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4]  # Reduced kpV values for smoother acceleration
         ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kiV = [0.1, 0.075, 0.05]  # Reduced kiV values for smoother control
         ret.longitudinalActuatorDelayLowerBound = 0.15  # Increased delay for smoother response
