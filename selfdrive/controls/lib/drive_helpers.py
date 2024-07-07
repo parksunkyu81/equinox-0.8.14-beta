@@ -32,8 +32,8 @@ CRUISE_NEAREST_FUNC = {
   ButtonType.decelCruise: math.floor,
 }
 CRUISE_INTERVAL_SIGN = {
-  ButtonType.accelCruise: +5,  # DEF 1
-  ButtonType.decelCruise: -5,  # DEF 1
+  ButtonType.accelCruise: +2,  # DEF 1
+  ButtonType.decelCruise: -2,  # DEF 1
 }
 
 
