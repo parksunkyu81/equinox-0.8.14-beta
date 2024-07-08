@@ -164,7 +164,7 @@ class CarInterface(CarInterfaceBase):
                                        80. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
         ret.longitudinalTuning.kpV = [0.87, 0.8, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4]  # Reduced kpV values for smoother acceleration
         ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kiV = [0.18, 0.13, 0.1]  # [0.1, 0.075, 0.05] Reduced kiV values for smoother control
+        ret.longitudinalTuning.kiV = [0.18, 0.13, 0.1]  # [0.1, 0.075, 0.05] Ki 값을 높이면 시스템이 오차를 빠르게 보상하려고 하여 반응이 빨라짐
         ret.longitudinalActuatorDelayLowerBound = 0.05  # 값을 줄이면 액츄에이터의 지연시간이 감소하여 보다 빠른 응답
         ret.longitudinalActuatorDelayUpperBound = 0.1
 
