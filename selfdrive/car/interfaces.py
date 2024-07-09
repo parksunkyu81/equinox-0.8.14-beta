@@ -75,7 +75,7 @@ class CarInterfaceBase(ABC):
   def get_steer_feedforward_function(self):
     return self.get_steer_feedforward_default
 
-  @staticmethod
+  """@staticmethod
   def torque_from_lateral_accel_linear(lateral_accel_value,
                                        torque_params,
                                        lateral_accel_error=None,
@@ -94,7 +94,7 @@ class CarInterfaceBase(ABC):
     return (lateral_accel_value / torque_params['latAccelFactor']) + friction
 
   def torque_from_lateral_accel(self):
-    return self.torque_from_lateral_accel_linear
+    return self.torque_from_lateral_accel_linear"""
 
 
   # returns a set of default params to avoid repetition in car specific params
