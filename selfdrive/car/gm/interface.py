@@ -134,18 +134,16 @@ class CarInterface(CarInterfaceBase):
             # ret.lateralTuning.pid.kdV = [0.5]
             ret.lateralTuning.pid.kf = 1.  # for get_steer_feedforward_bolt()
         else:
-            params = Params()
             ret.lateralTuning.init('torque')
+            ret.lateralTuning.torque.useSteeringAngle = True
+            max_lat_accel = 2.6531724862969748
+            ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
+            ret.lateralTuning.torque.kf = 0.1919764879840985 / max_lat_accel
+            ret.lateralTuning.torque.ki = 0.009054123646805178 / max_lat_accel
+            ret.lateralTuning.torque.friction = 0.175
 
-            try:
-              torque_lat_accel_factor = ntune_torque_get('latAccelFactor')  # LAT_ACCEL_FACTOR
-              torque_friction = ntune_torque_get('friction')  # FRICTION
-            except:
-              torque_lat_accel_factor = float(
-                    Decimal(params.get("TorqueMaxLatAccel", encoding="utf8")) * Decimal('0.1'))  # LAT_ACCEL_FACTOR
-              torque_friction = float(
-                    Decimal(params.get("TorqueFriction", encoding="utf8")) * Decimal('0.001'))  # FRICTION
-            CarInterfaceBase.configure_torque_tune(ret.lateralTuning, torque_lat_accel_factor, torque_friction)
+            ret.lateralTuning.torque.kd = 1.0
+            ret.lateralTuning.torque.deadzone = 0.03
 
 
         # TODO: get actual value, for now starting with reasonable value for
@@ -162,11 +160,11 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.kpBP = [0., 5. * CV.KPH_TO_MS, 10. * CV.KPH_TO_MS, 20. * CV.KPH_TO_MS,
                                        30. * CV.KPH_TO_MS, 50. * CV.KPH_TO_MS, 60. * CV.KPH_TO_MS,
                                        80. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kpV = [0.87, 0.8, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4]  # Reduced kpV values for smoother acceleration
+        ret.longitudinalTuning.kpV = [0.9, 0.8, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4]  # Reduced kpV values for smoother acceleration
         ret.longitudinalTuning.kiBP = [0., 25. * CV.KPH_TO_MS, 130. * CV.KPH_TO_MS]
-        ret.longitudinalTuning.kiV = [0.18, 0.13, 0.1]  # [0.1, 0.075, 0.05] Ki 값을 높이면 시스템이 오차를 빠르게 보상하려고 하여 반응이 빨라짐
-        ret.longitudinalActuatorDelayLowerBound = 0.05  # 값을 줄이면 액츄에이터의 지연시간이 감소하여 보다 빠른 응답
-        ret.longitudinalActuatorDelayUpperBound = 0.1
+        ret.longitudinalTuning.kiV = [0.1, 0.075, 0.05]  # Reduced kiV values for smoother control
+        ret.longitudinalActuatorDelayLowerBound = 0.15  # Increased delay for smoother response
+        ret.longitudinalActuatorDelayUpperBound = 0.3
 
         ret.steerLimitTimer = 0.4
         ret.radarTimeStep = 0.0667  # GM radar runs at 15Hz instead of standard 20Hz

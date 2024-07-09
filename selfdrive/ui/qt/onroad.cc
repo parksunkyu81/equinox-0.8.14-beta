@@ -537,11 +537,7 @@ void NvgWindow::drawHud(QPainter &p) {
                       controls_state.getSteerRatio(),
                       controls_state.getSteerActuatorDelay()
                       );*/
-  infoText.sprintf("(FACT:%.2f,FRI:%.2f,PT:%.0f) TCO(%.2f) SR(%.2f) SAD(%.2f) CURVE(%.2f) MIN_TR(%.1f) DF_MOD(%.1f)",
-                      controls_state.getLatAccelFactor(),
-                      //controls_state.getLatAccelOffset(),
-                      controls_state.getFriction(),
-                      controls_state.getTotalBucketPoints(),
+  infoText.sprintf("TCO(%.2f) SR(%.2f) SAD(%.2f) CURVE(%.2f) MIN_TR(%.1f) DF_MOD(%.1f)",
                       controls_state.getTotalCameraOffset(),
                       controls_state.getSteerRatio(),
                       controls_state.getSteerActuatorDelay(),
