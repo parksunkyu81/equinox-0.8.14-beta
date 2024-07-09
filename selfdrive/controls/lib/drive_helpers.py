@@ -82,12 +82,12 @@ def update_v_cruise(v_cruise_kph, buttonEvents, button_timers, enabled, metric):
         break
 
   if button_type:
-    v_cruise_delta = v_cruise_delta * (10 if long_press else 5)  # Adjust increment for long press
+    v_cruise_delta = 10 if long_press else 5 # Adjust increment for long press
     if long_press and v_cruise_kph % v_cruise_delta != 0:  # partial interval
       v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](v_cruise_kph / v_cruise_delta) * v_cruise_delta
     else:
       v_cruise_kph += v_cruise_delta * CRUISE_INTERVAL_SIGN[button_type]
-    v_cruise_kph = clip(round(v_cruise_kph, 1), V_CRUISE_MIN, V_CRUISE_MAX)
+    v_cruise_kph = clip(round(v_cruise_kph, 1), V_CRUISE_MIN, V_CRUISE_MAX) # 속도를 반올림하여 소수점 첫째 자리까지 유지
 
   return v_cruise_kph
 
