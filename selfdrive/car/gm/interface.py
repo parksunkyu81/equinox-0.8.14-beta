@@ -81,7 +81,7 @@ class CarInterface(CarInterfaceBase):
 
         # steerActuatorDelay, steerMaxV 커질수록 인으로 붙고, scale 작을수록 인으로 붙는다.
         # steeractuatordelay는 계산된 주행곡선을 좀더 빠르게 혹은 느리게 반영할지를 결정합니다
-        ret.steerActuatorDelay = max(ntune_common_get('steerActuatorDelay'), 0.1)
+        ret.steerActuatorDelay = 0.2 # max(ntune_common_get('steerActuatorDelay'), 0.1)
 
         ret.mass = 3500. * CV.LB_TO_KG + STD_CARGO_KG
         ret.wheelbase = 2.72
@@ -93,7 +93,7 @@ class CarInterface(CarInterfaceBase):
 
         tire_stiffness_factor = 0.444  # 1. 을 기준으로 줄면 민감(오버), 커지면 둔감(언더) DEF : 0.5
         ret.maxSteeringAngleDeg = 1000.  # 최대 조향 각도
-        #ret.disableLateralLiveTuning = True
+        ret.disableLateralLiveTuning = True
 
         lateral_control = Params().get("LateralControl", encoding='utf-8')
         if lateral_control == 'INDI':
