@@ -27,12 +27,8 @@ AWARENESS_DECEL = -0.2  # car smoothly decel at .2m/s^2 when user is distracted
 #_A_TOTAL_MAX_V = [1.7, 3.2]
 #_A_TOTAL_MAX_BP = [20., 40.]
 
-#_A_CRUISE_MIN_V_FOLLOWING = [-2.5, -2.0, -1.8, -1.5, -1.0]
-#_A_CRUISE_MIN_V = [-1.0, -1.2, -1.0, -0.7, -0.5]
-
-# 차량이 더 천천히 감속하여 멀리서 멈추게 하기 위해서는 감속 값을 더 낮춘다.
-_A_CRUISE_MIN_V_FOLLOWING = [-1.0, -0.8, -0.6, -0.5, -0.4]  # 감속 값을 더 낮게 설정
-_A_CRUISE_MIN_V = [-0.6, -0.5, -0.4, -0.3, -0.2]  # 감속 값을 더 낮게 설정
+_A_CRUISE_MIN_V_FOLLOWING = [-2.5, -2.0, -1.8, -1.5, -1.0]
+_A_CRUISE_MIN_V = [-1.0, -1.2, -1.0, -0.7, -0.5]
 _A_CRUISE_MIN_BP = [0., 15., 30., 55., 85.]
 
 _A_CRUISE_MAX_V = [1.1, 1.2, 1.0, 0.7, 0.5]
@@ -74,7 +70,7 @@ def limit_stop_acceleration(v_ego, a_target):
     """
     Limit the acceleration when the vehicle needs to stop.
     """
-    if v_ego < 2.8:  # DEF:0.5, 감속 시점을 조절하여 더 멀리서 멈추도록 설정 (현재 속도가 1.5 m/s (약 5.4 km/h) 이하일 때 부드러운 감속)
+    if v_ego < 0.5:  # DEF:0.5, 감속 시점을 조절하여 더 멀리서 멈추도록 설정 (현재 속도가 1.5 m/s (약 5.4 km/h) 이하일 때 부드러운 감속)
       # Apply smooth deceleration when approaching standstill
       a_target = max(a_target, AWARENESS_DECEL / 2)  # Ensure deceleration is smooth
     return a_target

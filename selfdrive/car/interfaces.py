@@ -134,9 +134,9 @@ class CarInterfaceBase(ABC):
   def configure_torque_tune(tune, LAT_ACCEL_FACTOR=2.4, FRICTION=0.175, steering_angle_deadzone_deg=0.03, use_steering_angle=True):
     tune.init('torque')
     tune.torque.useSteeringAngle = use_steering_angle
-    tune.torque.kp = 1.0
-    tune.torque.kf = 1.0
-    tune.torque.ki = 0.1
+    tune.torque.kp = 2.0 / LAT_ACCEL_FACTOR
+    tune.torque.kf = 1.0 / LAT_ACCEL_FACTOR
+    tune.torque.ki = 0.50 / LAT_ACCEL_FACTOR
     tune.torque.friction = FRICTION
     tune.torque.latAccelFactor = LAT_ACCEL_FACTOR
     tune.torque.latAccelOffset = 0.0

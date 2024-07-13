@@ -80,7 +80,7 @@ class CarController():
           # 원래 가속 명령 계산
           pedal_command = acc_mult * actuators.accel
           # 연비 향상을 위해 클리핑
-          self.comma_pedal = clip(pedal_command, 0., 0.9)  # 최대 0.8까지만 허용하여 연비 개선
+          self.comma_pedal = clip(pedal_command, 0., 0.87)  # 최대 0.8까지만 허용하여 연비 개선
 
           # longitudinal with FrogPilot
           """zero = 0.15625  # 40/256
