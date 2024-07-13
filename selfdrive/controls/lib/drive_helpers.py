@@ -32,8 +32,8 @@ CRUISE_NEAREST_FUNC = {
   ButtonType.decelCruise: math.floor,
 }
 CRUISE_INTERVAL_SIGN = {
-  ButtonType.accelCruise: +5,  # DEF 1
-  ButtonType.decelCruise: -5,  # DEF 1
+  ButtonType.accelCruise: +1,  # DEF 1
+  ButtonType.decelCruise: -1,  # DEF 1
 }
 
 
@@ -82,7 +82,7 @@ def update_v_cruise(v_cruise_kph, buttonEvents, button_timers, enabled, metric):
         break
 
   if button_type:
-    v_cruise_delta = 10 if long_press else 5  # Adjust increment for long press
+    v_cruise_delta = v_cruise_delta * (10 if long_press else 5)  # Adjust increment for long press
     if long_press and v_cruise_kph % v_cruise_delta != 0:  # partial interval
       v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](v_cruise_kph / v_cruise_delta) * v_cruise_delta
     else:
