@@ -736,7 +736,7 @@ class Controls:
         self.VM.update_params(x, sr)
 
         # Update Torque Params
-        """if self.CP.lateralTuning.which() == 'torque':
+        if self.CP.lateralTuning.which() == 'torque':
             if self.is_live_torque:
                 torque_params = self.sm['liveTorqueParameters']
 
@@ -755,7 +755,7 @@ class Controls:
                 self.torque_friction = ntune_torque_get('friction')  # FRICTION
                 self.torque_latAccelOffset = 1
                 self.LaC.update_live_torque_params(self.torque_latAccelFactor, self.torque_latAccelOffset,
-                                                   self.torque_friction)"""
+                                                   self.torque_friction)
 
 
         lat_plan = self.sm['lateralPlan']
@@ -1003,10 +1003,10 @@ class Controls:
         controlsState.sccCurvatureFactor = ntune_scc_get('sccCurvatureFactor')
 
         # Live Torque
-        #controlsState.latAccelFactor = self.torque_latAccelFactor
-        #controlsState.latAccelOffset = self.torque_latAccelOffset
-        #controlsState.friction = self.torque_friction
-        #controlsState.totalBucketPoints = self.totalBucketPoints
+        controlsState.latAccelFactor = self.torque_latAccelFactor
+        controlsState.latAccelOffset = self.torque_latAccelOffset
+        controlsState.friction = self.torque_friction
+        controlsState.totalBucketPoints = self.totalBucketPoints
 
         # Dynamic TR
         #controlsState.cruiseGap = int(Params().get("cruiseGap", encoding="utf8"))
