@@ -83,7 +83,8 @@ def update_v_cruise(v_cruise_kph, buttonEvents, button_timers, enabled, metric):
 
   if button_type:
     v_cruise_delta = v_cruise_delta * (5 if long_press else 1)  # Adjust increment for long press
-    if long_press and v_cruise_kph % v_cruise_delta != 0:  # partial interval
+    #if long_press and v_cruise_kph % v_cruise_delta != 0:  # partial interval
+    if v_cruise_kph % v_cruise_delta != 0:  # partial interval
       v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](v_cruise_kph / v_cruise_delta) * v_cruise_delta
     else:
       v_cruise_kph += v_cruise_delta * CRUISE_INTERVAL_SIGN[button_type]
