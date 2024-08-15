@@ -12,10 +12,10 @@ from selfdrive.ntune import ntune_common_get
 
 # kph
 V_CRUISE_MAX = 145
-V_CRUISE_MIN = 20   # DEF 20
-V_CRUISE_DELTA_MI = 10 * CV.MPH_TO_KPH   # DEF 5 (long button with speed step)
-V_CRUISE_DELTA_KM = 20  # DEF 20
-V_CRUISE_ENABLE_MIN = 1   # DEF 1
+V_CRUISE_MIN = 20
+V_CRUISE_DELTA_MI = 5 * CV.MPH_TO_KPH
+V_CRUISE_DELTA_KM = 20
+V_CRUISE_ENABLE_MIN = 1
 
 LAT_MPC_N = 16
 LON_MPC_N = 32
@@ -32,8 +32,8 @@ CRUISE_NEAREST_FUNC = {
   ButtonType.decelCruise: math.floor,
 }
 CRUISE_INTERVAL_SIGN = {
-  ButtonType.accelCruise: +5,  # DEF 1
-  ButtonType.decelCruise: -5,  # DEF 1
+  ButtonType.accelCruise: +1,
+  ButtonType.decelCruise: -1,
 }
 
 
@@ -78,18 +78,15 @@ def update_v_cruise(v_cruise_kph, buttonEvents, button_timers, enabled, metric):
     for k in button_timers.keys():
       if button_timers[k] and button_timers[k] % CRUISE_LONG_PRESS == 0:
         button_type = k
-        long_press = False
+        long_press = True
         break
 
   if button_type:
-    v_cruise_delta = v_cruise_delta * (5 if long_press else 1)  # Adjust increment for long press
-    #if long_press and v_cruise_kph % v_cruise_delta != 0:  # partial interval
-    if v_cruise_kph % v_cruise_delta != 0:  # partial interval
+    v_cruise_delta = v_cruise_delta * (5 if long_press else 1)
+    if long_press and v_cruise_kph % v_cruise_delta != 0:  # partial interval
       v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](v_cruise_kph / v_cruise_delta) * v_cruise_delta
     else:
       v_cruise_kph += v_cruise_delta * CRUISE_INTERVAL_SIGN[button_type]
-    # 5 단위로 설정되도록 수정
-    v_cruise_kph = round(v_cruise_kph / 5) * 5
     v_cruise_kph = clip(round(v_cruise_kph, 1), V_CRUISE_MIN, V_CRUISE_MAX)
 
   return v_cruise_kph
