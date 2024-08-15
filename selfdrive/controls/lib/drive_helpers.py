@@ -87,6 +87,8 @@ def update_v_cruise(v_cruise_kph, buttonEvents, button_timers, enabled, metric):
       v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](v_cruise_kph / v_cruise_delta) * v_cruise_delta
     else:
       v_cruise_kph += v_cruise_delta * CRUISE_INTERVAL_SIGN[button_type]
+    # 5 단위로 설정되도록 수정
+    v_cruise_kph = round(v_cruise_kph / 5) * 5
     v_cruise_kph = clip(round(v_cruise_kph, 1), V_CRUISE_MIN, V_CRUISE_MAX)
 
   return v_cruise_kph
