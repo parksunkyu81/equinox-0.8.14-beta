@@ -79,9 +79,9 @@ def update_v_cruise(v_cruise_kph, buttonEvents, button_timers, enabled, metric):
   if button_type:
     if long_press:
       v_cruise_delta = 10  # 길게 누를 때 10km/h 증가
-    if long_press and v_cruise_kph % v_cruise_delta != 0:  # 부분 간격일 경우
-      v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](v_cruise_kph / v_cruise_delta) * v_cruise_delta
-    else:
+    if long_press and v_cruise_kph % v_cruise_delta != 0:  # 사용자가 버튼을 길게 눌렀으며, 현재 속도 v_cruise_kph가 10의 배수가 아닐 경우
+      v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](v_cruise_kph / v_cruise_delta) * v_cruise_delta # 10의 배수로 반올림 또는 내림
+    else:  # 속도가 10의 배수로 이미 맞춰져 있는 경우
       v_cruise_kph += v_cruise_delta * CRUISE_INTERVAL_SIGN[button_type]
     v_cruise_kph = clip(round(v_cruise_kph, 1), V_CRUISE_MIN, V_CRUISE_MAX)
 
